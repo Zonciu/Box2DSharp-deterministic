@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Box2DSharp.Common;
+﻿using Box2DSharp.Common;
 using Box2DSharp.Dynamics.Joints;
 
 namespace Box2DSharp.Ropes
@@ -19,14 +18,14 @@ namespace Box2DSharp.Ropes
         }
 
         /// The local anchor point relative to bodyA's origin.
-        public Vector2 LocalAnchorA;
+        public FVector2 LocalAnchorA;
 
         /// The local anchor point relative to bodyB's origin.
-        public Vector2 LocalAnchorB;
+        public FVector2 LocalAnchorB;
 
         /// The maximum length of the rope.
         /// Warning: this must be larger than b2_linearSlop or
         /// the joint will have no effect.
-        public float MaxLength;
+        public FP MaxLength;
     };
 }

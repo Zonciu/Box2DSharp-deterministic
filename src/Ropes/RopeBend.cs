@@ -1,4 +1,6 @@
-﻿namespace Box2DSharp.Ropes
+﻿using Box2DSharp.Common;
+
+namespace Box2DSharp.Ropes
 {
     public struct RopeBend
     {
@@ -8,24 +10,24 @@
 
         public int i3;
 
-        public float invMass1;
+        public FP invMass1;
 
-        public float invMass2;
+        public FP invMass2;
 
-        public float invMass3;
+        public FP invMass3;
 
-        public float invEffectiveMass;
+        public FP invEffectiveMass;
 
-        public float lambda;
+        public FP lambda;
 
-        public float L1, L2;
+        public FP L1, L2;
 
-        public float alpha1;
+        public FP alpha1;
 
-        public float alpha2;
+        public FP alpha2;
 
-        public float spring;
+        public FP spring;
 
-        public float damper;
+        public FP damper;
     };
 }

@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Box2DSharp.Collision;
+﻿using Box2DSharp.Collision;
 using Box2DSharp.Common;
 using Testbed.Abstractions;
 
@@ -10,23 +9,23 @@ namespace Testbed.TestCases
     {
         private const int VertexCount = 8;
 
-        private readonly Vector2[] _vAs = new Vector2[Settings.MaxPolygonVertices];
+        private readonly FVector2[] _vAs = new FVector2[Settings.MaxPolygonVertices];
 
-        private readonly Vector2[] _vBs = new Vector2[Settings.MaxPolygonVertices];
+        private readonly FVector2[] _vBs = new FVector2[Settings.MaxPolygonVertices];
 
         private int _countA;
 
         private int _countB;
 
-        private float _radiusA;
+        private FP _radiusA;
 
-        private float _radiusB;
+        private FP _radiusB;
 
         private Transform _transformA;
 
         private Transform _transformB;
 
-        private Vector2 _translationB;
+        private FVector2 _translationB;
 
         public ShapeCast()
         {
@@ -50,17 +49,18 @@ namespace Testbed.TestCases
             _translationB.Set(8.0f, 0.0f);
         }
 
-        protected override void OnRender()
+        /// <inheritdoc />
+        protected override void PostStep()
         {
-            var input = new ShapeCastInput();
+            input = new ShapeCastInput();
             input.ProxyA.Set(_vAs, _countA, _radiusA);
             input.ProxyB.Set(_vBs, _countB, _radiusB);
             input.TransformA = _transformA;
             input.TransformB = _transformB;
             input.TranslationB = _translationB;
-            var hit = DistanceAlgorithm.ShapeCast(out var output, input);
+            hit = DistanceAlgorithm.ShapeCast(out output, input);
 
-            var transformB2 = new Transform
+            transformB2 = new Transform
             {
                 Rotation = _transformB.Rotation,
                 Position = _transformB.Position + output.Lambda * input.TranslationB
@@ -76,11 +76,28 @@ namespace Testbed.TestCases
             distanceInput.ProxyB.Set(_vBs, _countB, _radiusB);
             var simplexCache = new SimplexCache();
 
-            DistanceAlgorithm.Distance(out var distanceOutput, ref simplexCache, distanceInput);
-            DrawString(
-                $"hit = {hit}, iters = {output.Iterations}, lambda = {output.Lambda}, distance = {distanceOutput.Distance}");
+            DistanceAlgorithm.Distance(out distanceOutput, ref simplexCache, distanceInput);
+        }
 
-            var vertices = new Vector2[Settings.MaxPolygonVertices];
+        private bool hit;
+
+        private Transform transformB2;
+
+        private ShapeCastInput input;
+
+        private ShapeCastOutput output;
+
+        private DistanceOutput distanceOutput;
+
+        /// <inheritdoc />
+        protected override void OnGUI()
+        {
+            DrawString($"hit = {hit}, iters = {output.Iterations}, lambda = {output.Lambda}, distance = {distanceOutput.Distance}");
+        }
+
+        protected override void OnRender()
+        {
+            var vertices = new FVector2[Settings.MaxPolygonVertices];
 
             for (var i = 0; i < _countA; ++i)
             {

@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Box2DSharp.Collision.Shapes;
+﻿using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Joints;
@@ -12,15 +11,15 @@ namespace Testbed.TestCases
     {
         public DistanceJoint m_joint;
 
-        public float m_length;
+        public FP m_length;
 
-        public float m_minLength;
+        public FP m_minLength;
 
-        public float m_maxLength;
+        public FP m_maxLength;
 
-        public float m_hertz;
+        public FP m_hertz;
 
-        public float m_dampingRatio;
+        public FP m_dampingRatio;
 
         public DistanceJointTest()
         {
@@ -30,7 +29,7 @@ namespace Testbed.TestCases
                 ground = World.CreateBody(bd);
 
                 EdgeShape shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
             {
@@ -49,7 +48,7 @@ namespace Testbed.TestCases
                 m_dampingRatio = 0.7f;
 
                 DistanceJointDef jd = new DistanceJointDef();
-                jd.Initialize(ground, body, new Vector2(0.0f, 15.0f), bd.Position);
+                jd.Initialize(ground, body, new FVector2(0.0f, 15.0f), bd.Position);
                 jd.CollideConnected = true;
                 m_length = jd.Length;
                 m_minLength = m_length;
@@ -60,7 +59,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             DrawString("This demonstrates a soft distance joint.");
             DrawString("Press: (b) to delete a Body, (j) to delete a joint");

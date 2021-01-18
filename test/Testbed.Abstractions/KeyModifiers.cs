@@ -9,7 +9,7 @@ namespace Testbed.Abstractions
         Shift = 1 << 0,
 
         /// <summary>If one or more Control keys were held down.</summary>
-        Control = 1 << 1,
+        Ctrl = 1 << 1,
 
         /// <summary>If one or more Alt keys were held down.</summary>
         Alt = 1 << 2,

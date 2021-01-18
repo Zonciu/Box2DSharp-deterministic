@@ -2,7 +2,6 @@ using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Testbed.Abstractions;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -24,7 +23,7 @@ namespace Testbed.TestCases
                 var ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 
@@ -35,7 +34,7 @@ namespace Testbed.TestCases
                 _body = World.CreateBody(bd);
 
                 var shape = new PolygonShape();
-                shape.SetAsBox(4.0f, 4.0f, new Vector2(0.0f, 0.0f), 0.0f);
+                shape.SetAsBox(4.0f, 4.0f, new FVector2(0.0f, 0.0f), 0.0f);
                 _fixture1 = _body.CreateFixture(shape, 10.0f);
             }
             _fixture2 = null;
@@ -78,7 +77,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             DrawString("Press: (c) create a shape, (d) destroy a shape. (s) set sensor");
             DrawString($"sensor = {_sensor}");

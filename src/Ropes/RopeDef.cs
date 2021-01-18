@@ -1,19 +1,19 @@
-﻿using System.Numerics;
+﻿using Box2DSharp.Common;
 
 namespace Box2DSharp.Ropes
 {
     /// 
     public struct RopeDef
     {
-        public Vector2 Position;
+        public FVector2 Position;
 
-        public Vector2[] Vertices;
+        public FVector2[] Vertices;
 
         public int Count;
 
-        public float[] Masses;
+        public FP[] Masses;
 
-        public Vector2 Gravity;
+        public FVector2 Gravity;
 
         public RopeTuning Tuning;
     };

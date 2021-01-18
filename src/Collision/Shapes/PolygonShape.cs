@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Numerics;
 using Box2DSharp.Collision.Collider;
 using Box2DSharp.Common;
 
@@ -16,11 +15,11 @@ namespace Box2DSharp.Collision.Shapes
     {
         public const int MaxPolygonVertices = Settings.MaxPolygonVertices;
 
-        public readonly Vector2[] Normals = new Vector2[MaxPolygonVertices];
+        public readonly FVector2[] Normals = new FVector2[MaxPolygonVertices];
 
-        public readonly Vector2[] Vertices = new Vector2[MaxPolygonVertices];
+        public readonly FVector2[] Vertices = new FVector2[MaxPolygonVertices];
 
-        public Vector2 Centroid;
+        public FVector2 Centroid;
 
         public int Count;
 
@@ -50,7 +49,7 @@ namespace Box2DSharp.Collision.Shapes
         /// @warning the points may be re-ordered, even if they form a convex polygon
         /// @warning collinear points are handled but not removed. Collinear points
         /// may lead to poor stacking behavior.
-        public void Set(Vector2[] vertices, int count = -1)
+        public void Set(FVector2[] vertices, int count = -1)
         {
             if (count == -1)
             {
@@ -70,7 +69,7 @@ namespace Box2DSharp.Collision.Shapes
             var n = Math.Min(count, MaxPolygonVertices);
 
             // Perform welding and copy vertices into local buffer.
-            Span<Vector2> ps = stackalloc Vector2[MaxPolygonVertices];
+            Span<FVector2> ps = stackalloc FVector2[MaxPolygonVertices];
 
             var tempCount = 0;
             for (var i = 0; i < n; ++i)
@@ -80,7 +79,7 @@ namespace Box2DSharp.Collision.Shapes
                 var unique = true;
                 for (var j = 0; j < tempCount; ++j)
                 {
-                    if (Vector2.DistanceSquared(v, ps[j])
+                    if (FVector2.DistanceSquared(v, ps[j])
                       < 0.5f * Settings.LinearSlop * (0.5f * Settings.LinearSlop))
                     {
                         unique = false;
@@ -145,7 +144,7 @@ namespace Box2DSharp.Collision.Shapes
                     }
 
                     // Collinearity check
-                    if (c.Equals(0.0f) && v.LengthSquared() > r.LengthSquared())
+                    if (c == FP.Zero && v.LengthSquared() > r.LengthSquared())
                     {
                         ie = j;
                     }
@@ -181,7 +180,7 @@ namespace Box2DSharp.Collision.Shapes
                 var i2 = i + 1 < m ? i + 1 : 0;
                 var edge = Vertices[i2] - Vertices[i1];
                 Debug.Assert(edge.LengthSquared() > Settings.Epsilon * Settings.Epsilon);
-                Normals[i] = MathUtils.Cross(edge, 1.0f);
+                Normals[i] = MathUtils.Cross(edge, FP.One);
                 Normals[i].Normalize();
             }
 
@@ -192,7 +191,7 @@ namespace Box2DSharp.Collision.Shapes
         /// Build vertices to represent an axis-aligned box centered on the local origin.
         /// @param hx the half-width.
         /// @param hy the half-height.
-        public void SetAsBox(float hx, float hy)
+        public void SetAsBox(FP hx, FP hy)
         {
             Count = 4;
             Vertices[0].Set(-hx, -hy);
@@ -211,7 +210,7 @@ namespace Box2DSharp.Collision.Shapes
         /// @param hy the half-height.
         /// @param center the center of the box in local coordinates.
         /// @param angle the rotation of the box in local coordinates.
-        public void SetAsBox(float hx, float hy, in Vector2 center, float angle)
+        public void SetAsBox(FP hx, FP hy, in FVector2 center, FP angle)
         {
             SetAsBox(hx, hy);
             Centroid = center;
@@ -226,13 +225,13 @@ namespace Box2DSharp.Collision.Shapes
         }
 
         /// @see b2Shape::TestPoint
-        public override bool TestPoint(in Transform transform, in Vector2 p)
+        public override bool TestPoint(in Transform transform, in FVector2 p)
         {
             var pLocal = MathUtils.MulT(transform.Rotation, p - transform.Position);
 
             for (var i = 0; i < Count; ++i)
             {
-                var dot = Vector2.Dot(Normals[i], pLocal - Vertices[i]);
+                var dot = FVector2.Dot(Normals[i], pLocal - Vertices[i]);
                 if (dot > 0.0f)
                 {
                     return false;
@@ -265,7 +264,8 @@ namespace Box2DSharp.Collision.Shapes
             var p2 = MathUtils.MulT(transform.Rotation, input.P2 - transform.Position);
             var d = p2 - p1;
 
-            float lower = 0.0f, upper = input.MaxFraction;
+            var lower = FP.Zero;
+            var upper = input.MaxFraction;
 
             var index = -1;
 
@@ -274,10 +274,10 @@ namespace Box2DSharp.Collision.Shapes
                 // p = p1 + a * d
                 // dot(normal, p - v) = 0
                 // dot(normal, p1 - v) + a * dot(normal, d) = 0
-                var numerator = Vector2.Dot(Normals[i], Vertices[i] - p1);
-                var denominator = Vector2.Dot(Normals[i], d);
+                var numerator = FVector2.Dot(Normals[i], Vertices[i] - p1);
+                var denominator = FVector2.Dot(Normals[i], d);
 
-                if (denominator.Equals(0.0f))
+                if (denominator == FP.Zero)
                 {
                     if (numerator < 0.0f)
                     {
@@ -338,16 +338,16 @@ namespace Box2DSharp.Collision.Shapes
             for (var i = 1; i < Count; ++i)
             {
                 var v = MathUtils.Mul(transform, Vertices[i]);
-                lower = Vector2.Min(lower, v);
-                upper = Vector2.Max(upper, v);
+                lower = FVector2.Min(lower, v);
+                upper = FVector2.Max(upper, v);
             }
 
-            var r = new Vector2(Radius, Radius);
+            var r = new FVector2(Radius, Radius);
             aabb = new AABB {LowerBound = lower - r, UpperBound = upper + r};
         }
 
         /// @see b2Shape::ComputeMass
-        public override void ComputeMass(out MassData massData, float density)
+        public override void ComputeMass(out MassData massData, FP density)
         {
             // Polygon mass, centroid, and inertia.
             // Let rho be the polygon density in mass per unit area.
@@ -375,14 +375,13 @@ namespace Box2DSharp.Collision.Shapes
 
             Debug.Assert(Count >= 3);
 
-            var center = new Vector2(0.0f, 0.0f);
-            var area = 0.0f;
-            var I = 0.0f;
+            var center = FVector2.Zero;
+            var area = FP.Zero;
+            var I = FP.Zero;
 
             // Get a reference point for forming triangles.
             // Use the first vertex to reduce round-off errors.
             ref readonly var s = ref Vertices[0];
-            const float k_inv3 = 1.0f / 3.0f;
 
             for (var i = 0; i < Count; ++i)
             {
@@ -396,15 +395,17 @@ namespace Box2DSharp.Collision.Shapes
                 area += triangleArea;
 
                 // Area weighted centroid
-                center += triangleArea * k_inv3 * (e1 + e2);
+                center += triangleArea * inv3 * (e1 + e2);
 
-                float ex1 = e1.X, ey1 = e1.Y;
-                float ex2 = e2.X, ey2 = e2.Y;
+                var ex1 = e1.X;
+                var ey1 = e1.Y;
+                var ex2 = e2.X;
+                var ey2 = e2.Y;
 
                 var intx2 = ex1 * ex1 + ex2 * ex1 + ex2 * ex2;
                 var inty2 = ey1 * ey1 + ey2 * ey1 + ey2 * ey2;
 
-                I += 0.25f * k_inv3 * D * (intx2 + inty2);
+                I += 0.25f * inv3 * D * (intx2 + inty2);
             }
 
             // Total mass
@@ -420,8 +421,8 @@ namespace Box2DSharp.Collision.Shapes
 
             // Shift to center of mass then to original body origin.
             massData.RotationInertia += massData.Mass
-                                      * (Vector2.Dot(massData.Center, massData.Center)
-                                       - Vector2.Dot(center, center));
+                                      * (FVector2.Dot(massData.Center, massData.Center)
+                                       - FVector2.Dot(center, center));
         }
 
         /// Validate convexity. This is a very time consuming operation.
@@ -454,18 +455,18 @@ namespace Box2DSharp.Collision.Shapes
             return true;
         }
 
-        private static Vector2 ComputeCentroid(in Vector2[] vs, int count)
+        static FP inv3 = (FP)1 / (FP)3;
+
+        private static FVector2 ComputeCentroid(in FVector2[] vs, int count)
         {
             Debug.Assert(count >= 3);
 
-            var c = new Vector2(0.0f, 0.0f);
-            var area = 0.0f;
+            var c = FVector2.Zero;
+            var area = FP.Zero;
 
             // Get a reference point for forming triangles.
             // Use the first vertex to reduce round-off errors.
             var s = vs[0];
-
-            const float inv3 = 1.0f / 3.0f;
 
             for (var i = 0; i < count; ++i)
             {
@@ -479,7 +480,7 @@ namespace Box2DSharp.Collision.Shapes
 
                 var D = MathUtils.Cross(e1, e2);
 
-                var triangleArea = 0.5f * D;
+                var triangleArea = (FP)0.5 * D;
                 area += triangleArea;
 
                 // Area weighted centroid
@@ -488,7 +489,7 @@ namespace Box2DSharp.Collision.Shapes
 
             // Centroid
             Debug.Assert(area > Settings.Epsilon);
-            c = (1.0f / area) * c + s;
+            c = (FP.One / area) * c + s;
             return c;
         }
     }

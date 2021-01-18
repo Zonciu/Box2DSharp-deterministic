@@ -23,11 +23,7 @@ namespace Testbed
     {
         private ImGuiController _controller;
 
-        private long _frameTime;
-
-        private long _lastUpdateTime;
-
-        private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
+        public FpsCounter FpsCounter = new FpsCounter();
 
         public TestBase Test { get; private set; }
 
@@ -102,7 +98,6 @@ namespace Testbed
             TestSettingHelper.Save(Global.Settings);
             _controller.Dispose();
             _controller = null;
-            _stopwatch.Stop();
             base.OnClosed();
         }
 
@@ -121,32 +116,8 @@ namespace Testbed
 
             CheckTestChange();
             Test.Step();
-            var now = _stopwatch.ElapsedTicks;
-            _frameTime = now - _lastUpdateTime;
-            _lastUpdateTime = now;
+            FpsCounter.Count();
             base.OnUpdateFrame(e);
-        }
-
-        static float _avgDuration = 0;
-
-        const float Alpha = 1f / 100f; // 采样数设置为100
-
-        static int _frameCount = 0;
-
-        private int GetFps(float deltaTime) // ms
-        {
-            ++_frameCount;
-
-            if (1 == _frameCount)
-            {
-                _avgDuration = deltaTime;
-            }
-            else
-            {
-                _avgDuration = _avgDuration * (1 - Alpha) + deltaTime * Alpha;
-            }
-
-            return (int)(1f / _avgDuration * 1000);
         }
 
         #region Render
@@ -158,11 +129,12 @@ namespace Testbed
             UpdateText();
             UpdateUI();
             Test.Render();
+            Test.DrawGUI();
             if (DebugDrawer.ShowUI)
             {
                 DebugDrawer.DrawString(5, Global.Camera.Height - 60, $"steps: {Test.StepCount}");
-                DebugDrawer.DrawString(5, Global.Camera.Height - 40, $"{_frameTime / 10000f:.#} ms");
-                DebugDrawer.DrawString(5, Global.Camera.Height - 20, $"{GetFps(_frameTime / 10000f)} fps");
+                DebugDrawer.DrawString(5, Global.Camera.Height - 40, $"{FpsCounter.Ms:0.0} ms");
+                DebugDrawer.DrawString(5, Global.Camera.Height - 20, $"{FpsCounter.Fps:F1} fps");
             }
 
             DebugDrawer.Flush();
@@ -324,7 +296,7 @@ namespace Testbed
             case Keys.Left:
                 if (e.Control)
                 {
-                    Test.ShiftOrigin(new System.Numerics.Vector2(2.0f, 0.0f));
+                    Test.ShiftOrigin(new FVector2(2.0f, 0.0f));
                 }
                 else
                 {
@@ -335,7 +307,7 @@ namespace Testbed
             case Keys.Right:
                 if (e.Control)
                 {
-                    var newOrigin = new System.Numerics.Vector2(-2.0f, 0.0f);
+                    var newOrigin = new FVector2(-2.0f, 0.0f);
                     Test.ShiftOrigin(newOrigin);
                 }
                 else
@@ -347,7 +319,7 @@ namespace Testbed
             case Keys.Up:
                 if (e.Control)
                 {
-                    var newOrigin = new System.Numerics.Vector2(0.0f, -2.0f);
+                    var newOrigin = new FVector2(0.0f, -2.0f);
                     Test.ShiftOrigin(newOrigin);
                 }
                 else
@@ -359,7 +331,7 @@ namespace Testbed
             case Keys.Down:
                 if (e.Control)
                 {
-                    var newOrigin = new System.Numerics.Vector2(0.0f, 2.0f);
+                    var newOrigin = new FVector2(0.0f, 2.0f);
                     Test.ShiftOrigin(newOrigin);
                 }
                 else
@@ -444,7 +416,7 @@ namespace Testbed
         {
             if (e.Button == TKMouseButton.Left)
             {
-                var pw = Global.Camera.ConvertScreenToWorld(new System.Numerics.Vector2(MousePosition.X, MousePosition.Y));
+                var pw = Global.Camera.ConvertScreenToWorld(new System.Numerics.Vector2(MousePosition.X, MousePosition.Y)).ToFVector2();
 
                 if (e.Modifiers == TKKeyModifiers.Shift)
                 {
@@ -464,7 +436,7 @@ namespace Testbed
         {
             if (e.Button == TKMouseButton.Left)
             {
-                var pw = Global.Camera.ConvertScreenToWorld(new System.Numerics.Vector2(MousePosition.X, MousePosition.Y));
+                var pw = Global.Camera.ConvertScreenToWorld(new System.Numerics.Vector2(MousePosition.X, MousePosition.Y)).ToFVector2();
                 Test.MouseUp(pw);
             }
 
@@ -476,7 +448,7 @@ namespace Testbed
         {
             if (IsMouseButtonDown(TKMouseButton.Left))
             {
-                var pw = Global.Camera.ConvertScreenToWorld(new System.Numerics.Vector2(MousePosition.X, MousePosition.Y));
+                var pw = Global.Camera.ConvertScreenToWorld(new System.Numerics.Vector2(MousePosition.X, MousePosition.Y)).ToFVector2();
                 Test.MouseMove(pw);
             }
 

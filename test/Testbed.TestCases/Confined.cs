@@ -3,7 +3,6 @@ using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Testbed.Abstractions;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -25,19 +24,19 @@ namespace Testbed.TestCases
                 var shape = new EdgeShape();
 
                 // Floor
-                shape.SetTwoSided(new Vector2(-10.0f, 0.0f), new Vector2(10.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-10.0f, 0.0f), new FVector2(10.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
 
                 // Left wall
-                shape.SetTwoSided(new Vector2(-10.0f, 0.0f), new Vector2(-10.0f, 20.0f));
+                shape.SetTwoSided(new FVector2(-10.0f, 0.0f), new FVector2(-10.0f, 20.0f));
                 ground.CreateFixture(shape, 0.0f);
 
                 // Right wall
-                shape.SetTwoSided(new Vector2(10.0f, 0.0f), new Vector2(10.0f, 20.0f));
+                shape.SetTwoSided(new FVector2(10.0f, 0.0f), new FVector2(10.0f, 20.0f));
                 ground.CreateFixture(shape, 0.0f);
 
                 // Roof
-                shape.SetTwoSided(new Vector2(-10.0f, 20.0f), new Vector2(10.0f, 20.0f));
+                shape.SetTwoSided(new FVector2(-10.0f, 20.0f), new FVector2(10.0f, 20.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
             {
@@ -64,7 +63,7 @@ namespace Testbed.TestCases
                     }
                 }
             }
-            World.Gravity = new Vector2(0.0f, 0.0f);
+            World.Gravity = new FVector2(0.0f, 0.0f);
         }
 
         private void CreateCircle()
@@ -79,7 +78,7 @@ namespace Testbed.TestCases
             fd.Density = 1.0f;
             fd.Friction = 0.0f;
 
-            var p = new Vector2(RandomFloat(), 3.0f + RandomFloat());
+            var p = new FVector2(RandomFloat(), 3.0f + RandomFloat());
             var bd = new BodyDef();
             bd.BodyType = BodyType.DynamicBody;
             bd.Position = p;
@@ -146,7 +145,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             DrawString("Press 'c' to create a circle.");
             DrawString("Press 'a' to toggle auto generate circles.");

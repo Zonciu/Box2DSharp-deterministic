@@ -13,16 +13,22 @@ namespace Box2DSharp.Testbed.Unity.Inspection
 
         public Camera MainCamera;
 
+        public bool HasMouse;
+
         private void Start()
         {
             MainCamera = Camera.main;
+            HasMouse = Mouse.current != null;
         }
 
         private void Update()
         {
-            ScreenMouse = Mouse.current.position.ReadValue();
-            WorldMouse = MainCamera.ScreenToWorldPoint(ScreenMouse);
-            ViewPortMouse = MainCamera.ScreenToViewportPoint(ScreenMouse);
+            if (HasMouse)
+            {
+                ScreenMouse = Mouse.current.position.ReadValue();
+                WorldMouse = MainCamera.ScreenToWorldPoint(ScreenMouse);
+                ViewPortMouse = MainCamera.ScreenToViewportPoint(ScreenMouse);
+            }
         }
     }
 }

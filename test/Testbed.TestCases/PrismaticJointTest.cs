@@ -3,7 +3,6 @@ using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Joints;
 using Testbed.Abstractions;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -15,7 +14,7 @@ namespace Testbed.TestCases
     {
         protected PrismaticJoint Joint;
 
-        protected float MotorSpeed;
+        protected FP MotorSpeed;
 
         protected bool EnableMotor;
 
@@ -29,7 +28,7 @@ namespace Testbed.TestCases
                 ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 
@@ -52,7 +51,7 @@ namespace Testbed.TestCases
                 PrismaticJointDef pjd = new PrismaticJointDef();
 
                 // Horizontal
-                pjd.Initialize(ground, body, bd.Position, new Vector2(1.0f, 0.0f));
+                pjd.Initialize(ground, body, bd.Position, new FVector2(1.0f, 0.0f));
 
                 pjd.MotorSpeed = MotorSpeed;
                 pjd.MaxMotorForce = 10000.0f;
@@ -85,7 +84,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             var force = Joint.GetMotorForce(TestSettings.Hertz);
             DrawString($"Motor Force = {force}");

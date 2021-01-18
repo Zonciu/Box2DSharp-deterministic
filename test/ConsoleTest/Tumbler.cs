@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Box2DSharp.Collision.Shapes;
+﻿using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Joints;
@@ -8,7 +7,7 @@ namespace NETCoreTest
 {
     public class Tumbler
     {
-        private const int Count = 800;
+        private const int Count = 200;
 
         private RevoluteJoint _joint;
 
@@ -30,26 +29,26 @@ namespace NETCoreTest
                 {
                     BodyType = BodyType.DynamicBody,
                     AllowSleep = false,
-                    Position = new Vector2(0.0f, 10.0f)
+                    Position = new FVector2(0.0f, 10.0f)
                 };
                 var body = World.CreateBody(bd);
 
                 var shape = new PolygonShape();
-                shape.SetAsBox(0.5f, 10.0f, new Vector2(10.0f, 0.0f), 0.0f);
+                shape.SetAsBox(0.5f, 10.0f, new FVector2(10.0f, 0.0f), 0.0f);
                 body.CreateFixture(shape, 5.0f);
-                shape.SetAsBox(0.5f, 10.0f, new Vector2(-10.0f, 0.0f), 0.0f);
+                shape.SetAsBox(0.5f, 10.0f, new FVector2(-10.0f, 0.0f), 0.0f);
                 body.CreateFixture(shape, 5.0f);
-                shape.SetAsBox(10.0f, 0.5f, new Vector2(0.0f, 10.0f), 0.0f);
+                shape.SetAsBox(10.0f, 0.5f, new FVector2(0.0f, 10.0f), 0.0f);
                 body.CreateFixture(shape, 5.0f);
-                shape.SetAsBox(10.0f, 0.5f, new Vector2(0.0f, -10.0f), 0.0f);
+                shape.SetAsBox(10.0f, 0.5f, new FVector2(0.0f, -10.0f), 0.0f);
                 body.CreateFixture(shape, 5.0f);
 
                 var jd = new RevoluteJointDef
                 {
                     BodyA = ground,
                     BodyB = body,
-                    LocalAnchorA = new Vector2(0.0f, 10.0f),
-                    LocalAnchorB = new Vector2(0.0f, 0.0f),
+                    LocalAnchorA = new FVector2(0.0f, 10.0f),
+                    LocalAnchorB = new FVector2(0.0f, 0.0f),
                     ReferenceAngle = 0.0f,
                     MotorSpeed = 0.05f * Settings.Pi,
                     MaxMotorTorque = 1e8f,
@@ -61,15 +60,16 @@ namespace NETCoreTest
             _count = 0;
         }
 
+        private FP step = FP.One / 60;
+
         public void Step()
         {
-            World.Step(1 / 60f, 8, 3);
             if (_count < Count)
             {
                 var bd = new BodyDef
                 {
                     BodyType = BodyType.DynamicBody,
-                    Position = new Vector2(0.0f, 10.0f)
+                    Position = new FVector2(0.0f, 10.0f)
                 };
                 var body = World.CreateBody(bd);
 
@@ -79,6 +79,8 @@ namespace NETCoreTest
 
                 ++_count;
             }
+
+            World.Step(step, 8, 3);
         }
     }
 }

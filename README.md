@@ -1,4 +1,4 @@
-# Box2DSharp
+# Box2DSharp deterministic version(experimental)
 A C# port of [Box2D](https://github.com/erincatto/Box2D)
 
 Synchronized commits:

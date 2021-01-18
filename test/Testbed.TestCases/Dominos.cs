@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
@@ -16,7 +15,7 @@ namespace Testbed.TestCases
 
             {
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
 
                 var bd = new BodyDef();
                 b1 = World.CreateBody(bd);
@@ -54,7 +53,7 @@ namespace Testbed.TestCases
 
             {
                 var shape = new PolygonShape();
-                shape.SetAsBox(7.0f, 0.25f, Vector2.Zero, 0.3f);
+                shape.SetAsBox(7.0f, 0.25f, FVector2.Zero, 0.3f);
 
                 var bd = new BodyDef();
                 bd.Position.Set(1.0f, 6.0f);
@@ -88,7 +87,7 @@ namespace Testbed.TestCases
             }
 
             var jd = new RevoluteJointDef();
-            var anchor = new Vector2();
+            var anchor = new FVector2();
 
             anchor.Set(-2.0f, 1.0f);
             jd.Initialize(b1, b3, anchor);
@@ -127,13 +126,13 @@ namespace Testbed.TestCases
                 fd.Density = 10.0f;
                 fd.Friction = 0.1f;
 
-                shape.SetAsBox(1.0f, 0.1f, new Vector2(0.0f, -0.9f), 0.0f);
+                shape.SetAsBox(1.0f, 0.1f, new FVector2(0.0f, -0.9f), 0.0f);
                 b5.CreateFixture(fd);
 
-                shape.SetAsBox(0.1f, 1.0f, new Vector2(-0.9f, 0.0f), 0.0f);
+                shape.SetAsBox(0.1f, 1.0f, new FVector2(-0.9f, 0.0f), 0.0f);
                 b5.CreateFixture(fd);
 
-                shape.SetAsBox(0.1f, 1.0f, new Vector2(0.9f, 0.0f), 0.0f);
+                shape.SetAsBox(0.1f, 1.0f, new FVector2(0.9f, 0.0f), 0.0f);
                 b5.CreateFixture(fd);
             }
 

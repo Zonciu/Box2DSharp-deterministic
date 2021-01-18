@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2DSharp.Collision.Collider;
 using Box2DSharp.Common;
@@ -109,7 +108,7 @@ namespace Box2DSharp.Collision
             ref var proxyNode = ref _treeNodes[proxyId];
 
             // Fatten the aabb.
-            var r = new Vector2(Settings.AABBExtension, Settings.AABBExtension);
+            var r = new FVector2(Settings.AABBExtension, Settings.AABBExtension);
             proxyNode.AABB.LowerBound = aabb.LowerBound - r;
             proxyNode.AABB.UpperBound = aabb.UpperBound + r;
             proxyNode.UserData = userData;
@@ -134,14 +133,14 @@ namespace Box2DSharp.Collision
         /// then the proxy is removed from the tree and re-inserted. Otherwise
         /// the function returns immediately.
         /// @return true if the proxy was re-inserted.
-        public bool MoveProxy(int proxyId, in AABB aabb, in Vector2 displacement)
+        public bool MoveProxy(int proxyId, in AABB aabb, in FVector2 displacement)
         {
             Debug.Assert(0 <= proxyId && proxyId < _nodeCapacity);
 
             Debug.Assert(_treeNodes[proxyId].IsLeaf());
 
             // Extend AABB
-            var r = new Vector2(Settings.AABBExtension, Settings.AABBExtension);
+            var r = new FVector2(Settings.AABBExtension, Settings.AABBExtension);
             var fatAABB = new AABB
             {
                 LowerBound = aabb.LowerBound - r,
@@ -151,7 +150,7 @@ namespace Box2DSharp.Collision
             // Predict AABB movement
             var d = Settings.AABBMultiplier * displacement;
 
-            if (d.X < 0.0f)
+            if (d.X < FP.Zero)
             {
                 fatAABB.LowerBound.X += d.X;
             }
@@ -160,7 +159,7 @@ namespace Box2DSharp.Collision
                 fatAABB.UpperBound.X += d.X;
             }
 
-            if (d.Y < 0.0f)
+            if (d.Y < FP.Zero)
             {
                 fatAABB.LowerBound.Y += d.Y;
             }
@@ -285,12 +284,12 @@ namespace Box2DSharp.Collision
             var p1 = input.P1;
             var p2 = input.P2;
             var r = p2 - p1;
-            Debug.Assert(r.LengthSquared() > 0.0f);
+            Debug.Assert(r.LengthSquared() > FP.Zero);
             r.Normalize();
 
             // v is perpendicular to the segment.
-            var v = MathUtils.Cross(1.0f, r);
-            var abs_v = Vector2.Abs(v);
+            var v = MathUtils.Cross(FP.One, r);
+            var abs_v = FVector2.Abs(v);
 
             // Separating axis for segment (Gino, p80).
             // |dot(v, p1 - c)| > dot(|v|, h)
@@ -301,8 +300,8 @@ namespace Box2DSharp.Collision
             var segmentAABB = new AABB();
             {
                 var t = p1 + maxFraction * (p2 - p1);
-                segmentAABB.LowerBound = Vector2.Min(p1, t);
-                segmentAABB.UpperBound = Vector2.Max(p1, t);
+                segmentAABB.LowerBound = FVector2.Min(p1, t);
+                segmentAABB.UpperBound = FVector2.Max(p1, t);
             }
 
             var stack = _rayCastStack;
@@ -328,8 +327,8 @@ namespace Box2DSharp.Collision
                 // |dot(v, p1 - c)| > dot(|v|, h)
                 var c = node.AABB.GetCenter();
                 var h = node.AABB.GetExtents();
-                var separation = Math.Abs(Vector2.Dot(v, p1 - c)) - Vector2.Dot(abs_v, h);
-                if (separation > 0.0f)
+                var separation = FP.Abs(FVector2.Dot(v, p1 - c)) - FVector2.Dot(abs_v, h);
+                if (separation > FP.Zero)
                 {
                     continue;
                 }
@@ -356,8 +355,8 @@ namespace Box2DSharp.Collision
                         // Update segment bounding box.
                         maxFraction = value;
                         var t = p1 + maxFraction * (p2 - p1);
-                        segmentAABB.LowerBound = Vector2.Min(p1, t);
-                        segmentAABB.UpperBound = Vector2.Max(p1, t);
+                        segmentAABB.LowerBound = FVector2.Min(p1, t);
+                        segmentAABB.UpperBound = FVector2.Max(p1, t);
                     }
                 }
                 else
@@ -427,17 +426,17 @@ namespace Box2DSharp.Collision
         }
 
         /// Get the ratio of the sum of the node areas to the root area.
-        public float GetAreaRatio()
+        public FP GetAreaRatio()
         {
             if (_root == NullNode)
             {
-                return 0.0f;
+                return FP.Zero;
             }
 
             ref readonly var root = ref _treeNodes[_root];
             var rootArea = root.AABB.GetPerimeter();
 
-            var totalArea = 0.0f;
+            var totalArea = FP.Zero;
             for (var i = 0; i < _nodeCapacity; ++i)
             {
                 ref readonly var node = ref _treeNodes[i];
@@ -531,7 +530,7 @@ namespace Box2DSharp.Collision
         /// Shift the world origin. Useful for large worlds.
         /// The shift formula is: position -= newOrigin
         /// @param newOrigin the new origin with respect to the old origin
-        public void ShiftOrigin(in Vector2 newOrigin)
+        public void ShiftOrigin(in FVector2 newOrigin)
         {
             // Build array of leaves. Free the rest.
             for (var i = 0; i < _nodeCapacity; ++i)
@@ -565,13 +564,13 @@ namespace Box2DSharp.Collision
                 var combinedArea = combinedAABB.GetPerimeter();
 
                 // Cost of creating a new parent for this node and the new leaf
-                var cost = 2.0f * combinedArea;
+                var cost = 2 * combinedArea;
 
                 // Minimum cost of pushing the leaf further down the tree
-                var inheritanceCost = 2.0f * (combinedArea - area);
+                var inheritanceCost = 2 * (combinedArea - area);
 
                 // Cost of descending into child1
-                float cost1;
+                FP cost1;
                 if (_treeNodes[child1].IsLeaf())
                 {
                     AABB.Combine(leafAABB, _treeNodes[child1].AABB, out var aabb);
@@ -586,7 +585,7 @@ namespace Box2DSharp.Collision
                 }
 
                 // Cost of descending into child2
-                float cost2;
+                FP cost2;
                 if (_treeNodes[child2].IsLeaf())
                 {
                     AABB.Combine(leafAABB, _treeNodes[child2].AABB, out var aabb);

@@ -1,5 +1,5 @@
-using System.Numerics;
 using Box2DSharp.Collision.Collider;
+using Box2DSharp.Common;
 
 namespace Box2DSharp.Dynamics
 {
@@ -23,7 +23,7 @@ namespace Box2DSharp.Dynamics
         /// @param normal the normal vector at the point of intersection
         /// @return -1 to filter, 0 to terminate, fraction to clip the ray for
         /// closest hit, 1 to continue
-        float RayCastCallback(Fixture fixture, in Vector2 point, in Vector2 normal, float fraction);
+        FP RayCastCallback(Fixture fixture, in FVector2 point, in FVector2 normal, FP fraction);
     }
 }
 
@@ -36,7 +36,7 @@ namespace Box2DSharp.Dynamics.Internal
 
     public interface ITreeRayCastCallback
     {
-        float RayCastCallback(in RayCastInput input, int proxyId);
+        FP RayCastCallback(in RayCastInput input, int proxyId);
     }
 
     public interface IAddPairCallback

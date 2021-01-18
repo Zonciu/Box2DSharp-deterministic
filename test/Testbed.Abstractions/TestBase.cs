@@ -8,8 +8,6 @@ using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Contacts;
 using Box2DSharp.Dynamics.Joints;
 using Joint = Box2DSharp.Dynamics.Joints.Joint;
-using Random = System.Random;
-using Vector2 = System.Numerics.Vector2;
 using Color = Box2DSharp.Common.Color;
 
 namespace Testbed.Abstractions
@@ -20,7 +18,7 @@ namespace Testbed.Abstractions
 
         public const int RandomLimit = 32767;
 
-        public readonly Random Random = new Random();
+        public readonly FRandom Random = FRandom.New(1);
 
         public readonly ContactPoint[] Points = new ContactPoint[2048];
 
@@ -32,7 +30,7 @@ namespace Testbed.Abstractions
 
         public MouseJoint MouseJoint;
 
-        public Vector2 MouseWorld;
+        public FVector2 MouseWorld;
 
         public Profile TotalProfile;
 
@@ -47,7 +45,7 @@ namespace Testbed.Abstractions
         protected TestBase()
         {
             Regex.Replace(GetType().Name, @"(\B[A-Z])", " $1");
-            World = new World(new Vector2(0, -10));
+            World = new World(new FVector2(0, -10));
             World.SetContactListener(this);
             World.DestructionListener = this;
             GroundBody = World.CreateBody(new BodyDef());
@@ -151,24 +149,27 @@ namespace Testbed.Abstractions
         protected virtual void OnRender()
         { }
 
-        private int _textLine = 30;
+        protected virtual void OnGUI()
+        { }
 
-        private int _textIncrement = 13;
+        public int TextLine = 30;
+
+        public int TextIncrement = 13;
 
         public void DrawString(string text)
         {
             //_stringBuilder.AppendLine(text);
-            Drawer.DrawString(5, _textLine, text);
-            _textLine += _textIncrement;
+            Drawer.DrawString(5, TextLine, text);
+            TextLine += TextIncrement;
         }
 
         public void DrawTitle(string title)
         {
             Drawer.DrawString(5, 5, title);
-            _textLine = 26;
+            TextLine = 26;
         }
 
-        public void Render()
+        public void DrawGUI()
         {
             if (TestSettings.Pause)
             {
@@ -230,8 +231,13 @@ namespace Testbed.Abstractions
                 DrawString($"broad-phase [ave] (max) = {p.Broadphase} [{aveProfile.Broadphase}] ({MaxProfile.Broadphase})");
             }
 
-            OnRender();
+            OnGUI();
+        }
+
+        public void Render()
+        {
             DrawWorld();
+            OnRender();
         }
 
         private void DrawWorld()
@@ -320,9 +326,9 @@ namespace Testbed.Abstractions
         {
             public Fixture QueryFixture;
 
-            public Vector2 Point;
+            public FVector2 Point;
 
-            public void Reset(in Vector2 point)
+            public void Reset(in FVector2 point)
             {
                 QueryFixture = null;
                 Point = point;
@@ -351,7 +357,7 @@ namespace Testbed.Abstractions
 
         private readonly MouseQueryCallback _callback = new MouseQueryCallback();
 
-        public void MouseDown(Vector2 p)
+        public void MouseDown(FVector2 p)
         {
             if (MouseJoint != null)
             {
@@ -362,7 +368,7 @@ namespace Testbed.Abstractions
 
             // Make a small box.
             var aabb = new AABB();
-            var d = new Vector2(0.001f, 0.001f);
+            var d = new FVector2(0.001f, 0.001f);
             aabb.LowerBound = p - d;
             aabb.UpperBound = p + d;
 
@@ -388,7 +394,7 @@ namespace Testbed.Abstractions
             }
         }
 
-        public void MouseUp(Vector2 p)
+        public void MouseUp(FVector2 p)
         {
             MouseWorld = p;
             if (MouseJoint != null)
@@ -403,13 +409,13 @@ namespace Testbed.Abstractions
             }
         }
 
-        public void MouseMove(Vector2 p)
+        public void MouseMove(FVector2 p)
         {
             MouseWorld = p;
             MouseJoint?.SetTarget(p);
         }
 
-        public void ShiftMouseDown(Vector2 p)
+        public void ShiftMouseDown(FVector2 p)
         {
             MouseWorld = p;
             if (MouseJoint != null)
@@ -441,7 +447,7 @@ namespace Testbed.Abstractions
             /* Do nothing */
         }
 
-        public void ShiftOrigin(Vector2 origin)
+        public void ShiftOrigin(FVector2 origin)
         {
             World.ShiftOrigin(origin);
         }
@@ -450,21 +456,21 @@ namespace Testbed.Abstractions
         { }
 
         /// Random number in range [-1,1]
-        public float RandomFloat()
+        public FP RandomFloat()
         {
-            float r = Random.Next() & RandomLimit;
+            FP r = Random.Next() & RandomLimit;
             r /= RandomLimit;
-            r = 2.0f * r - 1.0f;
+            r = 2 * r - 1;
             return r;
         }
 
         /// Random floating point number in range [lo, hi]
-        public float RandomFloat(float lo, float hi)
+        public FP RandomFloat(FP lo, FP hi)
         {
-            float r = Random.Next() & RandomLimit;
+            FP r = Random.Next() & RandomLimit;
             r /= RandomLimit;
-            r = (hi - lo) * r + lo;
-            return r;
+            var result = (hi - lo) * r + lo;
+            return result;
         }
 
         public struct ContactPoint
@@ -473,41 +479,41 @@ namespace Testbed.Abstractions
 
             public Fixture FixtureB;
 
-            public Vector2 Normal;
+            public FVector2 Normal;
 
-            public Vector2 Position;
+            public FVector2 Position;
 
             public PointState State;
 
-            public float NormalImpulse;
+            public FP NormalImpulse;
 
-            public float TangentImpulse;
+            public FP TangentImpulse;
 
-            public float Separation;
+            public FP Separation;
         }
 
         #region Bomb
 
-        protected Vector2 BombSpawnPoint;
+        protected FVector2 BombSpawnPoint;
 
         protected bool BombSpawning;
 
         protected Body Bomb;
 
-        public void SpawnBomb(Vector2 worldPt)
+        public void SpawnBomb(FVector2 worldPt)
         {
             BombSpawnPoint = worldPt;
             BombSpawning = true;
         }
 
-        public void CompleteBombSpawn(Vector2 p)
+        public void CompleteBombSpawn(FVector2 p)
         {
             if (BombSpawning == false)
             {
                 return;
             }
 
-            const float Multiplier = 30.0f;
+            FP Multiplier = 30.0f;
             var vel = BombSpawnPoint - p;
             vel *= Multiplier;
             LaunchBomb(BombSpawnPoint, vel);
@@ -516,12 +522,12 @@ namespace Testbed.Abstractions
 
         public void LaunchBomb()
         {
-            var p = new Vector2(Random.Next(-15, 15), 30.0f);
+            var p = new FVector2(Random.Next(-15, 15), 30.0f);
             var v = -5.0f * p;
             LaunchBomb(p, v);
         }
 
-        public void LaunchBomb(Vector2 position, Vector2 velocity)
+        public void LaunchBomb(FVector2 position, FVector2 velocity)
         {
             if (Bomb != default)
             {

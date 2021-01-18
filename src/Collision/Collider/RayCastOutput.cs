@@ -1,4 +1,4 @@
-using System.Numerics;
+using Box2DSharp.Common;
 
 namespace Box2DSharp.Collision.Collider
 {
@@ -6,8 +6,8 @@ namespace Box2DSharp.Collision.Collider
     /// come from b2RayCastInput.
     public struct RayCastOutput
     {
-        public Vector2 Normal;
+        public FVector2 Normal;
 
-        public float Fraction;
+        public FP Fraction;
     }
 }

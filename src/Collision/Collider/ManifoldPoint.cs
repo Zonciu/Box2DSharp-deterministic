@@ -1,4 +1,4 @@
-using System.Numerics;
+using Box2DSharp.Common;
 
 namespace Box2DSharp.Collision.Collider
 {
@@ -15,13 +15,13 @@ namespace Box2DSharp.Collision.Collider
     public struct ManifoldPoint
     {
         /// usage depends on manifold type
-        public Vector2 LocalPoint;
+        public FVector2 LocalPoint;
 
         /// the non-penetration impulse
-        public float NormalImpulse;
+        public FP NormalImpulse;
 
         /// /// the friction impulse
-        public float TangentImpulse;
+        public FP TangentImpulse;
 
         /// uniquely identifies a contact point between two shapes
         public ContactId Id;

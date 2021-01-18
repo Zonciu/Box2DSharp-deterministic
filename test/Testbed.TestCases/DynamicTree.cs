@@ -7,7 +7,6 @@ using Box2DSharp.Dynamics.Internal;
 using Testbed.Abstractions;
 using Color = Box2DSharp.Common.Color;
 using Random = System.Random;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -22,7 +21,7 @@ namespace Testbed.TestCases
 
         private bool _automated;
 
-        private float _proxyExtent;
+        private FP _proxyExtent;
 
         private AABB _queryAABB;
 
@@ -34,7 +33,7 @@ namespace Testbed.TestCases
 
         private readonly Box2DSharp.Collision.DynamicTree _tree = new Box2DSharp.Collision.DynamicTree();
 
-        private float _worldExtent;
+        private FP _worldExtent;
 
         public DynamicTree()
         {
@@ -107,12 +106,19 @@ namespace Testbed.TestCases
             RayCast();
         }
 
-        protected override void OnRender()
+        /// <inheritdoc />
+        protected override void OnGUI()
         {
             DrawString("Keys: a: automate, c: create, d: destroy, m: move");
             DrawString("Blue: overlap");
             DrawString("Green: ray actor");
             DrawString("Red: ray actor & overlap");
+            var height = _tree.GetHeight();
+            DrawString($"dynamic tree height = {height}");
+        }
+
+        protected override void OnRender()
+        {
             Color c;
             for (var i = 0; i < ActorCount; ++i)
             {
@@ -155,16 +161,11 @@ namespace Testbed.TestCases
                 var p = _rayCastInput.P1 + _rayActor.Fraction * (_rayCastInput.P2 - _rayCastInput.P1);
                 Drawer.DrawPoint(p, 6.0f, cr);
             }
-
-            {
-                var height = _tree.GetHeight();
-                DrawString($"dynamic tree height = {height}");
-            }
         }
 
         // public void DrawAABB(AABB aabb, Color color)
         // {
-        //     var vs = new Vector2 [4];
+        //     var vs = new FVector2 [4];
         //     vs[0].Set(aabb.LowerBound.X, aabb.LowerBound.Y);
         //     vs[1].Set(aabb.UpperBound.X, aabb.LowerBound.Y);
         //     vs[2].Set(aabb.UpperBound.X, aabb.UpperBound.Y);
@@ -180,7 +181,7 @@ namespace Testbed.TestCases
             return true;
         }
 
-        public float RayCastCallback(in RayCastInput input, int proxyId)
+        public FP RayCastCallback(in RayCastInput input, int proxyId)
         {
             var actor = (Actor)_tree.GetUserData(proxyId);
             var hit = actor.AABB.RayCast(out var output, input);
@@ -198,7 +199,7 @@ namespace Testbed.TestCases
 
         private void GetRandomAABB(ref AABB aabb)
         {
-            var w = new Vector2(2.0f * _proxyExtent, 2.0f * _proxyExtent);
+            var w = new FVector2(2.0f * _proxyExtent, 2.0f * _proxyExtent);
 
             //aabb.LowerBound.X = -proxyExtent;
             //aabb.LowerBound.Y = -proxyExtent + worldExtent;
@@ -209,7 +210,7 @@ namespace Testbed.TestCases
 
         private void MoveAABB(ref AABB aabb)
         {
-            Vector2 d;
+            FVector2 d;
             d.X = RandomFloat(-0.5f, 0.5f);
             d.Y = RandomFloat(-0.5f, 0.5f);
 
@@ -219,11 +220,11 @@ namespace Testbed.TestCases
             aabb.UpperBound += d;
 
             var c0 = 0.5f * (aabb.LowerBound + aabb.UpperBound);
-            var min = new Vector2();
+            var min = new FVector2();
             min.Set(-_worldExtent, 0.0f);
-            var max = new Vector2();
+            var max = new FVector2();
             max.Set(_worldExtent, 2.0f * _worldExtent);
-            var c = Vector2.Clamp(c0, min, max);
+            var c = FVector2.Clamp(c0, min, max);
 
             aabb.LowerBound += c - c0;
             aabb.UpperBound += c - c0;
@@ -345,7 +346,7 @@ namespace Testbed.TestCases
 
             if (bruteActor != null)
             {
-                Debug.Assert(Math.Abs(bruteOutput.Fraction - _rayCastOutput.Fraction) < Settings.Epsilon);
+                Debug.Assert(FP.Abs(bruteOutput.Fraction - _rayCastOutput.Fraction) < Settings.Epsilon);
             }
         }
 
@@ -353,7 +354,7 @@ namespace Testbed.TestCases
         {
             public AABB AABB;
 
-            public float Fraction;
+            public FP Fraction;
 
             public bool Overlap;
 

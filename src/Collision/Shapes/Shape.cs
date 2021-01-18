@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Collider;
 using Box2DSharp.Common;
 
@@ -12,7 +11,7 @@ namespace Box2DSharp.Collision.Shapes
     {
         /// Radius of a shape. For polygonal shapes this must be b2_polygonRadius. There is no support for
         /// making rounded polygons.
-        public float Radius { get; internal set; }
+        public FP Radius { get; internal set; }
 
         public ShapeType ShapeType { get; internal set; }
 
@@ -25,7 +24,7 @@ namespace Box2DSharp.Collision.Shapes
         /// Test a point for containment in this shape. This only works for convex shapes.
         /// @param xf the shape world transform.
         /// @param p a point in world coordinates.
-        public abstract bool TestPoint(in Transform transform, in Vector2 point);
+        public abstract bool TestPoint(in Transform transform, in FVector2 point);
 
         /// Cast a ray against a child shape.
         /// @param output the ray-cast results.
@@ -48,6 +47,6 @@ namespace Box2DSharp.Collision.Shapes
         /// The inertia tensor is computed about the local origin.
         /// @param massData returns the mass data for this shape.
         /// @param density the density in kilograms per meter squared.
-        public abstract void ComputeMass(out MassData massData, float density);
+        public abstract void ComputeMass(out MassData massData, FP density);
     }
 }

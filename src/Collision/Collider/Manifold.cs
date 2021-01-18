@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Collision.Collider
@@ -27,10 +26,10 @@ namespace Box2DSharp.Collision.Collider
         public FixedArray2<ManifoldPoint> Points;
 
         /// not use for Type::e_points
-        public Vector2 LocalNormal;
+        public FVector2 LocalNormal;
 
         /// usage depends on manifold type
-        public Vector2 LocalPoint;
+        public FVector2 LocalPoint;
 
         public ManifoldType Type;
 

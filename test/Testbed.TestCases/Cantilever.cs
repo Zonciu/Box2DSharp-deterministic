@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
@@ -20,7 +19,7 @@ namespace Testbed.TestCases
                 ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 
@@ -43,7 +42,7 @@ namespace Testbed.TestCases
                     var body = World.CreateBody(bd);
                     body.CreateFixture(fd);
 
-                    var anchor = new Vector2(-15.0f + 1.0f * i, 5.0f);
+                    var anchor = new FVector2(-15.0f + 1.0f * i, 5.0f);
                     jd.Initialize(prevBody, body, anchor);
                     World.CreateJoint(jd);
 
@@ -72,7 +71,7 @@ namespace Testbed.TestCases
                     var body = World.CreateBody(bd);
                     body.CreateFixture(fd);
 
-                    var anchor = new Vector2(-15.0f + 2.0f * i, 15.0f);
+                    var anchor = new FVector2(-15.0f + 2.0f * i, 15.0f);
                     jd.Initialize(prevBody, body, anchor);
                     JointUtils.AngularStiffness(out jd.Stiffness, out jd.Damping, frequencyHz, dampingRatio, prevBody, body);
                     World.CreateJoint(jd);
@@ -102,7 +101,7 @@ namespace Testbed.TestCases
 
                     if (i > 0)
                     {
-                        var anchor = new Vector2(-5.0f + 1.0f * i, 5.0f);
+                        var anchor = new FVector2(-5.0f + 1.0f * i, 5.0f);
                         jd.Initialize(prevBody, body, anchor);
                         World.CreateJoint(jd);
                     }
@@ -134,7 +133,7 @@ namespace Testbed.TestCases
 
                     if (i > 0)
                     {
-                        var anchor = new Vector2(5.0f + 1.0f * i, 10.0f);
+                        var anchor = new FVector2(5.0f + 1.0f * i, 10.0f);
                         jd.Initialize(prevBody, body, anchor);
                         JointUtils.AngularStiffness(out jd.Stiffness, out jd.Damping, frequencyHz, dampingRatio, jd.BodyA, jd.BodyB);
                         World.CreateJoint(jd);
@@ -146,7 +145,7 @@ namespace Testbed.TestCases
 
             for (var i = 0; i < 2; ++i)
             {
-                var vertices = new Vector2 [3];
+                var vertices = new FVector2 [3];
                 vertices[0].Set(-0.5f, 0.0f);
                 vertices[1].Set(0.5f, 0.0f);
                 vertices[2].Set(0.0f, 1.5f);

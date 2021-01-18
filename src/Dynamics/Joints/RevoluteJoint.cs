@@ -1,6 +1,4 @@
-using System;
 using System.Diagnostics;
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Dynamics.Joints
@@ -13,59 +11,59 @@ namespace Box2DSharp.Dynamics.Joints
     /// is provided so that infinite forces are not generated.
     public class RevoluteJoint : Joint
     {
-        internal readonly float ReferenceAngle;
+        internal readonly FP ReferenceAngle;
 
         private bool _enableLimit;
 
         private bool _enableMotor;
 
-        private Vector2 _impulse;
+        private FVector2 _impulse;
 
         // Solver temp
         private int _indexA;
 
         private int _indexB;
 
-        private float _invIa;
+        private FP _invIa;
 
-        private float _invIb;
+        private FP _invIb;
 
         private Matrix2x2 _K;
 
-        private float _angle;
+        private FP _angle;
 
-        private float _axialMass;
+        private FP _axialMass;
 
-        private float _invMassA;
+        private FP _invMassA;
 
-        private float _invMassB;
+        private FP _invMassB;
 
-        private Vector2 _localCenterA;
+        private FVector2 _localCenterA;
 
-        private Vector2 _localCenterB;
+        private FVector2 _localCenterB;
 
-        private float _lowerAngle;
+        private FP _lowerAngle;
 
-        private float _maxMotorTorque;
+        private FP _maxMotorTorque;
 
-        private float _motorImpulse;
+        private FP _motorImpulse;
 
-        private float _lowerImpulse;
+        private FP _lowerImpulse;
 
-        private float _upperImpulse;
+        private FP _upperImpulse;
 
-        private float _motorSpeed;
+        private FP _motorSpeed;
 
-        private Vector2 _rA;
+        private FVector2 _rA;
 
-        private Vector2 _rB;
+        private FVector2 _rB;
 
-        private float _upperAngle;
+        private FP _upperAngle;
 
         // Solver shared
-        internal Vector2 LocalAnchorA;
+        internal FVector2 LocalAnchorA;
 
-        internal Vector2 LocalAnchorB;
+        internal FVector2 LocalAnchorB;
 
         internal RevoluteJoint(RevoluteJointDef def)
             : base(def)
@@ -90,25 +88,25 @@ namespace Box2DSharp.Dynamics.Joints
         }
 
         /// The local anchor point relative to bodyA's origin.
-        public Vector2 GetLocalAnchorA()
+        public FVector2 GetLocalAnchorA()
         {
             return LocalAnchorA;
         }
 
         /// The local anchor point relative to bodyB's origin.
-        public Vector2 GetLocalAnchorB()
+        public FVector2 GetLocalAnchorB()
         {
             return LocalAnchorB;
         }
 
         /// Get the reference angle.
-        public float GetReferenceAngle()
+        public FP GetReferenceAngle()
         {
             return ReferenceAngle;
         }
 
         /// Get the current joint angle in radians.
-        public float GetJointAngle()
+        public FP GetJointAngle()
         {
             var bA = BodyA;
             var bB = BodyB;
@@ -116,7 +114,7 @@ namespace Box2DSharp.Dynamics.Joints
         }
 
         /// Get the current joint angle speed in radians per second.
-        public float GetJointSpeed()
+        public FP GetJointSpeed()
         {
             var bA = BodyA;
             var bB = BodyB;
@@ -143,23 +141,23 @@ namespace Box2DSharp.Dynamics.Joints
         }
 
         /// Get the lower joint limit in radians.
-        public float GetLowerLimit()
+        public FP GetLowerLimit()
         {
             return _lowerAngle;
         }
 
         /// Get the upper joint limit in radians.
-        public float GetUpperLimit()
+        public FP GetUpperLimit()
         {
             return _upperAngle;
         }
 
         /// Set the joint limits in radians.
-        public void SetLimits(float lower, float upper)
+        public void SetLimits(FP lower, FP upper)
         {
             Debug.Assert(lower <= upper);
 
-            if (Math.Abs(lower - _lowerAngle) > Settings.Epsilon || Math.Abs(upper - _upperAngle) > Settings.Epsilon)
+            if (FP.Abs(lower - _lowerAngle) > Settings.Epsilon || FP.Abs(upper - _upperAngle) > Settings.Epsilon)
             {
                 BodyA.IsAwake = true;
                 BodyB.IsAwake = true;
@@ -188,7 +186,7 @@ namespace Box2DSharp.Dynamics.Joints
         }
 
         /// Set the motor speed in radians per second.
-        public void SetMotorSpeed(float speed)
+        public void SetMotorSpeed(FP speed)
         {
             if (speed != _motorSpeed)
             {
@@ -199,13 +197,13 @@ namespace Box2DSharp.Dynamics.Joints
         }
 
         /// Get the motor speed in radians per second.
-        public float GetMotorSpeed()
+        public FP GetMotorSpeed()
         {
             return _motorSpeed;
         }
 
         /// Set the maximum motor torque, usually in N-m.
-        public void SetMaxMotorTorque(float torque)
+        public void SetMaxMotorTorque(FP torque)
         {
             if (torque != _maxMotorTorque)
             {
@@ -215,7 +213,7 @@ namespace Box2DSharp.Dynamics.Joints
             }
         }
 
-        public float GetMaxMotorTorque()
+        public FP GetMaxMotorTorque()
         {
             return _maxMotorTorque;
         }
@@ -224,32 +222,32 @@ namespace Box2DSharp.Dynamics.Joints
         /// Unit is N.
         /// Get the current motor torque given the inverse time step.
         /// Unit is N*m.
-        public float GetMotorTorque(float inv_dt)
+        public FP GetMotorTorque(FP inv_dt)
         {
             return inv_dt * _motorImpulse;
         }
 
         /// <inheritdoc />
-        public override Vector2 GetAnchorA()
+        public override FVector2 GetAnchorA()
         {
             return BodyA.GetWorldPoint(LocalAnchorA);
         }
 
         /// <inheritdoc />
-        public override Vector2 GetAnchorB()
+        public override FVector2 GetAnchorB()
         {
             return BodyB.GetWorldPoint(LocalAnchorB);
         }
 
         /// <inheritdoc />
-        public override Vector2 GetReactionForce(float inv_dt)
+        public override FVector2 GetReactionForce(FP inv_dt)
         {
-            var P = new Vector2(_impulse.X, _impulse.Y);
+            var P = new FVector2(_impulse.X, _impulse.Y);
             return inv_dt * P;
         }
 
         /// <inheritdoc />
-        public override float GetReactionTorque(float inv_dt)
+        public override FP GetReactionTorque(FP inv_dt)
         {
             return inv_dt * (_motorImpulse + _lowerImpulse - _upperImpulse);
         }
@@ -310,8 +308,8 @@ namespace Box2DSharp.Dynamics.Joints
             // K = [ mA+r1y^2*iA+mB+r2y^2*iB,  -r1y*iA*r1x-r2y*iB*r2x]
             //     [  -r1y*iA*r1x-r2y*iB*r2x, mA+r1x^2*iA+mB+r2x^2*iB]
 
-            float mA = _invMassA, mB = _invMassB;
-            float iA = _invIa, iB = _invIb;
+            FP mA = _invMassA, mB = _invMassB;
+            FP iA = _invIa, iB = _invIb;
 
             _K.Ex.X = mA + mB + _rA.Y * _rA.Y * iA + _rB.Y * _rB.Y * iB;
             _K.Ey.X = -_rA.Y * _rA.X * iA - _rB.Y * _rB.X * iB;
@@ -351,7 +349,7 @@ namespace Box2DSharp.Dynamics.Joints
                 _upperImpulse *= data.Step.DtRatio;
 
                 var axialImpulse = _motorImpulse + _lowerImpulse - _upperImpulse;
-                var P = new Vector2(_impulse.X, _impulse.Y);
+                var P = new FVector2(_impulse.X, _impulse.Y);
 
                 vA -= mA * P;
                 wA -= iA * (MathUtils.Cross(_rA, P) + axialImpulse);
@@ -381,8 +379,8 @@ namespace Box2DSharp.Dynamics.Joints
             var vB = data.Velocities[_indexB].V;
             var wB = data.Velocities[_indexB].W;
 
-            float mA = _invMassA, mB = _invMassB;
-            float iA = _invIa, iB = _invIb;
+            FP mA = _invMassA, mB = _invMassB;
+            FP iA = _invIa, iB = _invIb;
 
             var fixedRotation = (iA + iB).Equals(0.0f);
 
@@ -404,11 +402,11 @@ namespace Box2DSharp.Dynamics.Joints
             {
                 // Lower limit
                 {
-                    float C = _angle - _lowerAngle;
-                    float Cdot = wB - wA;
-                    float impulse = -_axialMass * (Cdot + Math.Max(C, 0.0f) * data.Step.InvDt);
-                    float oldImpulse = _lowerImpulse;
-                    _lowerImpulse = Math.Max(_lowerImpulse + impulse, 0.0f);
+                    FP C = _angle - _lowerAngle;
+                    FP Cdot = wB - wA;
+                    FP impulse = -_axialMass * (Cdot + FP.Max(C, 0.0f) * data.Step.InvDt);
+                    FP oldImpulse = _lowerImpulse;
+                    _lowerImpulse = FP.Max(_lowerImpulse + impulse, 0.0f);
                     impulse = _lowerImpulse - oldImpulse;
 
                     wA -= iA * impulse;
@@ -419,11 +417,11 @@ namespace Box2DSharp.Dynamics.Joints
                 // Note: signs are flipped to keep C positive when the constraint is satisfied.
                 // This also keeps the impulse positive when the limit is active.
                 {
-                    float C = _upperAngle - _angle;
-                    float Cdot = wA - wB;
-                    float impulse = -_axialMass * (Cdot + Math.Max(C, 0.0f) * data.Step.InvDt);
-                    float oldImpulse = _upperImpulse;
-                    _upperImpulse = Math.Max(_upperImpulse + impulse, 0.0f);
+                    FP C = _upperAngle - _angle;
+                    FP Cdot = wA - wB;
+                    FP impulse = -_axialMass * (Cdot + FP.Max(C, 0.0f) * data.Step.InvDt);
+                    FP oldImpulse = _upperImpulse;
+                    _upperImpulse = FP.Max(_upperImpulse + impulse, 0.0f);
                     impulse = _upperImpulse - oldImpulse;
 
                     wA += iA * impulse;
@@ -463,18 +461,18 @@ namespace Box2DSharp.Dynamics.Joints
             var qA = new Rotation(aA);
             var qB = new Rotation(aB);
 
-            var angularError = 0.0f;
-            var positionError = 0.0f;
+            var angularError = FP.Zero;
+            var positionError = FP.Zero;
 
             var fixedRotation = (_invIa + _invIb).Equals(0.0f);
 
             // Solve angular limit constraint
             if (_enableLimit && fixedRotation == false)
             {
-                float angle = aB - aA - ReferenceAngle;
-                float C = 0.0f;
+                FP angle = aB - aA - ReferenceAngle;
+                FP C = 0.0f;
 
-                if (Math.Abs(_upperAngle - _lowerAngle) < 2.0f * Settings.AngularSlop)
+                if (FP.Abs(_upperAngle - _lowerAngle) < 2.0f * Settings.AngularSlop)
                 {
                     // Prevent large angular corrections
                     C = MathUtils.Clamp(angle - _lowerAngle, -Settings.MaxAngularCorrection, Settings.MaxAngularCorrection);
@@ -490,10 +488,10 @@ namespace Box2DSharp.Dynamics.Joints
                     C = MathUtils.Clamp(angle - _upperAngle - Settings.AngularSlop, 0.0f, Settings.MaxAngularCorrection);
                 }
 
-                float limitImpulse = -_axialMass * C;
+                FP limitImpulse = -_axialMass * C;
                 aA -= _invIa * limitImpulse;
                 aB += _invIb * limitImpulse;
-                angularError = Math.Abs(C);
+                angularError = FP.Abs(C);
             }
 
             // Solve point-to-point constraint.
@@ -506,8 +504,8 @@ namespace Box2DSharp.Dynamics.Joints
                 var C = cB + rB - cA - rA;
                 positionError = C.Length();
 
-                float mA = _invMassA, mB = _invMassB;
-                float iA = _invIa, iB = _invIb;
+                FP mA = _invMassA, mB = _invMassB;
+                FP iA = _invIa, iB = _invIb;
 
                 var K = new Matrix2x2();
                 K.Ex.X = mA + mB + iA * rA.Y * rA.Y + iB * rB.Y * rB.Y;
@@ -555,14 +553,14 @@ namespace Box2DSharp.Dynamics.Joints
 
             var L = 0.5f;
 
-            var r = L * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+            var r = L * new FVector2(FP.Cos(angle), FP.Sin(angle));
             drawer.DrawSegment(pB, pB + r, c1);
             drawer.DrawCircle(pB, L, c1);
 
             if (_enableLimit)
             {
-                var rlo = L * new Vector2((float)Math.Cos(_lowerAngle), (float)Math.Cos(_lowerAngle));
-                var rhi = L * new Vector2((float)Math.Cos(_upperAngle), (float)Math.Cos(_upperAngle));
+                var rlo = L * new FVector2(FP.Cos(_lowerAngle), FP.Cos(_lowerAngle));
+                var rhi = L * new FVector2(FP.Cos(_upperAngle), FP.Cos(_upperAngle));
 
                 drawer.DrawSegment(pB, pB + rlo, c2);
                 drawer.DrawSegment(pB, pB + rhi, c3);

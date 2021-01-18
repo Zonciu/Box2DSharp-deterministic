@@ -26,9 +26,9 @@
 
         Period,
 
-        LeftControl,
+        LeftCtrl,
 
-        RightControl,
+        RightCtrl,
 
         LeftShift,
 
@@ -89,5 +89,25 @@
         Y,
 
         Z,
+
+        LeftArrow,
+
+        RightArrow,
+
+        UpArrow,
+
+        DownArrow,
+
+        LeftBracket,
+
+        RightBracket,
+
+        Home,
+
+        Space,
+
+        Tab,
+
+        Escape
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Numerics;
-using Box2DSharp.Collision.Shapes;
+﻿using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Shouldly;
@@ -22,7 +20,7 @@ namespace UnitTest
         public void HelloWorld()
         {
             // Define the gravity vector.
-            Vector2 gravity = new Vector2(0.0f, -10.0f);
+            FVector2 gravity = new FVector2(0.0f, -10.0f);
 
             // Construct a world object, which will hold and simulate the rigid bodies.
             World world = new World(gravity);
@@ -71,12 +69,12 @@ namespace UnitTest
             // Prepare for simulation. Typically we use a time step of 1/60 of a
             // second (60Hz) and 10 iterations. This provides a high quality simulation
             // in most game scenarios.
-            float timeStep = 1.0f / 60.0f;
+            FP timeStep = 1.0f / 60.0f;
             var velocityIterations = 6;
             var positionIterations = 2;
 
-            Vector2 position = body.GetPosition();
-            float angle = body.GetAngle();
+            FVector2 position = body.GetPosition();
+            var angle = body.GetAngle();
 
             // This is our little game loop.
             for (var i = 0; i < 60; ++i)
@@ -95,9 +93,9 @@ namespace UnitTest
             // When the world destructor is called, all bodies and joints are freed. This can
             // create orphaned pointers, so be careful about your world management.
 
-            Math.Abs(position.X).ShouldBeLessThan(0.01f);
-            Math.Abs(position.Y - 1.01f).ShouldBeLessThan(0.01f);
-            Math.Abs(angle).ShouldBeLessThan(0.01f);
+            FP.Abs(position.X).ShouldBeLessThan<FP>(0.01f);
+            FP.Abs(position.Y - 1.01f).ShouldBeLessThan<FP>(0.01f);
+            FP.Abs(angle).ShouldBeLessThan<FP>(0.01f);
         }
     }
 }

@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Collider;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
@@ -22,7 +21,7 @@ namespace Box2DSharp.Collision
             var pB = MathUtils.Mul(xfB, circleB.Position);
 
             var d = pB - pA;
-            var distSqr = Vector2.Dot(d, d);
+            var distSqr = FVector2.Dot(d, d);
             var rA = circleA.Radius;
             var rB = circleB.Radius;
             var radius = rA + rB;
@@ -56,7 +55,7 @@ namespace Box2DSharp.Collision
 
             // Find the min separating edge.
             var normalIndex = 0;
-            var separation = -Settings.MaxFloat;
+            var separation = Settings.MinFloat;
             var radius = polygonA.Radius + circleB.Radius;
             var vertexCount = polygonA.Count;
             var vertices = polygonA.Vertices;
@@ -64,7 +63,7 @@ namespace Box2DSharp.Collision
 
             for (var i = 0; i < vertexCount; ++i)
             {
-                var s = Vector2.Dot(normals[i], cLocal - vertices[i]);
+                var s = FVector2.Dot(normals[i], cLocal - vertices[i]);
 
                 if (s > radius)
                 {
@@ -99,11 +98,11 @@ namespace Box2DSharp.Collision
             }
 
             // Compute barycentric coordinates
-            var u1 = Vector2.Dot(cLocal - v1, v2 - v1);
-            var u2 = Vector2.Dot(cLocal - v2, v1 - v2);
+            var u1 = FVector2.Dot(cLocal - v1, v2 - v1);
+            var u2 = FVector2.Dot(cLocal - v2, v1 - v2);
             if (u1 <= 0.0f)
             {
-                if (Vector2.DistanceSquared(cLocal, v1) > radius * radius)
+                if (FVector2.DistanceSquared(cLocal, v1) > radius * radius)
                 {
                     return;
                 }
@@ -119,7 +118,7 @@ namespace Box2DSharp.Collision
             }
             else if (u2 <= 0.0f)
             {
-                if (Vector2.DistanceSquared(cLocal, v2) > radius * radius)
+                if (FVector2.DistanceSquared(cLocal, v2) > radius * radius)
                 {
                     return;
                 }
@@ -136,7 +135,7 @@ namespace Box2DSharp.Collision
             else
             {
                 var faceCenter = 0.5f * (v1 + v2);
-                var s = Vector2.Dot(cLocal - faceCenter, normals[vertIndex1]);
+                var s = FVector2.Dot(cLocal - faceCenter, normals[vertIndex1]);
                 if (s > radius)
                 {
                     return;

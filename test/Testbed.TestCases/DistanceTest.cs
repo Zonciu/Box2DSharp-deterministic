@@ -4,20 +4,19 @@ using Box2DSharp.Common;
 using Testbed.Abstractions;
 using Color = Box2DSharp.Common.Color;
 using Transform = Box2DSharp.Common.Transform;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
     [TestCase("Geometry", "Distance Test")]
     public class DistanceTest : TestBase
     {
-        private float _angleB;
+        private FP _angleB;
 
         private PolygonShape _polygonA = new PolygonShape();
 
         private PolygonShape _polygonB = new PolygonShape();
 
-        private Vector2 _positionB;
+        private FVector2 _positionB;
 
         private Transform _transformA;
 
@@ -80,7 +79,8 @@ namespace Testbed.TestCases
             _transformB.Set(_positionB, _angleB);
         }
 
-        protected override void OnRender()
+        /// <inheritdoc />
+        protected override void PostStep()
         {
             var input = new DistanceInput();
             input.ProxyA.Set(_polygonA, 0);
@@ -89,14 +89,23 @@ namespace Testbed.TestCases
             input.TransformB = _transformB;
             input.UseRadii = true;
             var cache = new SimplexCache();
-            DistanceAlgorithm.Distance(out var output, ref cache, input);
+            DistanceAlgorithm.Distance(out output, ref cache, input);
+        }
 
+        private DistanceOutput output;
+
+        /// <inheritdoc />
+        protected override void OnGUI()
+        {
             DrawString($"distance = {output.Distance}");
             DrawString($"iterations = {output.Iterations}");
+        }
 
+        protected override void OnRender()
+        {
             {
                 var color = Color.FromArgb(230, 230, 230);
-                var v = new Vector2[Settings.MaxPolygonVertices];
+                var v = new FVector2[Settings.MaxPolygonVertices];
                 for (var i = 0; i < _polygonA.Count; ++i)
                 {
                     v[i] = MathUtils.Mul(_transformA, _polygonA.Vertices[i]);

@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Dynamics.Joints
@@ -18,28 +17,28 @@ namespace Box2DSharp.Dynamics.Joints
         public bool EnableMotor;
 
         /// The local anchor point relative to bodyA's origin.
-        public Vector2 LocalAnchorA;
+        public FVector2 LocalAnchorA;
 
         /// The local anchor point relative to bodyB's origin.
-        public Vector2 LocalAnchorB;
+        public FVector2 LocalAnchorB;
 
         /// The local translation unit axis in bodyA.
-        public Vector2 LocalAxisA;
+        public FVector2 LocalAxisA;
 
         /// The lower translation limit, usually in meters.
-        public float LowerTranslation;
+        public FP LowerTranslation;
 
         /// The maximum motor torque, usually in N-m.
-        public float MaxMotorForce;
+        public FP MaxMotorForce;
 
         /// The desired motor speed in radians per second.
-        public float MotorSpeed;
+        public FP MotorSpeed;
 
         /// The constrained angle between the bodies: bodyB_angle - bodyA_angle.
-        public float ReferenceAngle;
+        public FP ReferenceAngle;
 
         /// The upper translation limit, usually in meters.
-        public float UpperTranslation;
+        public FP UpperTranslation;
 
         public PrismaticJointDef()
         {
@@ -58,7 +57,7 @@ namespace Box2DSharp.Dynamics.Joints
 
         /// Initialize the bodies, anchors, axis, and reference angle using the world
         /// anchor and unit world axis.
-        public void Initialize(Body bA, Body bB, in Vector2 anchor, in Vector2 axis)
+        public void Initialize(Body bA, Body bB, in FVector2 anchor, in FVector2 axis)
         {
             BodyA = bA;
             BodyB = bB;

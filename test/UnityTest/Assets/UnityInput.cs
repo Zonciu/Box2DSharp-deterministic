@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Testbed.Abstractions;
+using UnityEditor;
 using UnityEngine.InputSystem;
 using UMouseButton = UnityEngine.UIElements.MouseButton;
 using UModifiers = UnityEngine.EventModifiers;
@@ -9,33 +10,79 @@ namespace Box2DSharp.Testbed.Unity
 {
     public class UnityInput : IInput
     {
+        public Keyboard Keyboard;
+
+        public Mouse Mouse;
+
         public UnityInput()
         {
             SetupKeyCodeMap();
             SetupUnityKeyCodeMap();
+            if (Keyboard.current != null)
+            {
+                Keyboard = Keyboard.current;
+            }
+
+            if (Mouse.current != null)
+            {
+                Mouse = Mouse.current;
+            }
+        }
+
+        public void UpdateDevice()
+        {
+            if (Keyboard.current != null)
+            {
+                Keyboard = Keyboard.current;
+            }
+
+            if (Mouse.current != null)
+            {
+                Mouse = Mouse.current;
+            }
         }
 
         /// <inheritdoc />
         public bool IsKeyDown(KeyCodes key)
         {
+            if (Keyboard == null)
+            {
+                return false;
+            }
+
             return Keyboard.current[KeyCodeMap[key]].wasPressedThisFrame;
         }
 
         /// <inheritdoc />
         public bool IsKeyPressed(KeyCodes key)
         {
+            if (Keyboard == null)
+            {
+                return false;
+            }
+
             return Keyboard.current[KeyCodeMap[key]].isPressed;
         }
 
         /// <inheritdoc />
         public bool IsKeyUp(KeyCodes key)
         {
+            if (Keyboard == null)
+            {
+                return false;
+            }
+
             return Keyboard.current[KeyCodeMap[key]].wasReleasedThisFrame;
         }
 
         /// <inheritdoc />
         public bool IsMouseDown(MouseButton button)
         {
+            if (Mouse == null)
+            {
+                return false;
+            }
+
             switch (button)
             {
             case MouseButton.Left:
@@ -50,8 +97,13 @@ namespace Box2DSharp.Testbed.Unity
         }
 
         /// <inheritdoc />
-        public bool IsMouseClicked(MouseButton button)
+        public bool IsMousePressed(MouseButton button)
         {
+            if (Mouse == null)
+            {
+                return false;
+            }
+
             switch (button)
             {
             case MouseButton.Left:
@@ -68,6 +120,11 @@ namespace Box2DSharp.Testbed.Unity
         /// <inheritdoc />
         public bool IsMouseUp(MouseButton button)
         {
+            if (Mouse == null)
+            {
+                return false;
+            }
+
             switch (button)
             {
             case MouseButton.Left:
@@ -96,6 +153,21 @@ namespace Box2DSharp.Testbed.Unity
             return MouseButtonMap[(int)mouse];
         }
 
+        public KeyModifiers KeyModifiers
+        {
+            get
+            {
+                KeyModifiers value = 0;
+                if (Keyboard == null)
+                {
+                    return value;
+                }
+
+                value = GetKeyModifiers(Keyboard);
+                return value;
+            }
+        }
+
         public static KeyModifiers GetKeyModifiers(Keyboard keyboard)
         {
             KeyModifiers value = 0;
@@ -106,7 +178,7 @@ namespace Box2DSharp.Testbed.Unity
 
             if (keyboard.ctrlKey.wasPressedThisFrame)
             {
-                value |= KeyModifiers.Control;
+                value |= KeyModifiers.Ctrl;
             }
 
             if (keyboard.altKey.wasPressedThisFrame)
@@ -132,7 +204,7 @@ namespace Box2DSharp.Testbed.Unity
             return value;
         }
 
-        public static KeyModifiers GetKeyModifiers(UModifiers keyModifiers)
+        public static KeyModifiers ConvertKeyModifiers(UModifiers keyModifiers)
         {
             KeyModifiers value = 0;
             if (keyModifiers.HasFlag(UModifiers.Shift))
@@ -142,7 +214,7 @@ namespace Box2DSharp.Testbed.Unity
 
             if (keyModifiers.HasFlag(UModifiers.Control))
             {
-                value |= KeyModifiers.Control;
+                value |= KeyModifiers.Ctrl;
             }
 
             if (keyModifiers.HasFlag(UModifiers.Alt))
@@ -191,14 +263,19 @@ namespace Box2DSharp.Testbed.Unity
             KeyCodeMap[KeyCodes.D7] = Key.Digit7;
             KeyCodeMap[KeyCodes.D8] = Key.Digit8;
             KeyCodeMap[KeyCodes.D9] = Key.Digit9;
+
             KeyCodeMap[KeyCodes.Comma] = Key.Comma;
             KeyCodeMap[KeyCodes.Period] = Key.Period;
-            KeyCodeMap[KeyCodes.LeftControl] = Key.LeftCtrl;
-            KeyCodeMap[KeyCodes.RightControl] = Key.RightCtrl;
+
+            KeyCodeMap[KeyCodes.LeftCtrl] = Key.LeftCtrl;
+            KeyCodeMap[KeyCodes.RightCtrl] = Key.RightCtrl;
+
             KeyCodeMap[KeyCodes.LeftShift] = Key.LeftShift;
             KeyCodeMap[KeyCodes.RightShift] = Key.RightShift;
+
             KeyCodeMap[KeyCodes.LeftAlt] = Key.LeftAlt;
             KeyCodeMap[KeyCodes.RightAlt] = Key.RightAlt;
+
             KeyCodeMap[KeyCodes.A] = Key.A;
             KeyCodeMap[KeyCodes.B] = Key.B;
             KeyCodeMap[KeyCodes.C] = Key.C;
@@ -225,6 +302,19 @@ namespace Box2DSharp.Testbed.Unity
             KeyCodeMap[KeyCodes.X] = Key.X;
             KeyCodeMap[KeyCodes.Y] = Key.Y;
             KeyCodeMap[KeyCodes.Z] = Key.Z;
+
+            KeyCodeMap[KeyCodes.LeftArrow] = Key.LeftArrow;
+            KeyCodeMap[KeyCodes.UpArrow] = Key.UpArrow;
+            KeyCodeMap[KeyCodes.RightArrow] = Key.RightArrow;
+            KeyCodeMap[KeyCodes.DownArrow] = Key.DownArrow;
+
+            KeyCodeMap[KeyCodes.LeftBracket] = Key.LeftBracket;
+            KeyCodeMap[KeyCodes.RightBracket] = Key.RightBracket;
+
+            KeyCodeMap[KeyCodes.Home] = Key.Home;
+            KeyCodeMap[KeyCodes.Space] = Key.Space;
+            KeyCodeMap[KeyCodes.Tab] = Key.Tab;
+            KeyCodeMap[KeyCodes.Escape] = Key.Escape;
         }
 
         private void SetupUnityKeyCodeMap()
@@ -239,14 +329,19 @@ namespace Box2DSharp.Testbed.Unity
             UnityKeyCodeMap[Key.Digit7] = KeyCodes.D7;
             UnityKeyCodeMap[Key.Digit8] = KeyCodes.D8;
             UnityKeyCodeMap[Key.Digit9] = KeyCodes.D9;
+
             UnityKeyCodeMap[Key.Comma] = KeyCodes.Comma;
             UnityKeyCodeMap[Key.Period] = KeyCodes.Period;
-            UnityKeyCodeMap[Key.LeftCtrl] = KeyCodes.LeftControl;
-            UnityKeyCodeMap[Key.RightCtrl] = KeyCodes.RightControl;
+
+            UnityKeyCodeMap[Key.LeftCtrl] = KeyCodes.LeftCtrl;
+            UnityKeyCodeMap[Key.RightCtrl] = KeyCodes.RightCtrl;
+
             UnityKeyCodeMap[Key.LeftShift] = KeyCodes.LeftShift;
             UnityKeyCodeMap[Key.RightShift] = KeyCodes.RightShift;
+
             UnityKeyCodeMap[Key.LeftAlt] = KeyCodes.LeftAlt;
             UnityKeyCodeMap[Key.RightAlt] = KeyCodes.RightAlt;
+
             UnityKeyCodeMap[Key.A] = KeyCodes.A;
             UnityKeyCodeMap[Key.B] = KeyCodes.B;
             UnityKeyCodeMap[Key.C] = KeyCodes.C;
@@ -273,6 +368,19 @@ namespace Box2DSharp.Testbed.Unity
             UnityKeyCodeMap[Key.X] = KeyCodes.X;
             UnityKeyCodeMap[Key.Y] = KeyCodes.Y;
             UnityKeyCodeMap[Key.Z] = KeyCodes.Z;
+
+            UnityKeyCodeMap[Key.LeftArrow] = KeyCodes.LeftArrow;
+            UnityKeyCodeMap[Key.UpArrow] = KeyCodes.UpArrow;
+            UnityKeyCodeMap[Key.RightArrow] = KeyCodes.RightArrow;
+            UnityKeyCodeMap[Key.DownArrow] = KeyCodes.DownArrow;
+
+            UnityKeyCodeMap[Key.LeftBracket] = KeyCodes.LeftBracket;
+            UnityKeyCodeMap[Key.RightBracket] = KeyCodes.RightBracket;
+
+            UnityKeyCodeMap[Key.Home] = KeyCodes.Home;
+            UnityKeyCodeMap[Key.Space] = KeyCodes.Space;
+            UnityKeyCodeMap[Key.Tab] = KeyCodes.Tab;
+            UnityKeyCodeMap[Key.Escape] = KeyCodes.Escape;
         }
     }
 }

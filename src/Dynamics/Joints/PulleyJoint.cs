@@ -1,67 +1,69 @@
-using System;
 using System.Diagnostics;
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Dynamics.Joints
 {
+    /// <summary>
+    /// 
     /// The pulley joint is connected to two bodies and two fixed ground points.
     /// The pulley supports a ratio such that:
-    /// length1 + ratio * length2 <= constant
+    /// length1 + ratio * length2 <![CDATA[<=]]> constant
     /// Yes, the force transmitted is scaled by the ratio.
     /// Warning: the pulley joint can get a bit squirrelly by itself. They often
     /// work better when combined with prismatic joints. You should also cover the
     /// the anchor points with static shapes to prevent one side from going to
     /// zero length.
+    /// </summary>
     public class PulleyJoint : Joint
     {
-        private readonly float _constant;
+        private readonly FP _constant;
 
-        private readonly float _lengthA;
+        private readonly FP _lengthA;
 
-        private readonly float _lengthB;
+        private readonly FP _lengthB;
 
         // Solver shared
-        private readonly Vector2 _localAnchorA;
+        private readonly FVector2 _localAnchorA;
 
-        private readonly Vector2 _localAnchorB;
+        private readonly FVector2 _localAnchorB;
 
-        private readonly float _ratio;
+        private readonly FP _ratio;
 
-        private Vector2 _groundAnchorA;
+        private FVector2 _groundAnchorA;
 
-        private Vector2 _groundAnchorB;
+        private FVector2 _groundAnchorB;
 
-        private float _impulse;
+        private FP _impulse;
 
         // Solver temp
         private int _indexA;
 
         private int _indexB;
 
-        private float _invIa;
+        private FP _invIa;
 
-        private float _invIb;
+        private FP _invIb;
 
-        private float _invMassA;
+        private FP _invMassA;
 
-        private float _invMassB;
+        private FP _invMassB;
 
-        private Vector2 _localCenterA;
+        private FVector2 _localCenterA;
 
-        private Vector2 _localCenterB;
+        private FVector2 _localCenterB;
 
-        private float _mass;
+        private FP _mass;
 
-        private Vector2 _rA;
+        private FVector2 _rA;
 
-        private Vector2 _rB;
+        private FVector2 _rB;
 
-        private Vector2 _uA;
+        private FVector2 _uA;
 
-        private Vector2 _uB;
+        private FVector2 _uB;
 
-        public PulleyJoint(PulleyJointDef def) : base(def)
+        public PulleyJoint(PulleyJointDef def)
+            : base(def)
         {
             _groundAnchorA = def.GroundAnchorA;
             _groundAnchorB = def.GroundAnchorB;
@@ -80,37 +82,37 @@ namespace Box2DSharp.Dynamics.Joints
         }
 
         /// Get the first ground anchor.
-        public Vector2 GetGroundAnchorA()
+        public FVector2 GetGroundAnchorA()
         {
             return _groundAnchorA;
         }
 
         /// Get the second ground anchor.
-        public Vector2 GetGroundAnchorB()
+        public FVector2 GetGroundAnchorB()
         {
             return _groundAnchorB;
         }
 
         /// Get the current length of the segment attached to bodyA.
-        public float GetLengthA()
+        public FP GetLengthA()
         {
             return _lengthA;
         }
 
         /// Get the current length of the segment attached to bodyB.
-        public float GetLengthB()
+        public FP GetLengthB()
         {
             return _lengthB;
         }
 
         /// Get the pulley ratio.
-        public float GetRatio()
+        public FP GetRatio()
         {
             return _ratio;
         }
 
         /// Get the current length of the segment attached to bodyA.
-        public float GetCurrentLengthA()
+        public FP GetCurrentLengthA()
         {
             var p = BodyA.GetWorldPoint(_localAnchorA);
             var s = _groundAnchorA;
@@ -119,7 +121,7 @@ namespace Box2DSharp.Dynamics.Joints
         }
 
         /// Get the current length of the segment attached to bodyB.
-        public float GetCurrentLengthB()
+        public FP GetCurrentLengthB()
         {
             var p = BodyB.GetWorldPoint(_localAnchorB);
             var s = _groundAnchorB;
@@ -128,26 +130,26 @@ namespace Box2DSharp.Dynamics.Joints
         }
 
         /// <inheritdoc />
-        public override Vector2 GetAnchorA()
+        public override FVector2 GetAnchorA()
         {
             return BodyA.GetWorldPoint(_localAnchorA);
         }
 
         /// <inheritdoc />
-        public override Vector2 GetAnchorB()
+        public override FVector2 GetAnchorB()
         {
             return BodyB.GetWorldPoint(_localAnchorB);
         }
 
         /// <inheritdoc />
-        public override Vector2 GetReactionForce(float inv_dt)
+        public override FVector2 GetReactionForce(FP inv_dt)
         {
             var P = _impulse * _uB;
             return inv_dt * P;
         }
 
         /// <inheritdoc />
-        public override float GetReactionTorque(float inv_dt)
+        public override FP GetReactionTorque(FP inv_dt)
         {
             return 0.0f;
         }
@@ -255,7 +257,7 @@ namespace Box2DSharp.Dynamics.Joints
             var vpA = vA + MathUtils.Cross(wA, _rA);
             var vpB = vB + MathUtils.Cross(wB, _rB);
 
-            var Cdot = -Vector2.Dot(_uA, vpA) - _ratio * Vector2.Dot(_uB, vpB);
+            var Cdot = -FVector2.Dot(_uA, vpA) - _ratio * FVector2.Dot(_uB, vpB);
             var impulse = -_mass * Cdot;
             _impulse += impulse;
 
@@ -326,7 +328,7 @@ namespace Box2DSharp.Dynamics.Joints
             }
 
             var C = _constant - lengthA - _ratio * lengthB;
-            var linearError = Math.Abs(C);
+            var linearError = FP.Abs(C);
 
             var impulse = -mass * C;
 
@@ -367,7 +369,7 @@ namespace Box2DSharp.Dynamics.Joints
         }
 
         /// <inheritdoc />
-        public override void ShiftOrigin(in Vector2 newOrigin)
+        public override void ShiftOrigin(in FVector2 newOrigin)
         {
             _groundAnchorA -= newOrigin;
             _groundAnchorB -= newOrigin;

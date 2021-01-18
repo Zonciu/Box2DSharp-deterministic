@@ -1,5 +1,4 @@
-﻿using System;
-using Box2DSharp.Collision.Shapes;
+﻿using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Shouldly;
 using Xunit;
@@ -25,14 +24,14 @@ namespace UnitTest
             sweep.GetTransform(out transform, 0.0f);
             transform.Position.X.ShouldBe(sweep.C0.X);
             transform.Position.Y.ShouldBe(sweep.C0.Y);
-            transform.Rotation.Cos.ShouldBe((float)Math.Cos(sweep.A0));
-            transform.Rotation.Sin.ShouldBe((float)Math.Sin(sweep.A0));
+            transform.Rotation.Cos.ShouldBe(FP.Cos(sweep.A0));
+            transform.Rotation.Sin.ShouldBe(FP.Sin(sweep.A0));
 
             sweep.GetTransform(out transform, 1.0f);
             transform.Position.X.ShouldBe(sweep.C.X);
             transform.Position.Y.ShouldBe(sweep.C.Y);
-            transform.Rotation.Cos.ShouldBe((float)Math.Cos(sweep.A));
-            transform.Rotation.Sin.ShouldBe((float)Math.Sin(sweep.A));
+            transform.Rotation.Cos.ShouldBe(FP.Cos(sweep.A));
+            transform.Rotation.Sin.ShouldBe(FP.Sin(sweep.A));
         }
     }
 }

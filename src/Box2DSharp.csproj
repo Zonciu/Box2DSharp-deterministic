@@ -20,20 +20,27 @@
         <DocumentationFile>$(OutDir)\Box2DSharp.xml</DocumentationFile>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <NoWarn>1701;1702;1591</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <NoWarn>1701;1702;1591</NoWarn>
+    </PropertyGroup>
+
     <ItemGroup>
         <None Include="..\LICENSE-Box2D.txt">
           <Pack>True</Pack>
-          <PackagePath></PackagePath>
+          <PackagePath />
         </None>
         <None Include="..\LICENSE.txt">
           <Pack>True</Pack>
-          <PackagePath></PackagePath>
+          <PackagePath />
         </None>
     </ItemGroup>
     
     <ItemGroup>
       <PackageReference Include="System.Memory" Version="4.5.3" />
-      <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     </ItemGroup>
 
 </Project>

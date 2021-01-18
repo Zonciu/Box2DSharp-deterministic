@@ -1,5 +1,3 @@
-using System;
-using System.Numerics;
 using Box2DSharp.Collision.Collider;
 using Box2DSharp.Common;
 
@@ -11,9 +9,9 @@ namespace Box2DSharp.Collision.Shapes
     public class CircleShape : Shape
     {
         /// Position
-        public Vector2 Position;
+        public FVector2 Position;
 
-        public new float Radius
+        public new FP Radius
         {
             get => base.Radius;
             set => base.Radius = value;
@@ -22,7 +20,7 @@ namespace Box2DSharp.Collision.Shapes
         public CircleShape()
         {
             ShapeType = ShapeType.Circle;
-            Radius = 0.0f;
+            Radius = 0;
             Position.SetZero();
         }
 
@@ -40,11 +38,11 @@ namespace Box2DSharp.Collision.Shapes
         }
 
         /// Implement b2Shape.
-        public override bool TestPoint(in Transform transform, in Vector2 p)
+        public override bool TestPoint(in Transform transform, in FVector2 p)
         {
             var center = transform.Position + MathUtils.Mul(transform.Rotation, Position);
             var d = p - center;
-            return Vector2.Dot(d, d) <= Radius * Radius;
+            return FVector2.Dot(d, d) <= Radius * Radius;
         }
 
         /// <summary>
@@ -66,25 +64,25 @@ namespace Box2DSharp.Collision.Shapes
             output = default;
             var position = transform.Position + MathUtils.Mul(transform.Rotation, Position);
             var s = input.P1 - position;
-            var b = Vector2.Dot(s, s) - Radius * Radius;
+            var b = FVector2.Dot(s, s) - Radius * Radius;
 
             // Solve quadratic equation.
             var r = input.P2 - input.P1;
-            var c = Vector2.Dot(s, r);
-            var rr = Vector2.Dot(r, r);
+            var c = FVector2.Dot(s, r);
+            var rr = FVector2.Dot(r, r);
             var sigma = c * c - rr * b;
 
             // Check for negative discriminant and short segment.
-            if (sigma < 0.0f || rr < Settings.Epsilon)
+            if (sigma < FP.Zero || rr < Settings.Epsilon)
             {
                 return false;
             }
 
             // Find the point of intersection of the line with the circle.
-            var a = -(c + (float) Math.Sqrt(sigma));
+            var a = -(c + FP.Sqrt(sigma));
 
             // Is the intersection point on the segment?
-            if (0.0f <= a && a <= input.MaxFraction * rr)
+            if (FP.Zero <= a && a <= input.MaxFraction * rr)
             {
                 a /= rr;
                 output = new RayCastOutput {Fraction = a, Normal = s + a * r};
@@ -109,12 +107,12 @@ namespace Box2DSharp.Collision.Shapes
         }
 
         /// @see b2Shape::ComputeMass
-        public override void ComputeMass(out MassData massData, float density)
+        public override void ComputeMass(out MassData massData, FP density)
         {
             massData = new MassData {Mass = density * Settings.Pi * Radius * Radius, Center = Position};
 
             // inertia about the local origin
-            massData.RotationInertia = massData.Mass * (0.5f * Radius * Radius + Vector2.Dot(Position, Position));
+            massData.RotationInertia = massData.Mass * (0.5f * Radius * Radius + FVector2.Dot(Position, Position));
         }
     }
 }

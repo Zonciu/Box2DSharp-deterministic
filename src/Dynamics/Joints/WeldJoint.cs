@@ -1,5 +1,3 @@
-using System;
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Dynamics.Joints
@@ -9,44 +7,44 @@ namespace Box2DSharp.Dynamics.Joints
     public class WeldJoint : Joint
     {
         // Solver shared
-        private readonly Vector2 _localAnchorA;
+        private readonly FVector2 _localAnchorA;
 
-        private readonly Vector2 _localAnchorB;
+        private readonly FVector2 _localAnchorB;
 
-        private readonly float _referenceAngle;
+        private readonly FP _referenceAngle;
 
-        private float _bias;
+        private FP _bias;
 
-        public float Stiffness = 0.0f;
+        public FP Stiffness = 0.0f;
 
-        public float Damping = 0.0f;
+        public FP Damping = 0.0f;
 
-        private float _gamma;
+        private FP _gamma;
 
-        private Vector3 _impulse;
+        private FVector3 _impulse;
 
         // Solver temp
         private int _indexA;
 
         private int _indexB;
 
-        private float _invIa;
+        private FP _invIa;
 
-        private float _invIb;
+        private FP _invIb;
 
-        private float _invMassA;
+        private FP _invMassA;
 
-        private float _invMassB;
+        private FP _invMassB;
 
-        private Vector2 _localCenterA;
+        private FVector2 _localCenterA;
 
-        private Vector2 _localCenterB;
+        private FVector2 _localCenterB;
 
         private Matrix3x3 _mass;
 
-        private Vector2 _rA;
+        private FVector2 _rA;
 
-        private Vector2 _rB;
+        private FVector2 _rB;
 
         internal WeldJoint(WeldJointDef def)
             : base(def)
@@ -61,44 +59,44 @@ namespace Box2DSharp.Dynamics.Joints
         }
 
         /// The local anchor point relative to bodyA's origin.
-        public Vector2 GetLocalAnchorA()
+        public FVector2 GetLocalAnchorA()
         {
             return _localAnchorA;
         }
 
         /// The local anchor point relative to bodyB's origin.
-        public Vector2 GetLocalAnchorB()
+        public FVector2 GetLocalAnchorB()
         {
             return _localAnchorB;
         }
 
         /// Get the reference angle.
-        public float GetReferenceAngle()
+        public FP GetReferenceAngle()
         {
             return _referenceAngle;
         }
 
         /// <inheritdoc />
-        public override Vector2 GetAnchorA()
+        public override FVector2 GetAnchorA()
         {
             return BodyA.GetWorldPoint(_localAnchorA);
         }
 
         /// <inheritdoc />
-        public override Vector2 GetAnchorB()
+        public override FVector2 GetAnchorB()
         {
             return BodyB.GetWorldPoint(_localAnchorB);
         }
 
         /// <inheritdoc />
-        public override Vector2 GetReactionForce(float inv_dt)
+        public override FVector2 GetReactionForce(FP inv_dt)
         {
-            var P = new Vector2(_impulse.X, _impulse.Y);
+            var P = new FVector2(_impulse.X, _impulse.Y);
             return inv_dt * P;
         }
 
         /// <inheritdoc />
-        public override float GetReactionTorque(float inv_dt)
+        public override FP GetReactionTorque(FP inv_dt)
         {
             return inv_dt * _impulse.Z;
         }
@@ -106,7 +104,7 @@ namespace Box2DSharp.Dynamics.Joints
         /// Dump to Logger.Log
         public override void Dump()
         {
-           // Todo
+            // Todo
         }
 
         /// <inheritdoc />
@@ -144,8 +142,8 @@ namespace Box2DSharp.Dynamics.Joints
             //     [  -r1y*iA*r1x-r2y*iB*r2x, mA+r1x^2*iA+mB+r2x^2*iB,           r1x*iA+r2x*iB]
             //     [          -r1y*iA-r2y*iB,           r1x*iA+r2x*iB,                   iA+iB]
 
-            float mA = _invMassA, mB = _invMassB;
-            float iA = _invIa, iB = _invIb;
+            FP mA = _invMassA, mB = _invMassB;
+            FP iA = _invIa, iB = _invIb;
 
             var K = new Matrix3x3();
             K.Ex.X = mA + mB + _rA.Y * _rA.Y * iA + _rB.Y * _rB.Y * iB;
@@ -175,11 +173,11 @@ namespace Box2DSharp.Dynamics.Joints
                 // magic formulas
                 var h = data.Step.Dt;
                 _gamma = h * (d + h * k);
-                _gamma = !_gamma.Equals(0.0f) ? 1.0f / _gamma : 0.0f;
+                _gamma = _gamma != FP.Zero ? FP.One / _gamma : FP.Zero;
                 _bias = C * h * k * _gamma;
 
                 invM += _gamma;
-                _mass.Ez.Z = !invM.Equals(0.0f) ? 1.0f / invM : 0.0f;
+                _mass.Ez.Z = invM != FP.Zero ? FP.One / invM : FP.Zero;
             }
             else if (K.Ez.Z.Equals(0.0f))
             {
@@ -199,7 +197,7 @@ namespace Box2DSharp.Dynamics.Joints
                 // Scale impulses to support a variable time step.
                 _impulse *= data.Step.DtRatio;
 
-                var P = new Vector2(_impulse.X, _impulse.Y);
+                var P = new FVector2(_impulse.X, _impulse.Y);
 
                 vA -= mA * P;
                 wA -= iA * (MathUtils.Cross(_rA, P) + _impulse.Z);
@@ -226,8 +224,8 @@ namespace Box2DSharp.Dynamics.Joints
             var vB = data.Velocities[_indexB].V;
             var wB = data.Velocities[_indexB].W;
 
-            float mA = _invMassA, mB = _invMassB;
-            float iA = _invIa, iB = _invIb;
+            FP mA = _invMassA, mB = _invMassB;
+            FP iA = _invIa, iB = _invIb;
 
             if (Stiffness > 0.0f)
             {
@@ -257,12 +255,12 @@ namespace Box2DSharp.Dynamics.Joints
             {
                 var cdot1 = vB + MathUtils.Cross(wB, _rB) - vA - MathUtils.Cross(wA, _rA);
                 var cdot2 = wB - wA;
-                var cdot = new Vector3(cdot1.X, cdot1.Y, cdot2);
+                var cdot = new FVector3(cdot1.X, cdot1.Y, cdot2);
 
                 var impulse = -MathUtils.Mul(_mass, cdot);
                 _impulse += impulse;
 
-                var P = new Vector2(impulse.X, impulse.Y);
+                var P = new FVector2(impulse.X, impulse.Y);
 
                 vA -= mA * P;
                 wA -= iA * (MathUtils.Cross(_rA, P) + impulse.Z);
@@ -288,13 +286,13 @@ namespace Box2DSharp.Dynamics.Joints
             var qA = new Rotation(aA);
             var qB = new Rotation(aB);
 
-            float mA = _invMassA, mB = _invMassB;
-            float iA = _invIa, iB = _invIb;
+            FP mA = _invMassA, mB = _invMassB;
+            FP iA = _invIa, iB = _invIb;
 
             var rA = MathUtils.Mul(qA, _localAnchorA - _localCenterA);
             var rB = MathUtils.Mul(qB, _localAnchorB - _localCenterB);
 
-            float positionError, angularError;
+            FP positionError, angularError;
 
             var K = new Matrix3x3();
             K.Ex.X = mA + mB + rA.Y * rA.Y * iA + rB.Y * rB.Y * iB;
@@ -328,11 +326,11 @@ namespace Box2DSharp.Dynamics.Joints
                 var C2 = aB - aA - _referenceAngle;
 
                 positionError = C1.Length();
-                angularError = Math.Abs(C2);
+                angularError = FP.Abs(C2);
 
-                var C = new Vector3(C1.X, C1.Y, C2);
+                var C = new FVector3(C1.X, C1.Y, C2);
 
-                var impulse = new Vector3();
+                var impulse = new FVector3();
                 if (K.Ez.Z > 0.0f)
                 {
                     impulse = -K.Solve33(C);
@@ -343,7 +341,7 @@ namespace Box2DSharp.Dynamics.Joints
                     impulse.Set(impulse2.X, impulse2.Y, 0.0f);
                 }
 
-                var P = new Vector2(impulse.X, impulse.Y);
+                var P = new FVector2(impulse.X, impulse.Y);
 
                 cA -= mA * P;
                 aA -= iA * (MathUtils.Cross(rA, P) + impulse.Z);

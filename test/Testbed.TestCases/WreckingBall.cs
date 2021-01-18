@@ -4,7 +4,6 @@ using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Joints;
 using Testbed.Abstractions;
 using Joint = Box2DSharp.Dynamics.Joints.Joint;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -35,7 +34,7 @@ namespace Testbed.TestCases
                 ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 
@@ -55,7 +54,7 @@ namespace Testbed.TestCases
                 jd.CollideConnected = false;
 
                 const int N = 10;
-                const float y = 15.0f;
+                FP y = 15.0f;
                 _distanceJointDef.LocalAnchorA.Set(0.0f, y);
 
                 var prevBody = ground;
@@ -88,7 +87,7 @@ namespace Testbed.TestCases
 
                     body.CreateFixture(fd);
 
-                    var anchor = new Vector2(i, y);
+                    var anchor = new FVector2(i, y);
                     jd.Initialize(prevBody, body, anchor);
                     World.CreateJoint(jd);
 
@@ -128,7 +127,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             if (_distanceJoint != null)
             {

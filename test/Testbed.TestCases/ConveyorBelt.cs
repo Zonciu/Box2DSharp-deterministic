@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Collider;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
@@ -21,7 +20,7 @@ namespace Testbed.TestCases
                 var ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-20.0f, 0.0f), new Vector2(20.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-20.0f, 0.0f), new FVector2(20.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 

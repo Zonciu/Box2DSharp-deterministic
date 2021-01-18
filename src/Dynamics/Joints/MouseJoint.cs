@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Dynamics.Joints
@@ -13,37 +11,37 @@ namespace Box2DSharp.Dynamics.Joints
     /// use the mouse joint, look at the testbed.
     public class MouseJoint : Joint
     {
-        private readonly Vector2 _localAnchorB;
+        private readonly FVector2 _localAnchorB;
 
-        private float _beta;
+        private FP _beta;
 
-        private Vector2 _C;
+        private FVector2 _C;
 
-        public float Damping;
+        public FP Damping;
 
-        public float Stiffness;
+        public FP Stiffness;
 
-        private float _gamma;
+        private FP _gamma;
 
         // Solver shared
-        private Vector2 _impulse;
+        private FVector2 _impulse;
 
         // Solver temp
         private int _indexB;
 
-        private float _invIb;
+        private FP _invIb;
 
-        private float _invMassB;
+        private FP _invMassB;
 
-        private Vector2 _localCenterB;
+        private FVector2 _localCenterB;
 
         private Matrix2x2 _mass;
 
-        public float MaxForce;
+        public FP MaxForce;
 
-        private Vector2 _rB;
+        private FVector2 _rB;
 
-        public Vector2 Target;
+        public FVector2 Target;
 
         internal MouseJoint(MouseJointDef def)
             : base(def)
@@ -62,7 +60,7 @@ namespace Box2DSharp.Dynamics.Joints
 
         /// Implements b2Joint.
         /// Use this to update the target point.
-        public void SetTarget(in Vector2 target)
+        public void SetTarget(in FVector2 target)
         {
             if (target != Target)
             {
@@ -72,31 +70,31 @@ namespace Box2DSharp.Dynamics.Joints
         }
 
         /// <inheritdoc />
-        public override void ShiftOrigin(in Vector2 newOrigin)
+        public override void ShiftOrigin(in FVector2 newOrigin)
         {
             Target -= newOrigin;
         }
 
         /// <inheritdoc />
-        public override Vector2 GetAnchorA()
+        public override FVector2 GetAnchorA()
         {
             return Target;
         }
 
         /// <inheritdoc />
-        public override Vector2 GetAnchorB()
+        public override FVector2 GetAnchorB()
         {
             return BodyB.GetWorldPoint(_localAnchorB);
         }
 
         /// <inheritdoc />
-        public override Vector2 GetReactionForce(float inv_dt)
+        public override FVector2 GetReactionForce(FP inv_dt)
         {
             return inv_dt * _impulse;
         }
 
         /// <inheritdoc />
-        public override float GetReactionTorque(float inv_dt)
+        public override FP GetReactionTorque(FP inv_dt)
         {
             return inv_dt * 0.0f;
         }

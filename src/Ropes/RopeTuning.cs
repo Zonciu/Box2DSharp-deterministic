@@ -1,4 +1,6 @@
-﻿namespace Box2DSharp.Ropes
+﻿using Box2DSharp.Common;
+
+namespace Box2DSharp.Ropes
 {
     ///
     public class RopeTuning
@@ -21,19 +23,19 @@
 
         public BendingModel BendingModel;
 
-        public float Damping;
+        public FP Damping;
 
-        public float StretchStiffness;
+        public FP StretchStiffness;
 
-        public float StretchHertz;
+        public FP StretchHertz;
 
-        public float StretchDamping;
+        public FP StretchDamping;
 
-        public float BendStiffness;
+        public FP BendStiffness;
 
-        public float BendHertz;
+        public FP BendHertz;
 
-        public float BendDamping;
+        public FP BendDamping;
 
         public bool Isometric;
 

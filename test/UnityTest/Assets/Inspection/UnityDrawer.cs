@@ -21,8 +21,14 @@ namespace Box2DSharp.Testbed.Unity.Inspection
         private readonly List<(Vector3 Center, float Radius, Color color)> _points =
             new List<(Vector3 Center, float Radius, Color color)>();
 
-        private StringBuilder _stringBuilder = new StringBuilder();
-        
+        private static readonly int _srcBlend = Shader.PropertyToID("_SrcBlend");
+
+        private static readonly int _dstBlend = Shader.PropertyToID("_DstBlend");
+
+        private static readonly int _cull = Shader.PropertyToID("_Cull");
+
+        private static readonly int _zWrite = Shader.PropertyToID("_ZWrite");
+
         public static UnityDrawer GetDrawer()
         {
             var drawLines = FindObjectOfType<UnityDrawer>();
@@ -105,14 +111,14 @@ namespace Box2DSharp.Testbed.Unity.Inspection
             _lineMaterial = new Material(shader) {hideFlags = HideFlags.HideAndDontSave};
 
             // Turn on alpha blending
-            _lineMaterial.SetInt("_SrcBlend", (int) BlendMode.SrcAlpha);
-            _lineMaterial.SetInt("_DstBlend", (int) BlendMode.OneMinusSrcAlpha);
+            _lineMaterial.SetInt(_srcBlend, (int)BlendMode.SrcAlpha);
+            _lineMaterial.SetInt(_dstBlend, (int)BlendMode.OneMinusSrcAlpha);
 
             // Turn backface culling off
-            _lineMaterial.SetInt("_Cull", (int) CullMode.Off);
+            _lineMaterial.SetInt(_cull, (int)CullMode.Off);
 
             // Turn off depth writes
-            _lineMaterial.SetInt("_ZWrite", 0);
+            _lineMaterial.SetInt(_zWrite, 0);
         }
     }
 }

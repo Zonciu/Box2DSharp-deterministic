@@ -1,4 +1,6 @@
-﻿namespace Box2DSharp.Ropes
+﻿using Box2DSharp.Common;
+
+namespace Box2DSharp.Ropes
 {
     public struct RopeStretch
     {
@@ -6,16 +8,16 @@
 
         public int I2;
 
-        public float InvMass1;
+        public FP InvMass1;
 
-        public float InvMass2;
+        public FP InvMass2;
 
-        public float L;
+        public FP L;
 
-        public float Lambda;
+        public FP Lambda;
 
-        public float Spring;
+        public FP Spring;
 
-        public float Damper;
+        public FP Damper;
     };
 }

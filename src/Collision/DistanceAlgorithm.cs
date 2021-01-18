@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Collision
@@ -144,7 +143,7 @@ namespace Box2DSharp.Collision
 
             // Prepare output.
             simplex.GetWitnessPoints(out output.PointA, out output.PointB);
-            output.Distance = Vector2.Distance(output.PointA, output.PointB);
+            output.Distance = FVector2.Distance(output.PointA, output.PointB);
             output.Iterations = iter;
 
             // Cache the simplex.
@@ -178,6 +177,8 @@ namespace Box2DSharp.Collision
             }
         }
 
+        private static readonly FP tolerance = 0.5f * Settings.LinearSlop;
+
         /// <summary>
         /// Perform a linear shape cast of shape B moving and shape A fixed. Determines the hit point, normal, and translation fraction.
         /// </summary>
@@ -190,23 +191,23 @@ namespace Box2DSharp.Collision
             {
                 Iterations = 0,
                 Lambda = 1.0f,
-                Normal = Vector2.Zero,
-                Point = Vector2.Zero
+                Normal = FVector2.Zero,
+                Point = FVector2.Zero
             };
 
             ref readonly var proxyA = ref input.ProxyA;
             ref readonly var proxyB = ref input.ProxyB;
 
-            var radiusA = Math.Max(proxyA.Radius, Settings.PolygonRadius);
-            var radiusB = Math.Max(proxyB.Radius, Settings.PolygonRadius);
+            var radiusA = FP.Max(proxyA.Radius, Settings.PolygonRadius);
+            var radiusB = FP.Max(proxyB.Radius, Settings.PolygonRadius);
             var radius = radiusA + radiusB;
 
             var xfA = input.TransformA;
             var xfB = input.TransformB;
 
             var r = input.TranslationB;
-            var n = new Vector2(0.0f, 0.0f);
-            var lambda = 0.0f;
+            var n = new FVector2(0.0f, 0.0f);
+            var lambda = FP.Zero;
 
             // Initial simplex
             var simplex = new Simplex();
@@ -222,8 +223,7 @@ namespace Box2DSharp.Collision
             var v = wA - wB;
 
             // Sigma is the target distance between polygons
-            var sigma = Math.Max(Settings.PolygonRadius, radius - Settings.PolygonRadius);
-            const float tolerance = 0.5f * Settings.LinearSlop;
+            var sigma = FP.Max(Settings.PolygonRadius, radius - Settings.PolygonRadius);
 
             // Main iteration loop.
             // 迭代次数上限
@@ -246,8 +246,8 @@ namespace Box2DSharp.Collision
                 v.Normalize();
 
                 // Intersect ray with plane
-                var vp = Vector2.Dot(v, p);
-                var vr = Vector2.Dot(v, r);
+                var vp = FVector2.Dot(v, p);
+                var vr = FVector2.Dot(v, r);
                 if (vp - sigma > lambda * vr)
                 {
                     if (vr <= 0.0f)

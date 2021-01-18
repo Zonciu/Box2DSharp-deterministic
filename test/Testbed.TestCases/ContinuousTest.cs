@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
@@ -10,7 +9,7 @@ namespace Testbed.TestCases
     [TestCase("Continuous","Continuous Test")]
     public class ContinuousTest : TestBase
     {
-        private float _angularVelocity;
+        private FP _angularVelocity;
 
         private Body _body;
 
@@ -29,11 +28,11 @@ namespace Testbed.TestCases
 
                 var edge = new EdgeShape();
 
-                edge.SetTwoSided(new Vector2(-10.0f, 0.0f), new Vector2(10.0f, 0.0f));
+                edge.SetTwoSided(new FVector2(-10.0f, 0.0f), new FVector2(10.0f, 0.0f));
                 body.CreateFixture(edge, 0.0f);
 
                 var shape = new PolygonShape();
-                shape.SetAsBox(0.2f, 1.0f, new Vector2(0.5f, 1.0f), 0.0f);
+                shape.SetAsBox(0.2f, 1.0f, new FVector2(0.5f, 1.0f), 0.0f);
                 body.CreateFixture(shape, 0.0f);
             }
 
@@ -53,7 +52,7 @@ namespace Testbed.TestCases
                 _angularVelocity = RandomFloat(-50.0f, 50.0f);
 
                 //m_angularVelocity = 46.661274f;
-                _body.SetLinearVelocity(new Vector2(0.0f, -100.0f));
+                _body.SetLinearVelocity(new FVector2(0.0f, -100.0f));
                 _body.SetAngularVelocity(_angularVelocity);
             }
         }
@@ -73,11 +72,11 @@ namespace Testbed.TestCases
             _toiProfile.ToiTime = 0.0f;
             _toiProfile.ToiMaxTime = 0.0f;
 
-            _body.SetTransform(new Vector2(0.0f, 20.0f), 0.0f);
+            _body.SetTransform(new FVector2(0.0f, 20.0f), 0.0f);
 
             _angularVelocity = RandomFloat(-50.0f, 50.0f);
 
-            _body.SetLinearVelocity(new Vector2(0.0f, -100.0f));
+            _body.SetLinearVelocity(new FVector2(0.0f, -100.0f));
 
             _body.SetAngularVelocity(_angularVelocity);
         }
@@ -91,7 +90,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             if (_gJkProfile.GjkCalls > 0)
             {

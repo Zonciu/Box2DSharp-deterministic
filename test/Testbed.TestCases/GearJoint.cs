@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
@@ -28,7 +27,7 @@ namespace Testbed.TestCases
                 ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(50.0f, 0.0f), new Vector2(-50.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(50.0f, 0.0f), new FVector2(-50.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 
@@ -118,7 +117,7 @@ namespace Testbed.TestCases
                 body3.CreateFixture(box, 5.0f);
 
                 var jd3 = new PrismaticJointDef();
-                jd3.Initialize(ground, body3, bd3.Position, new Vector2(0.0f, 1.0f));
+                jd3.Initialize(ground, body3, bd3.Position, new FVector2(0.0f, 1.0f));
                 jd3.LowerTranslation = -5.0f;
                 jd3.UpperTranslation = 5.0f;
                 jd3.EnableLimit = true;
@@ -143,7 +142,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             var ratio = _joint4.GetRatio();
             var value = _joint1.GetJointAngle() + ratio * _joint2.GetJointAngle();

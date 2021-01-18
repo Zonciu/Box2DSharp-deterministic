@@ -1,10 +1,8 @@
-using System;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Testbed.Abstractions;
 using Color = Box2DSharp.Common.Color;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -12,12 +10,12 @@ namespace Testbed.TestCases
     {
         public Fixture Fixture;
 
-        public Vector2 Normal;
+        public FVector2 Normal;
 
-        public Vector2 Point;
+        public FVector2 Point;
 
         /// <inheritdoc />
-        public float RayCastCallback(Fixture fixture, in Vector2 point, in Vector2 normal, float fraction)
+        public FP RayCastCallback(Fixture fixture, in FVector2 point, in FVector2 normal, FP fraction)
         {
             Fixture = fixture;
             Point = point;
@@ -36,7 +34,7 @@ namespace Testbed.TestCases
 
         private readonly PolygonShape[] _polygons = new PolygonShape[4].Fill();
 
-        private float _angle;
+        private FP _angle;
 
         private int _bodyIndex;
 
@@ -50,14 +48,14 @@ namespace Testbed.TestCases
                 var ground = World.CreateBody(bd);
 
                 var x1 = -20.0f;
-                var y1 = 2.0f * (float)Math.Cos(x1 / 10.0f * Settings.Pi);
+                var y1 = 2.0f * FP.Cos(x1 / 10.0f * Settings.Pi);
                 for (var i = 0; i < 80; ++i)
                 {
                     var x2 = x1 + 0.5f;
-                    var y2 = 2.0f * (float)Math.Cos(x2 / 10.0f * Settings.Pi);
+                    var y2 = 2.0f * FP.Cos(x2 / 10.0f * Settings.Pi);
 
                     var shape = new EdgeShape();
-                    shape.SetTwoSided(new Vector2(x1, y1), new Vector2(x2, y2));
+                    shape.SetTwoSided(new FVector2(x1, y1), new FVector2(x2, y2));
                     ground.CreateFixture(shape, 0.0f);
 
                     x1 = x2;
@@ -66,7 +64,7 @@ namespace Testbed.TestCases
             }
 
             {
-                var vertices = new Vector2[3];
+                var vertices = new FVector2[3];
                 vertices[0].Set(-0.5f, 0.0f);
                 vertices[1].Set(0.5f, 0.0f);
                 vertices[2].Set(0.0f, 1.5f);
@@ -74,7 +72,7 @@ namespace Testbed.TestCases
             }
 
             {
-                var vertices = new Vector2[3];
+                var vertices = new FVector2[3];
                 vertices[0].Set(-0.1f, 0.0f);
                 vertices[1].Set(0.1f, 0.0f);
                 vertices[2].Set(0.0f, 1.5f);
@@ -83,10 +81,10 @@ namespace Testbed.TestCases
 
             {
                 var w = 1.0f;
-                var b = w / (2.0f + (float)Math.Sqrt(2.0f));
-                var s = (float)Math.Sqrt(2.0f) * b;
+                var b = w / (2.0f + FP.Sqrt(2.0f));
+                var s = FP.Sqrt(2.0f) * b;
 
-                var vertices = new Vector2[8];
+                var vertices = new FVector2[8];
                 vertices[0].Set(0.5f * s, 0.0f);
                 vertices[1].Set(0.5f * w, b);
                 vertices[2].Set(0.5f * w, b + s);
@@ -167,16 +165,20 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnRender()
+        /// <inheritdoc />
+        protected override void OnGUI()
         {
             DrawString("Press 1-5 to drop stuff");
+        }
 
+        protected override void OnRender()
+        {
             var advanceRay = TestSettings.Pause == false || TestSettings.SingleStep;
 
             var L = 25.0f;
-            var point1 = new Vector2(0.0f, 10.0f);
+            var point1 = new FVector2(0.0f, 10.0f);
 
-            var d = new Vector2(L * (float)Math.Cos(_angle), -L * (float)Math.Abs(Math.Sin(_angle)));
+            var d = new FVector2(L * FP.Cos(_angle), -L * FP.Abs(FP.Sin(_angle)));
             var point2 = point1 + d;
 
             var callback = new EdgeShapesCallback();

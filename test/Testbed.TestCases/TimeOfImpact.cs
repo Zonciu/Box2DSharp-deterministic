@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
@@ -27,39 +26,54 @@ namespace Testbed.TestCases
             _shapeB.SetAsBox(2.5f, 2.5f);
         }
 
-        protected override void OnRender()
+        /// <inheritdoc />
+        protected override void PreStep()
         {
-            var sweepA = new Sweep();
+            sweepA = new Sweep();
             sweepA.C0.Set(24.0f, -60.0f);
             sweepA.A0 = 2.95f;
             sweepA.C = sweepA.C0;
             sweepA.A = sweepA.A0;
             sweepA.LocalCenter.SetZero();
 
-            var sweepB = new Sweep();
+            sweepB = new Sweep();
             sweepB.C0.Set(53.474274f, -50.252514f);
             sweepB.A0 = 513.36676f; // - 162.0f * _pi;
             sweepB.C.Set(54.595478f, -51.083473f);
             sweepB.A = 513.62781f; //  - 162.0f * _pi;
             sweepB.LocalCenter.SetZero();
 
-            //sweepB.A0 -= 300.0f * _pi;
-            //sweepB.A -= 300.0f * _pi;
-
-            var input = new ToiInput();
+            input = new ToiInput();
             input.ProxyA.Set(_shapeA, 0);
             input.ProxyB.Set(_shapeB, 0);
             input.SweepA = sweepA;
             input.SweepB = sweepB;
             input.Tmax = 1.0f;
 
-            TimeOfImpact.ComputeTimeOfImpact(out var output, input, World.ToiProfile, World.GJkProfile);
+            TimeOfImpact.ComputeTimeOfImpact(out output, input, World.ToiProfile, World.GJkProfile);
+        }
 
+        private Sweep sweepA;
+
+        private Sweep sweepB;
+
+        private ToiInput input;
+
+        private ToiOutput output;
+
+        /// <inheritdoc />
+        protected override void OnGUI()
+        {
             DrawString($"toi = {output.Time}");
-
             DrawString($"max toi iters = {ToiMaxIters}, max root iters = {ToiMaxRootIters}");
+        }
 
-            var vertices = new Vector2[Settings.MaxPolygonVertices];
+        protected override void OnRender()
+        {
+            //sweepB.A0 -= 300.0f * _pi;
+            //sweepB.A -= 300.0f * _pi;
+
+            var vertices = new FVector2[Settings.MaxPolygonVertices];
 
             sweepA.GetTransform(out var transformA, 0.0f);
 

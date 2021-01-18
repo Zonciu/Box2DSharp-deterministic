@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Dynamics.Joints
@@ -7,19 +6,19 @@ namespace Box2DSharp.Dynamics.Joints
     public class MotorJointDef : JointDef
     {
         /// The bodyB angle minus bodyA angle in radians.
-        public float AngularOffset;
+        public FP AngularOffset;
 
         /// Position correction factor in the range [0,1].
-        public float CorrectionFactor;
+        public FP CorrectionFactor;
 
         /// Position of bodyB minus the position of bodyA, in bodyA's frame, in meters.
-        public Vector2 LinearOffset;
+        public FVector2 LinearOffset;
 
         /// The maximum motor force in N.
-        public float MaxForce;
+        public FP MaxForce;
 
         /// The maximum motor torque in N-m.
-        public float MaxTorque;
+        public FP MaxTorque;
 
         public MotorJointDef()
         {

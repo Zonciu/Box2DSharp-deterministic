@@ -1,11 +1,9 @@
-using System;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Joints;
 using Testbed.Abstractions;
 using Color = Box2DSharp.Common.Color;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -14,7 +12,7 @@ namespace Testbed.TestCases
     {
         private bool _go;
 
-        private float _time;
+        private FP _time;
 
         private Box2DSharp.Dynamics.Joints.MotorJoint _joint;
 
@@ -26,7 +24,7 @@ namespace Testbed.TestCases
                 ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-20.0f, 0.0f), new Vector2(20.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-20.0f, 0.0f), new FVector2(20.0f, 0.0f));
 
                 var fd = new FixtureDef();
                 fd.Shape = shape;
@@ -77,9 +75,9 @@ namespace Testbed.TestCases
                 _time += 1 / TestSettings.Hertz;
             }
 
-            _linearOffset = new Vector2
+            _linearOffset = new FVector2
             {
-                X = 6.0f * (float)Math.Sin(2.0f * _time), Y = 8.0f + 4.0f * (float)Math.Sin(1.0f * _time)
+                X = 6.0f * FP.Sin(2.0f * _time), Y = 8.0f + 4.0f * FP.Sin(1.0f * _time)
             };
 
             var angularOffset = 4.0f * _time;
@@ -88,12 +86,15 @@ namespace Testbed.TestCases
             _joint.SetAngularOffset(angularOffset);
         }
 
-        private Vector2 _linearOffset;
+        private FVector2 _linearOffset;
+
+        protected override void OnGUI()
+        {
+            DrawString("Keys: (s) pause");
+        }
 
         protected override void OnRender()
         {
-            DrawString("Keys: (s) pause");
-
             Drawer.DrawPoint(_linearOffset, 4.0f, Color.FromArgb(230, 230, 230));
         }
     }

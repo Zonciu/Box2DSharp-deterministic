@@ -1,7 +1,5 @@
-using System;
 using System.Buffers;
 using System.Diagnostics;
-using System.Numerics;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics.Contacts;
 using Box2DSharp.Dynamics.Joints;
@@ -109,7 +107,13 @@ namespace Box2DSharp.Dynamics
 
         private readonly Stopwatch _solveTimer = new Stopwatch();
 
-        internal void Solve(out Profile profile, in TimeStep step, in Vector2 gravity, bool allowSleep)
+        // 线速度最小值平方
+        private static readonly FP linTolSqr = Settings.LinearSleepTolerance * Settings.LinearSleepTolerance;
+
+        // 角速度最小值平方
+        private static readonly FP angTolSqr = Settings.AngularSleepTolerance * Settings.AngularSleepTolerance;
+
+        internal void Solve(out Profile profile, in TimeStep step, in FVector2 gravity, bool allowSleep)
         {
             profile = default;
 
@@ -203,7 +207,7 @@ namespace Box2DSharp.Dynamics
 
                 // Check for large velocities
                 var translation = h * v;
-                if (Vector2.Dot(translation, translation) > Settings.MaxTranslationSquared)
+                if (FVector2.Dot(translation, translation) > Settings.MaxTranslationSquared)
                 {
                     var ratio = Settings.MaxTranslation / translation.Length();
                     v *= ratio;
@@ -212,7 +216,7 @@ namespace Box2DSharp.Dynamics
                 var rotation = h * w;
                 if (rotation * rotation > Settings.MaxRotationSquared)
                 {
-                    var ratio = Settings.MaxRotation / Math.Abs(rotation);
+                    var ratio = Settings.MaxRotation / FP.Abs(rotation);
                     w *= ratio;
                 }
 
@@ -268,12 +272,6 @@ namespace Box2DSharp.Dynamics
             {
                 var minSleepTime = Settings.MaxFloat;
 
-                // 线速度最小值平方
-                const float linTolSqr = Settings.LinearSleepTolerance * Settings.LinearSleepTolerance;
-
-                // 角速度最小值平方
-                const float angTolSqr = Settings.AngularSleepTolerance * Settings.AngularSleepTolerance;
-
                 for (var i = 0; i < BodyCount; ++i)
                 {
                     var b = Bodies[i];
@@ -282,9 +280,9 @@ namespace Box2DSharp.Dynamics
                         continue;
                     }
 
-                    if (!b.Flags.HasFlag(BodyFlags.AutoSleep)                              // 不允许休眠
-                     || b.AngularVelocity * b.AngularVelocity > angTolSqr            // 或 角速度大于最小值
-                     || Vector2.Dot(b.LinearVelocity, b.LinearVelocity) > linTolSqr) // 或 线速度大于最小值
+                    if (!b.Flags.HasFlag(BodyFlags.AutoSleep)                         // 不允许休眠
+                     || b.AngularVelocity * b.AngularVelocity > angTolSqr             // 或 角速度大于最小值
+                     || FVector2.Dot(b.LinearVelocity, b.LinearVelocity) > linTolSqr) // 或 线速度大于最小值
                     {
                         b.SleepTime = 0.0f;
                         minSleepTime = 0.0f;
@@ -292,7 +290,7 @@ namespace Box2DSharp.Dynamics
                     else
                     {
                         b.SleepTime += h;
-                        minSleepTime = Math.Min(minSleepTime, b.SleepTime);
+                        minSleepTime = FP.Min(minSleepTime, b.SleepTime);
                     }
                 }
 
@@ -403,7 +401,7 @@ namespace Box2DSharp.Dynamics
 
                 // Check for large velocities
                 var translation = h * v;
-                if (Vector2.Dot(translation, translation) > Settings.MaxTranslationSquared)
+                if (FVector2.Dot(translation, translation) > Settings.MaxTranslationSquared)
                 {
                     var ratio = Settings.MaxTranslation / translation.Length();
                     v *= ratio;
@@ -412,7 +410,7 @@ namespace Box2DSharp.Dynamics
                 var rotation = h * w;
                 if (rotation * rotation > Settings.MaxRotationSquared)
                 {
-                    var ratio = Settings.MaxRotation / Math.Abs(rotation);
+                    var ratio = Settings.MaxRotation / FP.Abs(rotation);
                     w *= ratio;
                 }
 

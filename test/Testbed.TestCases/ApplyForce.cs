@@ -1,11 +1,9 @@
-using System;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Joints;
 using Testbed.Abstractions;
 using Transform = Box2DSharp.Common.Transform;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -19,11 +17,11 @@ namespace Testbed.TestCases
     {
         private Body _body;
 
+        static FP restitution = FP.FromRaw(1717986918L); // 0.4
+
         public ApplyForce()
         {
-            World.Gravity = new Vector2(0.0f, 0.0f);
-
-            const float restitution = 0.4f;
+            World.Gravity = new FVector2(0.0f, 0.0f);
 
             Body ground;
             {
@@ -39,19 +37,19 @@ namespace Testbed.TestCases
                 sd.Restitution = restitution;
 
                 // Left vertical
-                shape.SetTwoSided(new Vector2(-20.0f, -20.0f), new Vector2(-20.0f, 20.0f));
+                shape.SetTwoSided(new FVector2(-20.0f, -20.0f), new FVector2(-20.0f, 20.0f));
                 ground.CreateFixture(sd);
 
                 // Right vertical
-                shape.SetTwoSided(new Vector2(20.0f, -20.0f), new Vector2(20.0f, 20.0f));
+                shape.SetTwoSided(new FVector2(20.0f, -20.0f), new FVector2(20.0f, 20.0f));
                 ground.CreateFixture(sd);
 
                 // Top horizontal
-                shape.SetTwoSided(new Vector2(-20.0f, 20.0f), new Vector2(20.0f, 20.0f));
+                shape.SetTwoSided(new FVector2(-20.0f, 20.0f), new FVector2(20.0f, 20.0f));
                 ground.CreateFixture(sd);
 
                 // Bottom horizontal
-                shape.SetTwoSided(new Vector2(-20.0f, -20.0f), new Vector2(20.0f, -20.0f));
+                shape.SetTwoSided(new FVector2(-20.0f, -20.0f), new FVector2(20.0f, -20.0f));
                 ground.CreateFixture(sd);
             }
 
@@ -60,10 +58,10 @@ namespace Testbed.TestCases
                 xf1.Rotation.Set(0.3524f * Settings.Pi);
                 xf1.Position = xf1.Rotation.GetXAxis();
 
-                var vertices = new Vector2[3];
-                vertices[0] = MathUtils.Mul(xf1, new Vector2(-1.0f, 0.0f));
-                vertices[1] = MathUtils.Mul(xf1, new Vector2(1.0f, 0.0f));
-                vertices[2] = MathUtils.Mul(xf1, new Vector2(0.0f, 0.5f));
+                var vertices = new FVector2[3];
+                vertices[0] = MathUtils.Mul(xf1, new FVector2(-1.0f, 0.0f));
+                vertices[1] = MathUtils.Mul(xf1, new FVector2(1.0f, 0.0f));
+                vertices[2] = MathUtils.Mul(xf1, new FVector2(0.0f, 0.5f));
 
                 var poly1 = new PolygonShape();
                 poly1.Set(vertices);
@@ -76,9 +74,9 @@ namespace Testbed.TestCases
                 xf2.Rotation.Set(-0.3524f * Settings.Pi);
                 xf2.Position = -xf2.Rotation.GetXAxis();
 
-                vertices[0] = MathUtils.Mul(xf2, new Vector2(-1.0f, 0.0f));
-                vertices[1] = MathUtils.Mul(xf2, new Vector2(1.0f, 0.0f));
-                vertices[2] = MathUtils.Mul(xf2, new Vector2(0.0f, 0.5f));
+                vertices[0] = MathUtils.Mul(xf2, new FVector2(-1.0f, 0.0f));
+                vertices[1] = MathUtils.Mul(xf2, new FVector2(1.0f, 0.0f));
+                vertices[2] = MathUtils.Mul(xf2, new FVector2(0.0f, 0.5f));
 
                 var poly2 = new PolygonShape();
                 poly2.Set(vertices);
@@ -89,7 +87,7 @@ namespace Testbed.TestCases
 
                 var bd = new BodyDef();
                 bd.BodyType = BodyType.DynamicBody;
-                bd.Position = new Vector2(0.0f, 3.0f);
+                bd.Position = new FVector2(0.0f, 3.0f);
                 bd.Angle = Settings.Pi;
                 bd.AllowSleep = false;
                 _body = World.CreateBody(bd);
@@ -103,7 +101,7 @@ namespace Testbed.TestCases
                 // Compute an effective radius that can be used to
                 // set the max torque for a friction joint
                 // For a circle: I = 0.5 * m * r * r ==> r = sqrt(2 * I / m)
-                var radius = (float)Math.Sqrt(2.0f * I / mass);
+                var radius = FP.Sqrt(2.0f * I / mass);
 
                 FrictionJointDef jd = new FrictionJointDef();
                 jd.BodyA = ground;
@@ -141,7 +139,7 @@ namespace Testbed.TestCases
                     var mass = body.Mass;
 
                     // For a circle: I = 0.5 * m * r * r ==> r = sqrt(2 * I / m)
-                    var radius = (float)Math.Sqrt(2.0f * I / mass);
+                    var radius = FP.Sqrt(2.0f * I / mass);
 
                     var jd = new FrictionJointDef();
                     jd.LocalAnchorA.SetZero();
@@ -162,8 +160,8 @@ namespace Testbed.TestCases
         {
             if (Input.IsKeyDown(KeyCodes.W))
             {
-                var f = _body.GetWorldVector(new Vector2(0.0f, -50.0f));
-                var p = _body.GetWorldPoint(new Vector2(0.0f, 3.0f));
+                var f = _body.GetWorldVector(new FVector2(0.0f, -50.0f));
+                var p = _body.GetWorldPoint(new FVector2(0.0f, 3.0f));
                 _body.ApplyForce(f, p, true);
             }
 
@@ -178,7 +176,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             DrawString("Forward (W), Turn (A) and (D)");
         }

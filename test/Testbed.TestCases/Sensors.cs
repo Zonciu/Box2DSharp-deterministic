@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
@@ -14,7 +13,7 @@ namespace Testbed.TestCases
 
         private readonly Body[] _bodies = new Body[Count];
 
-        protected float _force;
+        protected FP _force;
 
         private bool[] _touching = new bool[Count];
 
@@ -28,7 +27,7 @@ namespace Testbed.TestCases
 
                 {
                     var shape = new EdgeShape();
-                    shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                    shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
                     ground.CreateFixture(shape, 0.0f);
                 }
 
@@ -88,7 +87,7 @@ namespace Testbed.TestCases
                     continue;
                 }
 
-                d = Vector2.Normalize(d);
+                d = FVector2.Normalize(d);
                 var F = _force * d;
                 body.ApplyForce(F, position, false);
             }

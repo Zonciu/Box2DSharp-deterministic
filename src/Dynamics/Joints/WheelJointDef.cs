@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Dynamics.Joints
@@ -12,37 +11,37 @@ namespace Box2DSharp.Dynamics.Joints
     public class WheelJointDef : JointDef
     {
         /// The local anchor point relative to bodyA's origin.
-        public Vector2 LocalAnchorA;
+        public FVector2 LocalAnchorA;
 
         /// The local anchor point relative to bodyB's origin.
-        public Vector2 LocalAnchorB;
+        public FVector2 LocalAnchorB;
 
         /// The local translation axis in bodyA.
-        public Vector2 LocalAxisA;
+        public FVector2 LocalAxisA;
 
         /// Enable/disable the joint limit.
         public bool EnableLimit;
 
         /// The lower translation limit, usually in meters.
-        public float LowerTranslation;
+        public FP LowerTranslation;
 
         /// The upper translation limit, usually in meters.
-        public float UpperTranslation;
+        public FP UpperTranslation;
 
         /// Enable/disable the joint motor.
         public bool EnableMotor;
 
         /// The maximum motor torque, usually in N-m.
-        public float MaxMotorTorque;
+        public FP MaxMotorTorque;
 
         /// The desired motor speed in radians per second.
-        public float MotorSpeed;
+        public FP MotorSpeed;
 
         /// Suspension stiffness. Typically in units N/m.
-        public float Stiffness;
+        public FP Stiffness;
 
         /// Suspension damping. Typically in units of N*s/m.
-        public float Damping;
+        public FP Damping;
 
         public WheelJointDef()
         {
@@ -62,7 +61,7 @@ namespace Box2DSharp.Dynamics.Joints
 
         /// Initialize the bodies, anchors, axis, and reference angle using the world
         /// anchor and world axis.
-        public void Initialize(Body bA, Body bB, in Vector2 anchor, in Vector2 axis)
+        public void Initialize(Body bA, Body bB, in FVector2 anchor, in FVector2 axis)
         {
             BodyA = bA;
             BodyB = bB;

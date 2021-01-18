@@ -4,7 +4,6 @@ using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Joints;
 using Testbed.Abstractions;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -17,9 +16,9 @@ namespace Testbed.TestCases
 
         private bool _motorOn;
 
-        private float _motorSpeed;
+        private FP _motorSpeed;
 
-        private Vector2 _offset;
+        private FVector2 _offset;
 
         private Body _wheel;
 
@@ -28,7 +27,7 @@ namespace Testbed.TestCases
             _offset.Set(0.0f, 8.0f);
             _motorSpeed = 2.0f;
             _motorOn = true;
-            var pivot = new Vector2(0.0f, 0.8f);
+            var pivot = new FVector2(0.0f, 0.8f);
 
             // Ground
             {
@@ -36,13 +35,13 @@ namespace Testbed.TestCases
                 var ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-50.0f, 0.0f), new Vector2(50.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-50.0f, 0.0f), new FVector2(50.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
 
-                shape.SetTwoSided(new Vector2(-50.0f, 0.0f), new Vector2(-50.0f, 10.0f));
+                shape.SetTwoSided(new FVector2(-50.0f, 0.0f), new FVector2(-50.0f, 10.0f));
                 ground.CreateFixture(shape, 0.0f);
 
-                shape.SetTwoSided(new Vector2(50.0f, 0.0f), new Vector2(50.0f, 10.0f));
+                shape.SetTwoSided(new FVector2(50.0f, 0.0f), new FVector2(50.0f, 10.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 
@@ -100,30 +99,30 @@ namespace Testbed.TestCases
                 _motorJoint = (RevoluteJoint)World.CreateJoint(jd);
             }
 
-            Vector2 wheelAnchor;
+            FVector2 wheelAnchor;
 
-            wheelAnchor = pivot + new Vector2(0.0f, -0.8f);
+            wheelAnchor = pivot + new FVector2(0.0f, -0.8f);
 
             CreateLeg(-1.0f, wheelAnchor);
             CreateLeg(1.0f, wheelAnchor);
 
-            _wheel.SetTransform(_wheel.GetPosition(), 120.0f * (float)Math.PI / 180.0f);
+            _wheel.SetTransform(_wheel.GetPosition(), 120 * FP.Pi / 180);
             CreateLeg(-1.0f, wheelAnchor);
             CreateLeg(1.0f, wheelAnchor);
 
-            _wheel.SetTransform(_wheel.GetPosition(), -120.0f * (float)Math.PI / 180.0f);
+            _wheel.SetTransform(_wheel.GetPosition(), -120 * FP.Pi / 180);
             CreateLeg(-1.0f, wheelAnchor);
             CreateLeg(1.0f, wheelAnchor);
         }
 
-        private void CreateLeg(float s, Vector2 wheelAnchor)
+        private void CreateLeg(FP s, FVector2 wheelAnchor)
         {
-            var p1 = new Vector2(5.4f * s, -6.1f);
-            var p2 = new Vector2(7.2f * s, -1.2f);
-            var p3 = new Vector2(4.3f * s, -1.9f);
-            var p4 = new Vector2(3.1f * s, 0.8f);
-            var p5 = new Vector2(6.0f * s, 1.5f);
-            var p6 = new Vector2(2.5f * s, 3.7f);
+            var p1 = new FVector2(5.4f * s, -6.1f);
+            var p2 = new FVector2(7.2f * s, -1.2f);
+            var p3 = new FVector2(4.3f * s, -1.9f);
+            var p4 = new FVector2(3.1f * s, 0.8f);
+            var p5 = new FVector2(6.0f * s, 1.5f);
+            var p6 = new FVector2(2.5f * s, 3.7f);
 
             var fd1 = new FixtureDef {Filter = {GroupIndex = -1}, Density = 1.0f};
             var fd2 = new FixtureDef {Filter = {GroupIndex = -1}, Density = 1.0f};
@@ -133,28 +132,28 @@ namespace Testbed.TestCases
 
             if (s > 0.0f)
             {
-                var vertices = new Vector2[3];
+                var vertices = new FVector2[3];
 
                 vertices[0] = p1;
                 vertices[1] = p2;
                 vertices[2] = p3;
                 poly1.Set(vertices);
 
-                vertices[0] = Vector2.Zero;
+                vertices[0] = FVector2.Zero;
                 vertices[1] = p5 - p4;
                 vertices[2] = p6 - p4;
                 poly2.Set(vertices);
             }
             else
             {
-                var vertices = new Vector2[3];
+                var vertices = new FVector2[3];
 
                 vertices[0] = p1;
                 vertices[1] = p3;
                 vertices[2] = p2;
                 poly1.Set(vertices);
 
-                vertices[0] = Vector2.Zero;
+                vertices[0] = FVector2.Zero;
                 vertices[1] = p6 - p4;
                 vertices[2] = p5 - p4;
                 poly2.Set(vertices);
@@ -237,7 +236,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             DrawString("Keys: left = a, brake = s, right = d, toggle motor = m");
         }

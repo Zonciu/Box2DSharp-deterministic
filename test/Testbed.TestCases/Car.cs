@@ -3,7 +3,6 @@ using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Joints;
 using Testbed.Abstractions;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -16,7 +15,7 @@ namespace Testbed.TestCases
 
         private Body _wheel2;
 
-        private float _speed;
+        private FP _speed;
 
         private WheelJoint _spring1;
 
@@ -38,17 +37,17 @@ namespace Testbed.TestCases
                 fd.Density = 0.0f;
                 fd.Friction = 0.6f;
 
-                shape.SetTwoSided(new Vector2(-20.0f, 0.0f), new Vector2(20.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-20.0f, 0.0f), new FVector2(20.0f, 0.0f));
                 ground.CreateFixture(fd);
 
-                float[] hs = {0.25f, 1.0f, 4.0f, 0.0f, 0.0f, -1.0f, -2.0f, -2.0f, -1.25f, 0.0f};
+                FP[] hs = {0.25f, 1.0f, 4.0f, 0.0f, 0.0f, -1.0f, -2.0f, -2.0f, -1.25f, 0.0f};
 
-                float x = 20.0f, y1 = 0.0f, dx = 5.0f;
+                FP x = 20.0f, y1 = 0.0f, dx = 5.0f;
 
                 for (var i = 0; i < 10; ++i)
                 {
                     var y2 = hs[i];
-                    shape.SetTwoSided(new Vector2(x, y1), new Vector2(x + dx, y2));
+                    shape.SetTwoSided(new FVector2(x, y1), new FVector2(x + dx, y2));
                     ground.CreateFixture(fd);
                     y1 = y2;
                     x += dx;
@@ -57,29 +56,29 @@ namespace Testbed.TestCases
                 for (var i = 0; i < 10; ++i)
                 {
                     var y2 = hs[i];
-                    shape.SetTwoSided(new Vector2(x, y1), new Vector2(x + dx, y2));
+                    shape.SetTwoSided(new FVector2(x, y1), new FVector2(x + dx, y2));
                     ground.CreateFixture(fd);
                     y1 = y2;
                     x += dx;
                 }
 
-                shape.SetTwoSided(new Vector2(x, 0.0f), new Vector2(x + 40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(x, 0.0f), new FVector2(x + 40.0f, 0.0f));
                 ground.CreateFixture(fd);
 
                 x += 80.0f;
-                shape.SetTwoSided(new Vector2(x, 0.0f), new Vector2(x + 40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(x, 0.0f), new FVector2(x + 40.0f, 0.0f));
                 ground.CreateFixture(fd);
 
                 x += 40.0f;
-                shape.SetTwoSided(new Vector2(x, 0.0f), new Vector2(x + 10.0f, 5.0f));
+                shape.SetTwoSided(new FVector2(x, 0.0f), new FVector2(x + 10.0f, 5.0f));
                 ground.CreateFixture(fd);
 
                 x += 20.0f;
-                shape.SetTwoSided(new Vector2(x, 0.0f), new Vector2(x + 40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(x, 0.0f), new FVector2(x + 40.0f, 0.0f));
                 ground.CreateFixture(fd);
 
                 x += 40.0f;
-                shape.SetTwoSided(new Vector2(x, 0.0f), new Vector2(x, 20.0f));
+                shape.SetTwoSided(new FVector2(x, 0.0f), new FVector2(x, 20.0f));
                 ground.CreateFixture(fd);
             }
 
@@ -126,7 +125,7 @@ namespace Testbed.TestCases
                     var body = World.CreateBody(bd);
                     body.CreateFixture(fd);
 
-                    var anchor = new Vector2(160.0f + 2.0f * i, -0.125f);
+                    var anchor = new FVector2(160.0f + 2.0f * i, -0.125f);
                     jd.Initialize(prevBody, body, anchor);
                     World.CreateJoint(jd);
 
@@ -134,7 +133,7 @@ namespace Testbed.TestCases
                 }
 
                 {
-                    var anchor = new Vector2(160.0f + 2.0f * N, -0.125f);
+                    var anchor = new FVector2(160.0f + 2.0f * N, -0.125f);
                     jd.Initialize(prevBody, ground, anchor);
                     World.CreateJoint(jd);
                 }
@@ -173,7 +172,7 @@ namespace Testbed.TestCases
             // Car
             {
                 var chassis = new PolygonShape();
-                var vertices = new Vector2[8];
+                var vertices = new FVector2[8];
                 vertices[0].Set(-1.5f, -0.5f);
                 vertices[1].Set(1.5f, -0.5f);
                 vertices[2].Set(1.5f, 0.0f);
@@ -205,7 +204,7 @@ namespace Testbed.TestCases
                 _wheel2.CreateFixture(fd);
 
                 var jd = new WheelJointDef();
-                var axis = new Vector2(0.0f, 1.0f);
+                var axis = new FVector2(0.0f, 1.0f);
                 var mass1 = _wheel1.Mass;
                 var mass2 = _wheel2.Mass;
 
@@ -239,7 +238,7 @@ namespace Testbed.TestCases
         protected override void PreStep()
         {
             var p = Global.Camera.Center;
-            p.X = _car.GetPosition().X;
+            p.X = (float)_car.GetPosition().X;
             Global.Camera.Center = p;
         }
 
@@ -260,7 +259,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             DrawString("Keys: left = a, brake = s, right = d");
         }

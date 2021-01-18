@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Dynamics;
 using Testbed.Abstractions;
-using Vector2 = System.Numerics.Vector2;
+using Box2DSharp.Common;
 
 namespace Testbed.TestCases
 {
@@ -38,7 +38,7 @@ namespace Testbed.TestCases
 
                 var N = 200;
                 var M = 10;
-                var position = new Vector2();
+                var position = new FVector2();
                 position.Y = 0.0f;
                 for (var j = 0; j < M; ++j)
                 {
@@ -61,10 +61,10 @@ namespace Testbed.TestCases
                 var shape = new PolygonShape();
                 shape.SetAsBox(a, a);
 
-                var x = new Vector2(-7.0f, 0.75f);
-                var y = new Vector2();
-                var deltaX = new Vector2(0.5625f, 1.25f);
-                var deltaY = new Vector2(1.125f, 0.0f);
+                var x = new FVector2(-7.0f, 0.75f);
+                var y = new FVector2();
+                var deltaX = new FVector2(0.5625f, 1.25f);
+                var deltaY = new FVector2(1.125f, 0.0f);
 
                 for (int i = 0; i < Count; ++i)
                 {
@@ -113,7 +113,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             var cm = World.ContactManager;
             var height = cm.BroadPhase.GetTreeHeight();

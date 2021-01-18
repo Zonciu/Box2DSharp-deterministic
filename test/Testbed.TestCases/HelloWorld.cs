@@ -2,7 +2,6 @@ using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Testbed.Abstractions;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -29,7 +28,7 @@ namespace Testbed.TestCases
             bodyDef.Position.Set(0, 4f);
 
             var dynamicBox = new PolygonShape();
-            dynamicBox.SetAsBox(1f, 1f, Vector2.Zero, 45f);
+            dynamicBox.SetAsBox(1f, 1f, FVector2.Zero, 45f);
 
             // Define the dynamic body fixture.
             var fixtureDef = new FixtureDef
@@ -51,7 +50,7 @@ namespace Testbed.TestCases
 
             for (int i = 0; i < 100; i++)
             {
-                bodyDef.Position = new Vector2(Random.Next(-50, 50), Random.Next(0, 500));
+                bodyDef.Position = new FVector2(Random.Next(-50, 50), Random.Next(0, 500));
                 bodyDef.Angle = Random.Next(0, 360);
                 World.CreateBody(bodyDef).CreateFixture(fixtureDef);
             }

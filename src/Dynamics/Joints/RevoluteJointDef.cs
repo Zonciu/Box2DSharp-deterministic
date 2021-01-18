@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Dynamics.Joints
@@ -22,26 +21,26 @@ namespace Box2DSharp.Dynamics.Joints
         public bool EnableMotor;
 
         /// The local anchor point relative to bodyA's origin.
-        public Vector2 LocalAnchorA;
+        public FVector2 LocalAnchorA;
 
         /// The local anchor point relative to bodyB's origin.
-        public Vector2 LocalAnchorB;
+        public FVector2 LocalAnchorB;
 
         /// The lower angle for the joint limit (radians).
-        public float LowerAngle;
+        public FP LowerAngle;
 
         /// The maximum motor torque used to achieve the desired motor speed.
         /// Usually in N-m.
-        public float MaxMotorTorque;
+        public FP MaxMotorTorque;
 
         /// The desired motor speed. Usually in radians per second.
-        public float MotorSpeed;
+        public FP MotorSpeed;
 
         /// The bodyB angle minus bodyA angle in the reference state (radians).
-        public float ReferenceAngle;
+        public FP ReferenceAngle;
 
         /// The upper angle for the joint limit (radians).
-        public float UpperAngle;
+        public FP UpperAngle;
 
         public RevoluteJointDef()
         {
@@ -59,7 +58,7 @@ namespace Box2DSharp.Dynamics.Joints
 
         /// Initialize the bodies, anchors, and reference angle using a world
         /// anchor point.
-        public void Initialize(Body bA, Body bB, Vector2 anchor)
+        public void Initialize(Body bA, Body bB, FVector2 anchor)
         {
             BodyA = bA;
             BodyB = bB;

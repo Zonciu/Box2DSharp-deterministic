@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
@@ -14,7 +13,7 @@ namespace Testbed.TestCases
 
         private Body _bullet;
 
-        private float _x;
+        private FP _x;
 
         private GJkProfile _gJkProfile = new GJkProfile();
 
@@ -29,11 +28,11 @@ namespace Testbed.TestCases
 
                 var edge = new EdgeShape();
 
-                edge.SetTwoSided(new Vector2(-10.0f, 0.0f), new Vector2(10.0f, 0.0f));
+                edge.SetTwoSided(new FVector2(-10.0f, 0.0f), new FVector2(10.0f, 0.0f));
                 body.CreateFixture(edge, 0.0f);
 
                 var shape = new PolygonShape();
-                shape.SetAsBox(0.2f, 1.0f, new Vector2(0.5f, 1.0f), 0.0f);
+                shape.SetAsBox(0.2f, 1.0f, new FVector2(0.5f, 1.0f), 0.0f);
                 body.CreateFixture(shape, 0.0f);
             }
 
@@ -52,25 +51,25 @@ namespace Testbed.TestCases
 
                 //m_x = RandomFloat(-1.0f, 1.0f);
                 _x = 0.20352793f;
-                bd.Position = new Vector2(_x, 10.0f);
+                bd.Position = new FVector2(_x, 10.0f);
                 bd.Bullet = true;
 
                 _bullet = World.CreateBody(bd);
                 _bullet.CreateFixture(box, 100.0f);
 
-                _bullet.SetLinearVelocity(new Vector2(0.0f, -50.0f));
+                _bullet.SetLinearVelocity(new FVector2(0.0f, -50.0f));
             }
         }
 
         private void Launch()
         {
-            _body.SetTransform(new Vector2(0.0f, 4.0f), 0.0f);
-            _body.SetLinearVelocity(Vector2.Zero);
+            _body.SetTransform(new FVector2(0.0f, 4.0f), 0.0f);
+            _body.SetLinearVelocity(FVector2.Zero);
             _body.SetAngularVelocity(0.0f);
 
             _x = RandomFloat(-1.0f, 1.0f);
-            _bullet.SetTransform(new Vector2(_x, 10.0f), 0.0f);
-            _bullet.SetLinearVelocity(new Vector2(0.0f, -50.0f));
+            _bullet.SetTransform(new FVector2(_x, 10.0f), 0.0f);
+            _bullet.SetLinearVelocity(new FVector2(0.0f, -50.0f));
             _bullet.SetAngularVelocity(0.0f);
         }
 
@@ -82,7 +81,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             if (_gJkProfile.GjkCalls > 0)
             {

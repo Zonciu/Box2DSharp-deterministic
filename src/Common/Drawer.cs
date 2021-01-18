@@ -1,5 +1,4 @@
 using System;
-using System.Numerics;
 
 namespace Box2DSharp.Common
 {
@@ -8,25 +7,25 @@ namespace Box2DSharp.Common
         DrawFlag Flags { get; set; }
 
         /// Draw a closed polygon provided in CCW order.
-        void DrawPolygon(Span<Vector2> vertices, int vertexCount, in Color color);
+        void DrawPolygon(Span<FVector2> vertices, int vertexCount, in Color color);
 
         /// Draw a solid closed polygon provided in CCW order.
-        void DrawSolidPolygon(Span<Vector2> vertices, int vertexCount, in Color color);
+        void DrawSolidPolygon(Span<FVector2> vertices, int vertexCount, in Color color);
 
         /// Draw a circle.
-        void DrawCircle(in Vector2 center, float radius, in Color color);
+        void DrawCircle(in FVector2 center, FP radius, in Color color);
 
         /// Draw a solid circle.
-        void DrawSolidCircle(in Vector2 center, float radius, in Vector2 axis, in Color color);
+        void DrawSolidCircle(in FVector2 center, FP radius, in FVector2 axis, in Color color);
 
         /// Draw a line segment.
-        void DrawSegment(in Vector2 p1, in Vector2 p2, in Color color);
+        void DrawSegment(in FVector2 p1, in FVector2 p2, in Color color);
 
         /// Draw a transform. Choose your own length scale.
         /// @param xf a transform.
         void DrawTransform(in Transform xf);
 
         /// Draw a point.
-        void DrawPoint(in Vector2 p, float size, in Color color);
+        void DrawPoint(in FVector2 p, FP size, in Color color);
     }
 }

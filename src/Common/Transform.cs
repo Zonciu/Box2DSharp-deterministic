@@ -1,22 +1,21 @@
 using System;
-using System.Numerics;
 
 namespace Box2DSharp.Common
 {
     public struct Transform : IFormattable
     {
-        public Vector2 Position;
+        public FVector2 Position;
 
         public Rotation Rotation;
 
         /// Initialize using a position vector and a rotation.
-        public Transform(in Vector2 position, in Rotation rotation)
+        public Transform(in FVector2 position, in Rotation rotation)
         {
             Position = position;
             Rotation = rotation;
         }
 
-        public Transform(in Vector2 position, float angle)
+        public Transform(in FVector2 position, FP angle)
         {
             Position = position;
             Rotation = new Rotation(angle);
@@ -25,12 +24,12 @@ namespace Box2DSharp.Common
         /// Set this to the identity transform.
         public void SetIdentity()
         {
-            Position = Vector2.Zero;
+            Position = FVector2.Zero;
             Rotation.SetIdentity();
         }
 
         /// Set this based on the position and angle.
-        public void Set(in Vector2 position, float angle)
+        public void Set(in FVector2 position, FP angle)
         {
             Position = position;
             Rotation.Set(angle);

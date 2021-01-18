@@ -1,7 +1,5 @@
 using System;
-using System.Buffers;
 using System.Diagnostics;
-using System.Numerics;
 using Box2DSharp.Collision.Collider;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
@@ -33,12 +31,13 @@ namespace Box2DSharp.Collision
             // 在边缘形状的外框处理圆形
             var Q = MathUtils.MulT(xfA, MathUtils.Mul(xfB, circleB.Position));
 
-            Vector2 A = edgeA.Vertex1, B = edgeA.Vertex2;
+            var A = edgeA.Vertex1;
+            var B = edgeA.Vertex2;
             var e = B - A;
 
             // Normal points to the right for a CCW winding
-            var n = new Vector2(e.Y, -e.X);
-            var offset = Vector2.Dot(n, Q - A);
+            var n = new FVector2(e.Y, -e.X);
+            var offset = FVector2.Dot(n, Q - A);
 
             var oneSided = edgeA.OneSided;
             if (oneSided && offset < 0.0f)
@@ -48,8 +47,8 @@ namespace Box2DSharp.Collision
 
             // Barycentric coordinates
             // 质心坐标
-            var u = Vector2.Dot(e, B - Q);
-            var v = Vector2.Dot(e, Q - A);
+            var u = FVector2.Dot(e, B - Q);
+            var v = FVector2.Dot(e, Q - A);
 
             var radius = edgeA.Radius + circleB.Radius;
 
@@ -60,7 +59,7 @@ namespace Box2DSharp.Collision
             {
                 var P = A;
                 var d = Q - P;
-                var dd = Vector2.Dot(d, d);
+                var dd = FVector2.Dot(d, d);
                 if (dd > radius * radius)
                 {
                     return;
@@ -72,7 +71,7 @@ namespace Box2DSharp.Collision
                     var A1 = edgeA.Vertex0;
                     var B1 = A;
                     var e1 = B1 - A1;
-                    var u1 = Vector2.Dot(e1, B1 - Q);
+                    var u1 = FVector2.Dot(e1, B1 - Q);
 
                     // Is the circle in Region AB of the previous edge?
                     if (u1 > 0.0f)
@@ -99,7 +98,7 @@ namespace Box2DSharp.Collision
             {
                 var P = B;
                 var d = Q - P;
-                var dd = Vector2.Dot(d, d);
+                var dd = FVector2.Dot(d, d);
                 if (dd > radius * radius)
                 {
                     return;
@@ -111,7 +110,7 @@ namespace Box2DSharp.Collision
                     var B2 = edgeA.Vertex3;
                     var A2 = B;
                     var e2 = B2 - A2;
-                    var v2 = Vector2.Dot(e2, Q - A2);
+                    var v2 = FVector2.Dot(e2, Q - A2);
 
                     // Is the circle in Region AB of the next edge?
                     if (v2 > 0.0f)
@@ -135,11 +134,11 @@ namespace Box2DSharp.Collision
 
             {
                 // Region AB
-                var den = Vector2.Dot(e, e);
+                var den = FVector2.Dot(e, e);
                 Debug.Assert(den > 0.0f);
                 var P = 1.0f / den * (u * A + v * B);
                 var d = Q - P;
-                var dd = Vector2.Dot(d, d);
+                var dd = FVector2.Dot(d, d);
                 if (dd > radius * radius)
                 {
                     return;
@@ -177,13 +176,13 @@ namespace Box2DSharp.Collision
                 EdgeB
             }
 
-            public Vector2 Normal;
+            public FVector2 Normal;
 
             public EPAxisType Type;
 
             public int Index;
 
-            public float Separation;
+            public FP Separation;
         }
 
         // This holds polygon B expressed in frame A.
@@ -192,12 +191,12 @@ namespace Box2DSharp.Collision
             /// <summary>
             /// Size Settings.MaxPolygonVertices
             /// </summary>
-            public FixedArray8<Vector2> Vertices;
+            public FixedArray8<FVector2> Vertices;
 
             /// <summary>
             /// Size Settings.MaxPolygonVertices
             /// </summary>
-            public FixedArray8<Vector2> Normals;
+            public FixedArray8<FVector2> Normals;
 
             public int Count;
         }
@@ -207,26 +206,26 @@ namespace Box2DSharp.Collision
         {
             public int I1, I2;
 
-            public Vector2 Normal;
+            public FVector2 Normal;
 
-            public Vector2 SideNormal1;
+            public FVector2 SideNormal1;
 
-            public Vector2 SideNormal2;
+            public FVector2 SideNormal2;
 
-            public float SideOffset1;
+            public FP SideOffset1;
 
-            public float SideOffset2;
+            public FP SideOffset2;
 
-            public Vector2 V1, V2;
+            public FVector2 V1, V2;
         }
 
-        static EPAxis ComputeEdgeSeparation(in TempPolygon polygonB, in Vector2 v1, Vector2 normal1)
+        static EPAxis ComputeEdgeSeparation(in TempPolygon polygonB, in FVector2 v1, FVector2 normal1)
         {
             EPAxis axis = new EPAxis
             {
                 Type = EPAxis.EPAxisType.EdgeA,
                 Index = -1,
-                Separation = -Settings.MaxFloat,
+                Separation = Settings.MinFloat,
                 Normal = default
             };
 
@@ -235,12 +234,12 @@ namespace Box2DSharp.Collision
             // Find axis with least overlap (min-max problem)
             for (int j = 0; j < 2; ++j)
             {
-                float sj = Settings.MaxFloat;
+                var sj = Settings.MaxFloat;
 
                 // Find deepest polygon vertex along axis j
                 for (int i = 0; i < polygonB.Count; ++i)
                 {
-                    float si = Vector2.Dot(axes[j], polygonB.Vertices[i] - v1);
+                    var si = FVector2.Dot(axes[j], polygonB.Vertices[i] - v1);
                     if (si < sj)
                     {
                         sj = si;
@@ -258,13 +257,13 @@ namespace Box2DSharp.Collision
             return axis;
         }
 
-        static EPAxis ComputePolygonSeparation(in TempPolygon polygonB, in Vector2 v1, in Vector2 v2)
+        static EPAxis ComputePolygonSeparation(in TempPolygon polygonB, in FVector2 v1, in FVector2 v2)
         {
             var axis = new EPAxis
             {
                 Type = EPAxis.EPAxisType.Unknown,
                 Index = -1,
-                Separation = -Settings.MaxFloat,
+                Separation = Settings.MinFloat,
                 Normal = default
             };
 
@@ -272,9 +271,9 @@ namespace Box2DSharp.Collision
             {
                 var n = -polygonB.Normals[i];
 
-                var s1 = Vector2.Dot(n, polygonB.Vertices[i] - v1);
-                var s2 = Vector2.Dot(n, polygonB.Vertices[i] - v2);
-                var s = Math.Min(s1, s2);
+                var s1 = FVector2.Dot(n, polygonB.Vertices[i] - v1);
+                var s2 = FVector2.Dot(n, polygonB.Vertices[i] - v2);
+                var s = FP.Min(s1, s2);
 
                 if (s > axis.Separation)
                 {
@@ -288,6 +287,12 @@ namespace Box2DSharp.Collision
             return axis;
         }
 
+        private static FP k_relativeTol = FP.FromRaw(4209067950L); // 0.98
+
+        private static FP k_absoluteTol = FP.FromRaw(4294967L); //0.001
+
+        private static FP sinTol = FP.FromRaw(429496729L); //0.1
+
         public static void CollideEdgeAndPolygon(
             ref Manifold manifold,
             EdgeShape edgeA,
@@ -299,17 +304,17 @@ namespace Box2DSharp.Collision
 
             Transform xf = MathUtils.MulT(xfA, xfB);
 
-            Vector2 centroidB = MathUtils.Mul(xf, polygonB.Centroid);
+            var centroidB = MathUtils.Mul(xf, polygonB.Centroid);
 
-            Vector2 v1 = edgeA.Vertex1;
-            Vector2 v2 = edgeA.Vertex2;
+            var v1 = edgeA.Vertex1;
+            var v2 = edgeA.Vertex2;
 
-            Vector2 edge1 = v2 - v1;
+            var edge1 = v2 - v1;
             edge1.Normalize();
 
             // Normal points to the right for a CCW winding
-            Vector2 normal1 = new Vector2(edge1.Y, -edge1.X);
-            float offset1 = Vector2.Dot(normal1, centroidB - v1);
+            var normal1 = new FVector2(edge1.Y, -edge1.X);
+            var offset1 = FVector2.Dot(normal1, centroidB - v1);
 
             bool oneSided = edgeA.OneSided;
             if (oneSided && offset1 < 0.0f)
@@ -326,23 +331,21 @@ namespace Box2DSharp.Collision
                 tempPolygonB.Normals[i] = MathUtils.Mul(xf.Rotation, polygonB.Normals[i]);
             }
 
-            float radius = polygonB.Radius + edgeA.Radius;
+            var radius = polygonB.Radius + edgeA.Radius;
 
-            EPAxis edgeAxis = ComputeEdgeSeparation(tempPolygonB, v1, normal1);
+            var edgeAxis = ComputeEdgeSeparation(tempPolygonB, v1, normal1);
             if (edgeAxis.Separation > radius)
             {
                 return;
             }
 
-            EPAxis polygonAxis = ComputePolygonSeparation(tempPolygonB, v1, v2);
+            var polygonAxis = ComputePolygonSeparation(tempPolygonB, v1, v2);
             if (polygonAxis.Separation > radius)
             {
                 return;
             }
 
             // Use hysteresis for jitter reduction.
-            const float k_relativeTol = 0.98f;
-            const float k_absoluteTol = 0.001f;
 
             var primaryAxis = new EPAxis();
             if (primaryAxis.Separation - radius > k_relativeTol * (edgeAxis.Separation - radius) + k_absoluteTol)
@@ -359,18 +362,17 @@ namespace Box2DSharp.Collision
                 // Smooth collision
                 // See https://box2d.org/posts/2020/06/ghost-collisions/
 
-                Vector2 edge0 = v1 - edgeA.Vertex0;
+                var edge0 = v1 - edgeA.Vertex0;
                 edge0.Normalize();
-                Vector2 normal0 = new Vector2(edge0.Y, -edge0.X);
-                bool convex1 = MathUtils.Cross(edge0, edge1) >= 0.0f;
+                var normal0 = new FVector2(edge0.Y, -edge0.X);
+                var convex1 = MathUtils.Cross(edge0, edge1) >= 0.0f;
 
-                Vector2 edge2 = edgeA.Vertex3 - v2;
+                var edge2 = edgeA.Vertex3 - v2;
                 edge2.Normalize();
-                Vector2 normal2 = new Vector2(edge2.Y, -edge2.X);
-                bool convex2 = MathUtils.Cross(edge1, edge2) >= 0.0f;
+                var normal2 = new FVector2(edge2.Y, -edge2.X);
+                var convex2 = MathUtils.Cross(edge1, edge2) >= 0.0f;
 
-                const float sinTol = 0.1f;
-                bool side1 = Vector2.Dot(primaryAxis.Normal, edge1) <= 0.0f;
+                var side1 = FVector2.Dot(primaryAxis.Normal, edge1) <= 0.0f;
 
                 // Check Gauss Map
                 if (side1)
@@ -411,18 +413,18 @@ namespace Box2DSharp.Collision
                 }
             }
 
-            ClipVertex[] clipPoints = new ClipVertex[2];
-            ReferenceFace refFace = new ReferenceFace();
+            var clipPoints = new ClipVertex[2];
+            var refFace = new ReferenceFace();
             if (primaryAxis.Type == EPAxis.EPAxisType.EdgeA)
             {
                 manifold.Type = ManifoldType.FaceA;
 
                 // Search for the polygon normal that is most anti-parallel to the edge normal.
                 int bestIndex = 0;
-                float bestValue = Vector2.Dot(primaryAxis.Normal, tempPolygonB.Normals[0]);
+                var bestValue = FVector2.Dot(primaryAxis.Normal, tempPolygonB.Normals[0]);
                 for (int i = 1; i < tempPolygonB.Count; ++i)
                 {
-                    float value = Vector2.Dot(primaryAxis.Normal, tempPolygonB.Normals[i]);
+                    var value = FVector2.Dot(primaryAxis.Normal, tempPolygonB.Normals[i]);
                     if (value < bestValue)
                     {
                         bestValue = value;
@@ -480,8 +482,8 @@ namespace Box2DSharp.Collision
                 refFace.SideNormal2 = -refFace.SideNormal1;
             }
 
-            refFace.SideOffset1 = Vector2.Dot(refFace.SideNormal1, refFace.V1);
-            refFace.SideOffset2 = Vector2.Dot(refFace.SideNormal2, refFace.V2);
+            refFace.SideOffset1 = FVector2.Dot(refFace.SideNormal1, refFace.V1);
+            refFace.SideOffset2 = FVector2.Dot(refFace.SideNormal2, refFace.V2);
 
             // Clip incident edge against reference face side planes
             Span<ClipVertex> clipPoints1 = stackalloc ClipVertex[2];
@@ -519,7 +521,7 @@ namespace Box2DSharp.Collision
             var pointCount = 0;
             for (var i = 0; i < Settings.MaxManifoldPoints; ++i)
             {
-                var separation = Vector2.Dot(refFace.Normal, clipPoints2[i].Vector - refFace.V1);
+                var separation = FVector2.Dot(refFace.Normal, clipPoints2[i].Vector - refFace.V1);
 
                 if (separation <= radius)
                 {

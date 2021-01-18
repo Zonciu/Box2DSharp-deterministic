@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2DSharp.Collision.Collider;
 using Box2DSharp.Collision.Shapes;
@@ -63,16 +62,16 @@ namespace Box2DSharp.Collision
         public static int ClipSegmentToLine(
             in Span<ClipVertex> vOut,
             in Span<ClipVertex> vIn,
-            in Vector2 normal,
-            float offset,
+            in FVector2 normal,
+            FP offset,
             int vertexIndexA)
         {
             // Start with no output points
             var count = 0;
 
             // Calculate the distance of end points to the line
-            var distance0 = Vector2.Dot(normal, vIn[0].Vector) - offset;
-            var distance1 = Vector2.Dot(normal, vIn[1].Vector) - offset;
+            var distance0 = FVector2.Dot(normal, vIn[0].Vector) - offset;
+            var distance1 = FVector2.Dot(normal, vIn[1].Vector) - offset;
 
             // If the points are behind the plane
             if (distance0 <= 0.0f)

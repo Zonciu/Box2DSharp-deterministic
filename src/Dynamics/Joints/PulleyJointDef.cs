@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Dynamics.Joints
@@ -9,25 +8,25 @@ namespace Box2DSharp.Dynamics.Joints
     public class PulleyJointDef : JointDef
     {
         /// The first ground anchor in world coordinates. This point never moves.
-        public Vector2 GroundAnchorA;
+        public FVector2 GroundAnchorA;
 
         /// The second ground anchor in world coordinates. This point never moves.
-        public Vector2 GroundAnchorB;
+        public FVector2 GroundAnchorB;
 
         /// The a reference length for the segment attached to bodyA.
-        public float LengthA;
+        public FP LengthA;
 
         /// The a reference length for the segment attached to bodyB.
-        public float LengthB;
+        public FP LengthB;
 
         /// The local anchor point relative to bodyA's origin.
-        public Vector2 LocalAnchorA;
+        public FVector2 LocalAnchorA;
 
         /// The local anchor point relative to bodyB's origin.
-        public Vector2 LocalAnchorB;
+        public FVector2 LocalAnchorB;
 
         /// The pulley ratio, used to simulate a block-and-tackle.
-        public float Ratio;
+        public FP Ratio;
 
         public PulleyJointDef()
         {
@@ -54,11 +53,11 @@ namespace Box2DSharp.Dynamics.Joints
         public void Initialize(
             Body bA,
             Body bB,
-            in Vector2 groundA,
-            in Vector2 groundB,
-            in Vector2 anchorA,
-            in Vector2 anchorB,
-            float r)
+            in FVector2 groundA,
+            in FVector2 groundB,
+            in FVector2 anchorA,
+            in FVector2 anchorB,
+            FP r)
         {
             BodyA = bA;
             BodyB = bB;

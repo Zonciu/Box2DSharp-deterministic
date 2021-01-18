@@ -1,8 +1,6 @@
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Numerics;
 using System.Threading;
 using Box2DSharp.Collision;
 using Box2DSharp.Collision.Collider;
@@ -21,7 +19,7 @@ namespace Box2DSharp.Dynamics
         /// support a variable time step.
         /// 时间步倍率
         /// </summary>
-        private float _invDt0;
+        private FP _invDt0;
 
         /// <summary>
         /// 时间步完成
@@ -54,7 +52,7 @@ namespace Box2DSharp.Dynamics
         /// <summary>
         /// 重力常数
         /// </summary>
-        public Vector2 Gravity { get; set; }
+        public FVector2 Gravity { get; set; }
 
         /// <summary>
         /// 清除受力
@@ -151,13 +149,13 @@ namespace Box2DSharp.Dynamics
 
         /// Get the quality metric of the dynamic tree. The smaller the better.
         /// The minimum is 1.
-        public float TreeQuality => ContactManager.BroadPhase.GetTreeQuality();
+        public FP TreeQuality => ContactManager.BroadPhase.GetTreeQuality();
 
         public World()
-            : this(new Vector2(0, -10))
+            : this(new FVector2(0, -10))
         { }
 
-        public World(in Vector2 gravity)
+        public World(in FVector2 gravity)
         {
             Gravity = gravity;
 
@@ -421,7 +419,7 @@ namespace Box2DSharp.Dynamics
         /// <param name="timeStep">the amount of time to simulate, this should not vary.</param>
         /// <param name="velocityIterations">for the velocity constraint solver.</param>
         /// <param name="positionIterations">for the position constraint solver.</param>
-        public void Step(float timeStep, int velocityIterations, int positionIterations)
+        public void Step(FP timeStep, int velocityIterations, int positionIterations)
         {
             // profile 计时
             _stepTimer.Restart();
@@ -583,7 +581,7 @@ namespace Box2DSharp.Dynamics
                 Callback = default;
             }
 
-            public float RayCastCallback(in RayCastInput input, int proxyId)
+            public FP RayCastCallback(in RayCastInput input, int proxyId)
             {
                 var userData = ContactManager.BroadPhase.GetUserData(proxyId);
                 var proxy = (FixtureProxy)userData;
@@ -611,7 +609,7 @@ namespace Box2DSharp.Dynamics
         /// @param callback a user implemented callback class.
         /// @param point1 the ray starting point
         /// @param point2 the ray ending point
-        public void RayCast(in IRayCastCallback callback, in Vector2 point1, in Vector2 point2)
+        public void RayCast(in IRayCastCallback callback, in FVector2 point1, in FVector2 point2)
         {
             var input = new RayCastInput
             {
@@ -626,7 +624,7 @@ namespace Box2DSharp.Dynamics
         /// Shift the world origin. Useful for large worlds.
         /// The body shift formula is: position -= newOrigin
         /// @param newOrigin the new origin with respect to the old origin
-        public void ShiftOrigin(in Vector2 newOrigin)
+        public void ShiftOrigin(in FVector2 newOrigin)
         {
             Debug.Assert(!IsLocked);
             if (IsLocked)
@@ -935,7 +933,7 @@ namespace Box2DSharp.Dynamics
             {
                 // Find the first TOI.
                 Contact minContact = null;
-                var minAlpha = 1.0f;
+                var minAlpha = FP.One;
 
                 var contactNode = ContactManager.ContactList.First;
                 while (contactNode != null)
@@ -955,7 +953,7 @@ namespace Box2DSharp.Dynamics
                         continue;
                     }
 
-                    var alpha = 1.0f;
+                    var alpha = FP.One;
                     if (c.Flags.HasFlag(Contact.ContactFlag.ToiFlag))
                     {
                         // This contact has a valid cached TOI.
@@ -1030,7 +1028,7 @@ namespace Box2DSharp.Dynamics
 
                         // Beta is the fraction of the remaining portion of the .
                         var beta = output.Time;
-                        alpha = output.State == ToiOutput.ToiState.Touching ? Math.Min(alpha0 + (1.0f - alpha0) * beta, 1.0f) : 1.0f;
+                        alpha = output.State == ToiOutput.ToiState.Touching ? FP.Min(alpha0 + (FP.One - alpha0) * beta, FP.One) : FP.One;
 
                         c.Toi = alpha;
                         c.Flags |= Contact.ContactFlag.ToiFlag;
@@ -1482,7 +1480,7 @@ namespace Box2DSharp.Dynamics
                 var bp = ContactManager.BroadPhase;
 
                 var node = BodyList.First;
-                Span<Vector2> vs = stackalloc Vector2[4];
+                Span<FVector2> vs = stackalloc FVector2[4];
                 while (node != null)
                 {
                     var b = node.Value;
@@ -1497,10 +1495,10 @@ namespace Box2DSharp.Dynamics
                         foreach (var proxy in f.Proxies)
                         {
                             var aabb = bp.GetFatAABB(proxy.ProxyId);
-                            vs[0] = new Vector2(aabb.LowerBound.X, aabb.LowerBound.Y);
-                            vs[1] = new Vector2(aabb.UpperBound.X, aabb.LowerBound.Y);
-                            vs[2] = new Vector2(aabb.UpperBound.X, aabb.UpperBound.Y);
-                            vs[3] = new Vector2(aabb.LowerBound.X, aabb.UpperBound.Y);
+                            vs[0] = new FVector2(aabb.LowerBound.X, aabb.LowerBound.Y);
+                            vs[1] = new FVector2(aabb.UpperBound.X, aabb.LowerBound.Y);
+                            vs[2] = new FVector2(aabb.UpperBound.X, aabb.UpperBound.Y);
+                            vs[3] = new FVector2(aabb.LowerBound.X, aabb.UpperBound.Y);
                             Drawer.DrawPolygon(vs, 4, color);
                         }
                     }
@@ -1535,7 +1533,7 @@ namespace Box2DSharp.Dynamics
             {
                 var center = MathUtils.Mul(xf, circle.Position);
                 var radius = circle.Radius;
-                var axis = MathUtils.Mul(xf.Rotation, new Vector2(1.0f, 0.0f));
+                var axis = MathUtils.Mul(xf.Rotation, new FVector2(1.0f, 0.0f));
 
                 Drawer.DrawSolidCircle(center, radius, axis, color);
             }
@@ -1574,7 +1572,7 @@ namespace Box2DSharp.Dynamics
             {
                 var vertexCount = poly.Count;
                 Debug.Assert(vertexCount <= Settings.MaxPolygonVertices);
-                Span<Vector2> vertices = stackalloc Vector2[vertexCount];
+                Span<FVector2> vertices = stackalloc FVector2[vertexCount];
 
                 for (var i = 0; i < vertexCount; ++i)
                 {

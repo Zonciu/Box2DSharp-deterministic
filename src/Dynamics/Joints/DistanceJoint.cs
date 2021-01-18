@@ -1,5 +1,3 @@
-using System;
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Dynamics.Joints
@@ -9,62 +7,62 @@ namespace Box2DSharp.Dynamics.Joints
     public class DistanceJoint : Joint
     {
         // Solver shared
-        private readonly Vector2 _localAnchorA;
+        private readonly FVector2 _localAnchorA;
 
-        private readonly Vector2 _localAnchorB;
+        private readonly FVector2 _localAnchorB;
 
-        private float _bias;
+        private FP _bias;
 
-        private float _gamma;
+        private FP _gamma;
 
-        private float _impulse;
+        private FP _impulse;
 
         // Solver temp
         private int _indexA;
 
         private int _indexB;
 
-        private float _invIa;
+        private FP _invIa;
 
-        private float _invIb;
+        private FP _invIb;
 
-        private float _invMassA;
+        private FP _invMassA;
 
-        private float _invMassB;
+        private FP _invMassB;
 
-        private Vector2 _localCenterA;
+        private FVector2 _localCenterA;
 
-        private Vector2 _localCenterB;
+        private FVector2 _localCenterB;
 
-        private float _mass;
+        private FP _mass;
 
-        private Vector2 _rA;
+        private FVector2 _rA;
 
-        private Vector2 _rB;
+        private FVector2 _rB;
 
-        private Vector2 _u;
+        private FVector2 _u;
 
         /// The rest length
-        private float _length;
+        private FP _length;
 
-        private float _minLength;
+        private FP _minLength;
 
-        private float _maxLength;
+        private FP _maxLength;
 
-        private float _currentLength;
+        private FP _currentLength;
 
-        private float _lowerImpulse;
+        private FP _lowerImpulse;
 
-        private float _upperImpulse;
+        private FP _upperImpulse;
 
         internal DistanceJoint(DistanceJointDef def)
             : base(def)
         {
             _localAnchorA = def.LocalAnchorA;
             _localAnchorB = def.LocalAnchorB;
-            _length = Math.Max(def.Length, Settings.LinearSlop);
-            _minLength = Math.Max(def.MinLength, Settings.LinearSlop);
-            _maxLength = Math.Max(def.MaxLength, _minLength);
+            _length = FP.Max(def.Length, Settings.LinearSlop);
+            _minLength = FP.Max(def.MinLength, Settings.LinearSlop);
+            _maxLength = FP.Max(def.MaxLength, _minLength);
             Stiffness = def.Stiffness;
             Damping = def.Damping;
             _impulse = 0.0f;
@@ -77,26 +75,26 @@ namespace Box2DSharp.Dynamics.Joints
         }
 
         /// Set/get the linear stiffness in N/m
-        public float Stiffness { get; set; }
+        public FP Stiffness { get; set; }
 
         /// Set/get linear damping in N*s/m
-        public float Damping { get; set; }
+        public FP Damping { get; set; }
 
-        public float SoftMass { get; set; }
+        public FP SoftMass { get; set; }
 
-        public override Vector2 GetAnchorA()
+        public override FVector2 GetAnchorA()
         {
             return BodyA.GetWorldPoint(_localAnchorA);
         }
 
-        public override Vector2 GetAnchorB()
+        public override FVector2 GetAnchorB()
         {
             return BodyB.GetWorldPoint(_localAnchorB);
         }
 
         /// Get the reaction force given the inverse time step.
         /// Unit is N.
-        public override Vector2 GetReactionForce(float inv_dt)
+        public override FVector2 GetReactionForce(FP inv_dt)
         {
             var F = inv_dt * (_impulse + _lowerImpulse - _upperImpulse) * _u;
             return F;
@@ -104,45 +102,45 @@ namespace Box2DSharp.Dynamics.Joints
 
         /// Get the reaction torque given the inverse time step.
         /// Unit is N*m. This is always zero for a distance joint.
-        public override float GetReactionTorque(float inv_dt)
+        public override FP GetReactionTorque(FP inv_dt)
         {
             return 0.0f;
         }
 
         /// The local anchor point relative to bodyA's origin.
-        public Vector2 GetLocalAnchorA()
+        public FVector2 GetLocalAnchorA()
         {
             return _localAnchorA;
         }
 
         /// The local anchor point relative to bodyB's origin.
-        public Vector2 GetLocalAnchorB()
+        public FVector2 GetLocalAnchorB()
         {
             return _localAnchorB;
         }
 
-        public float SetLength(float length)
+        public FP SetLength(FP length)
         {
             _impulse = 0.0f;
-            _length = Math.Max(Settings.LinearSlop, length);
+            _length = FP.Max(Settings.LinearSlop, length);
             return _length;
         }
 
-        public float SetMinLength(float minLength)
+        public FP SetMinLength(FP minLength)
         {
             _lowerImpulse = 0.0f;
             _minLength = MathUtils.Clamp(minLength, Settings.LinearSlop, _maxLength);
             return _minLength;
         }
 
-        public float SetMaxLength(float maxLength)
+        public FP SetMaxLength(FP maxLength)
         {
             _upperImpulse = 0.0f;
-            _maxLength = Math.Max(maxLength, _minLength);
+            _maxLength = FP.Max(maxLength, _minLength);
             return _maxLength;
         }
 
-        public float GetCurrentLength()
+        public FP GetCurrentLength()
         {
             var pA = BodyA.GetWorldPoint(_localAnchorA);
             var pB = BodyB.GetWorldPoint(_localAnchorB);
@@ -203,7 +201,7 @@ namespace Box2DSharp.Dynamics.Joints
             var crAu = MathUtils.Cross(_rA, _u);
             var crBu = MathUtils.Cross(_rB, _u);
             var invMass = _invMassA + _invIa * crAu * crAu + _invMassB + _invIb * crBu * crBu;
-            _mass = invMass != 0.0f ? 1.0f / invMass : 0.0f;
+            _mass = invMass != FP.Zero ? FP.One / invMass : FP.Zero;
             if (Stiffness > 0.0f && _minLength < _maxLength)
             {
                 // soft
@@ -218,18 +216,18 @@ namespace Box2DSharp.Dynamics.Joints
                 // gamma = 1 / (h * (d + h * k))
                 // the extra factor of h in the denominator is since the lambda is an impulse, not a force
                 _gamma = h * (d + h * k);
-                _gamma = !_gamma.Equals(0.0f) ? 1.0f / _gamma : 0.0f;
+                _gamma = _gamma != FP.Zero ? FP.One / _gamma : FP.Zero;
                 _bias = C * h * k * _gamma;
 
                 invMass += _gamma;
-                SoftMass = Math.Abs(invMass) > Settings.Epsilon ? 1.0f / invMass : 0.0f;
+                SoftMass = FP.Abs(invMass) > Settings.Epsilon ? FP.One / invMass : FP.Zero;
             }
             else
             {
                 // rigid
                 _gamma = 0.0f;
                 _bias = 0.0f;
-                _mass = invMass != 0.0f ? 1.0f / invMass : 0.0f;
+                _mass = invMass != FP.Zero ? FP.One / invMass : FP.Zero;
                 SoftMass = _mass;
             }
 
@@ -270,7 +268,7 @@ namespace Box2DSharp.Dynamics.Joints
                     // Cdot = dot(u, v + cross(w, r))
                     var vpA = vA + MathUtils.Cross(wA, _rA);
                     var vpB = vB + MathUtils.Cross(wB, _rB);
-                    var Cdot = Vector2.Dot(_u, vpB - vpA);
+                    var Cdot = FVector2.Dot(_u, vpB - vpA);
 
                     var impulse = -SoftMass * (Cdot + _bias + _gamma * _impulse);
                     _impulse += impulse;
@@ -285,15 +283,15 @@ namespace Box2DSharp.Dynamics.Joints
                 // lower
                 {
                     var C = _currentLength - _minLength;
-                    var bias = Math.Max(0.0f, C) * data.Step.InvDt;
+                    var bias = FP.Max(0.0f, C) * data.Step.InvDt;
 
                     var vpA = vA + MathUtils.Cross(wA, _rA);
                     var vpB = vB + MathUtils.Cross(wB, _rB);
-                    var Cdot = Vector2.Dot(_u, vpB - vpA);
+                    var Cdot = FVector2.Dot(_u, vpB - vpA);
 
                     var impulse = -_mass * (Cdot + bias);
                     var oldImpulse = _lowerImpulse;
-                    _lowerImpulse = Math.Max(0.0f, _lowerImpulse + impulse);
+                    _lowerImpulse = FP.Max(0.0f, _lowerImpulse + impulse);
                     impulse = _lowerImpulse - oldImpulse;
                     var P = impulse * _u;
 
@@ -306,15 +304,15 @@ namespace Box2DSharp.Dynamics.Joints
                 // upper
                 {
                     var C = _maxLength - _currentLength;
-                    var bias = Math.Max(0.0f, C) * data.Step.InvDt;
+                    var bias = FP.Max(0.0f, C).SafeMul(data.Step.InvDt);
 
                     var vpA = vA + MathUtils.Cross(wA, _rA);
                     var vpB = vB + MathUtils.Cross(wB, _rB);
-                    var Cdot = Vector2.Dot(_u, vpA - vpB);
+                    var Cdot = FVector2.Dot(_u, vpA - vpB);
 
-                    var impulse = -_mass * (Cdot + bias);
+                    var impulse = -_mass.SafeMul(Cdot.SafeAdd(bias));
                     var oldImpulse = _upperImpulse;
-                    _upperImpulse = Math.Max(0.0f, _upperImpulse + impulse);
+                    _upperImpulse = FP.Max(0.0f, _upperImpulse + impulse);
                     impulse = _upperImpulse - oldImpulse;
                     var P = -impulse * _u;
 
@@ -331,7 +329,7 @@ namespace Box2DSharp.Dynamics.Joints
                 // Cdot = dot(u, v + cross(w, r))
                 var vpA = vA + MathUtils.Cross(wA, _rA);
                 var vpB = vB + MathUtils.Cross(wB, _rB);
-                var Cdot = Vector2.Dot(_u, vpB - vpA);
+                var Cdot = FVector2.Dot(_u, vpB - vpA);
 
                 var impulse = -_mass * Cdot;
                 _impulse += impulse;
@@ -364,8 +362,8 @@ namespace Box2DSharp.Dynamics.Joints
             var u = cB + rB - cA - rA;
 
             var length = u.Normalize();
-            float C;
-            if (Math.Abs(_minLength - _maxLength) < Settings.Epsilon)
+            FP C = FP.Zero;
+            if (FP.Abs(_minLength - _maxLength) < Settings.Epsilon)
             {
                 C = length - _minLength;
             }
@@ -395,7 +393,7 @@ namespace Box2DSharp.Dynamics.Joints
             data.Positions[_indexB].Center = cB;
             data.Positions[_indexB].Angle = aB;
 
-            return Math.Abs(C) < Settings.LinearSlop;
+            return FP.Abs(C) < Settings.LinearSlop;
         }
 
         /// <inheritdoc />
@@ -419,7 +417,7 @@ namespace Box2DSharp.Dynamics.Joints
             var pRest = pA + _length * axis;
             drawer.DrawPoint(pRest, 8.0f, c1);
 
-            if (Math.Abs(_minLength - _maxLength) > Settings.Epsilon)
+            if (FP.Abs(_minLength - _maxLength) > Settings.Epsilon)
             {
                 if (_minLength > Settings.LinearSlop)
                 {

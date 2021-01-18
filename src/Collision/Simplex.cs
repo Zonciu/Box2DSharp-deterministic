@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Collision
@@ -77,7 +76,7 @@ namespace Box2DSharp.Collision
             }
         }
 
-        public Vector2 GetSearchDirection()
+        public FVector2 GetSearchDirection()
         {
             switch (Count)
             {
@@ -103,7 +102,7 @@ namespace Box2DSharp.Collision
             }
         }
 
-        public Vector2 GetClosestPoint()
+        public FVector2 GetClosestPoint()
         {
             switch (Count)
             {
@@ -114,14 +113,14 @@ namespace Box2DSharp.Collision
                 return Vertices.Value0.A * Vertices.Value0.W + Vertices.Value1.A * Vertices.Value1.W;
 
             case 3:
-                return Vector2.Zero;
+                return FVector2.Zero;
 
             default:
                 throw new ArgumentOutOfRangeException(nameof(Count));
             }
         }
 
-        public void GetWitnessPoints(out Vector2 pA, out Vector2 pB)
+        public void GetWitnessPoints(out FVector2 pA, out FVector2 pB)
         {
             switch (Count)
             {
@@ -147,19 +146,19 @@ namespace Box2DSharp.Collision
             }
         }
 
-        public float GetMetric()
+        public FP GetMetric()
         {
             switch (Count)
             {
             case 0:
                 Debug.Assert(false);
-                return 0.0f;
+                return FP.Zero;
 
             case 1:
-                return 0.0f;
+                return FP.Zero;
 
             case 2:
-                return Vector2.Distance(Vertices.Value0.W, Vertices.Value1.W);
+                return FVector2.Distance(Vertices.Value0.W, Vertices.Value1.W);
 
             case 3:
                 return MathUtils.Cross(Vertices.Value1.W - Vertices.Value0.W, Vertices.Value2.W - Vertices.Value0.W);
@@ -201,28 +200,28 @@ namespace Box2DSharp.Collision
             var e12 = w2 - w1;
 
             // w1 region
-            var d12_2 = -Vector2.Dot(w1, e12);
-            if (d12_2 <= 0.0f)
+            var d12_2 = -FVector2.Dot(w1, e12);
+            if (d12_2 <= FP.Zero)
             {
                 // a2 <= 0, so we clamp it to 0
-                v0.A = 1.0f;
+                v0.A = FP.One;
                 Count = 1;
                 return;
             }
 
             // w2 region
-            var d12_1 = Vector2.Dot(w2, e12);
-            if (d12_1 <= 0.0f)
+            var d12_1 = FVector2.Dot(w2, e12);
+            if (d12_1 <= FP.Zero)
             {
                 // a1 <= 0, so we clamp it to 0
-                v1.A = 1.0f;
+                v1.A = FP.One;
                 Count = 1;
                 Vertices.Value0 = Vertices.Value1;
                 return;
             }
 
             // Must be in e12 region.
-            var inv_d12 = 1.0f / (d12_1 + d12_2);
+            var inv_d12 = FP.One / (d12_1 + d12_2);
             v0.A = d12_1 * inv_d12;
             v1.A = d12_2 * inv_d12;
             Count = 2;
@@ -247,8 +246,8 @@ namespace Box2DSharp.Collision
             // [w1.e12 w2.e12][a2] = [0]
             // a3 = 0
             var e12 = w2 - w1;
-            var w1e12 = Vector2.Dot(w1, e12);
-            var w2e12 = Vector2.Dot(w2, e12);
+            var w1e12 = FVector2.Dot(w1, e12);
+            var w2e12 = FVector2.Dot(w2, e12);
             var d12_1 = w2e12;
             var d12_2 = -w1e12;
 
@@ -257,8 +256,8 @@ namespace Box2DSharp.Collision
             // [w1.e13 w3.e13][a3] = [0]
             // a2 = 0
             var e13 = w3 - w1;
-            var w1e13 = Vector2.Dot(w1, e13);
-            var w3e13 = Vector2.Dot(w3, e13);
+            var w1e13 = FVector2.Dot(w1, e13);
+            var w3e13 = FVector2.Dot(w3, e13);
             var d13_1 = w3e13;
             var d13_2 = -w1e13;
 
@@ -267,8 +266,8 @@ namespace Box2DSharp.Collision
             // [w2.e23 w3.e23][a3] = [0]
             // a1 = 0
             var e23 = w3 - w2;
-            var w2e23 = Vector2.Dot(w2, e23);
-            var w3e23 = Vector2.Dot(w3, e23);
+            var w2e23 = FVector2.Dot(w2, e23);
+            var w3e23 = FVector2.Dot(w3, e23);
             var d23_1 = w3e23;
             var d23_2 = -w2e23;
 
@@ -280,17 +279,17 @@ namespace Box2DSharp.Collision
             var d123_3 = n123 * MathUtils.Cross(w1, w2);
 
             // w1 region
-            if (d12_2 <= 0.0f && d13_2 <= 0.0f)
+            if (d12_2 <= FP.Zero && d13_2 <= FP.Zero)
             {
-                v0.A = 1.0f;
+                v0.A = FP.One;
                 Count = 1;
                 return;
             }
 
             // e12
-            if (d12_1 > 0.0f && d12_2 > 0.0f && d123_3 <= 0.0f)
+            if (d12_1 > FP.Zero && d12_2 > FP.Zero && d123_3 <= FP.Zero)
             {
-                var inv_d12 = 1.0f / (d12_1 + d12_2);
+                var inv_d12 = FP.One / (d12_1 + d12_2);
                 v0.A = d12_1 * inv_d12;
                 v1.A = d12_2 * inv_d12;
                 Count = 2;
@@ -298,9 +297,9 @@ namespace Box2DSharp.Collision
             }
 
             // e13
-            if (d13_1 > 0.0f && d13_2 > 0.0f && d123_2 <= 0.0f)
+            if (d13_1 > FP.Zero && d13_2 > FP.Zero && d123_2 <= FP.Zero)
             {
-                var inv_d13 = 1.0f / (d13_1 + d13_2);
+                var inv_d13 = FP.One / (d13_1 + d13_2);
                 v0.A = d13_1 * inv_d13;
                 v2.A = d13_2 * inv_d13;
                 Count = 2;
@@ -309,18 +308,18 @@ namespace Box2DSharp.Collision
             }
 
             // w2 region
-            if (d12_1 <= 0.0f && d23_2 <= 0.0f)
+            if (d12_1 <= FP.Zero && d23_2 <= FP.Zero)
             {
-                v1.A = 1.0f;
+                v1.A = FP.One;
                 Count = 1;
                 v0 = v1;
                 return;
             }
 
             // w3 region
-            if (d13_1 <= 0.0f && d23_1 <= 0.0f)
+            if (d13_1 <= FP.Zero && d23_1 <= FP.Zero)
             {
-                v2.A = 1.0f;
+                v2.A = FP.One;
                 Count = 1;
                 v0 = v2;
                 return;

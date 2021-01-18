@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
@@ -9,9 +8,9 @@ namespace Testbed.TestCases
     [TestCase("Geometry", "Edge Test")]
     public class EdgeTest : TestBase
     {
-        public readonly Vector2 Offset1;
+        public readonly FVector2 Offset1;
 
-        public readonly Vector2 Offset2;
+        public readonly FVector2 Offset2;
 
         public Body Body1;
 
@@ -21,18 +20,18 @@ namespace Testbed.TestCases
 
         public EdgeTest()
         {
-            var vertices = new Vector2[]
+            var vertices = new FVector2[]
             {
-                new Vector2(10.0f, -4.0f),
-                new Vector2(10.0f, 0.0f),
-                new Vector2(6.0f, 0.0f),
-                new Vector2(4.0f, 2.0f),
-                new Vector2(2.0f, 0.0f),
-                new Vector2(-2.0f, 0.0f),
-                new Vector2(-6.0f, 0.0f),
-                new Vector2(-8.0f, -3.0f),
-                new Vector2(-10.0f, 0.0f),
-                new Vector2(-10.0f, -4.0f)
+                new FVector2(10.0f, -4.0f),
+                new FVector2(10.0f, 0.0f),
+                new FVector2(6.0f, 0.0f),
+                new FVector2(4.0f, 2.0f),
+                new FVector2(2.0f, 0.0f),
+                new FVector2(-2.0f, 0.0f),
+                new FVector2(-6.0f, 0.0f),
+                new FVector2(-8.0f, -3.0f),
+                new FVector2(-10.0f, 0.0f),
+                new FVector2(-10.0f, -4.0f)
             };
 
             Offset1.Set(0.0f, 8.0f);
@@ -157,7 +156,7 @@ namespace Testbed.TestCases
             {
                 BodyDef bd = new BodyDef();
                 bd.BodyType = BodyType.DynamicBody;
-                bd.Position = new Vector2(8.0f, 2.6f) + Offset1;
+                bd.Position = new FVector2(8.0f, 2.6f) + Offset1;
                 bd.AllowSleep = false;
                 Body1 = World.CreateBody(bd);
 
@@ -170,7 +169,7 @@ namespace Testbed.TestCases
             {
                 BodyDef bd = new BodyDef();
                 bd.BodyType = BodyType.DynamicBody;
-                bd.Position = new Vector2(8.0f, 2.6f) + Offset2;
+                bd.Position = new FVector2(8.0f, 2.6f) + Offset2;
                 bd.AllowSleep = false;
                 Body2 = World.CreateBody(bd);
 
@@ -198,7 +197,7 @@ namespace Testbed.TestCases
             {
                 BodyDef bd = new BodyDef();
                 bd.BodyType = BodyType.DynamicBody;
-                bd.Position = new Vector2(-0.5f, 0.6f) + Offset1;
+                bd.Position = new FVector2(-0.5f, 0.6f) + Offset1;
                 bd.AllowSleep = false;
                 Body1 = World.CreateBody(bd);
 
@@ -211,7 +210,7 @@ namespace Testbed.TestCases
             {
                 BodyDef bd = new BodyDef();
                 bd.BodyType = BodyType.DynamicBody;
-                bd.Position = new Vector2(-0.5f, 0.6f) + Offset2;
+                bd.Position = new FVector2(-0.5f, 0.6f) + Offset2;
                 bd.AllowSleep = false;
                 Body2 = World.CreateBody(bd);
 
@@ -227,14 +226,14 @@ namespace Testbed.TestCases
         {
             if (keyInput.Key == KeyCodes.A)
             {
-                Body1.ApplyForceToCenter(new Vector2(-10.0f, 0.0f), true);
-                Body2.ApplyForceToCenter(new Vector2(-10.0f, 0.0f), true);
+                Body1.ApplyForceToCenter(new FVector2(-10.0f, 0.0f), true);
+                Body2.ApplyForceToCenter(new FVector2(-10.0f, 0.0f), true);
             }
 
             if (keyInput.Key == KeyCodes.D)
             {
-                Body1.ApplyForceToCenter(new Vector2(10.0f, 0.0f), true);
-                Body2.ApplyForceToCenter(new Vector2(10.0f, 0.0f), true);
+                Body1.ApplyForceToCenter(new FVector2(10.0f, 0.0f), true);
+                Body2.ApplyForceToCenter(new FVector2(10.0f, 0.0f), true);
             }
         }
     }

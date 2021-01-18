@@ -10,7 +10,7 @@
 
         bool IsMouseDown(MouseButton button);
 
-        bool IsMouseClicked(MouseButton button);
+        bool IsMousePressed(MouseButton button);
 
         bool IsMouseUp(MouseButton button);
     }

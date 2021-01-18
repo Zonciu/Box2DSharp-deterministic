@@ -7,9 +7,9 @@ namespace Box2DSharp.Dynamics.Contacts
     /// match up one-to-one with the contact points in b2Manifold.
     public struct ContactImpulse
     {
-        public FixedArray2<float> NormalImpulses;
+        public FixedArray2<FP> NormalImpulses;
 
-        public FixedArray2<float> TangentImpulses;
+        public FixedArray2<FP> TangentImpulses;
 
         public int Count;
     }

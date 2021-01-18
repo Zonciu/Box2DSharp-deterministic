@@ -10,7 +10,7 @@
 
         public bool Alt => Modifiers.HasFlag(KeyModifiers.Alt);
 
-        public bool Control => Modifiers.HasFlag(KeyModifiers.Control);
+        public bool Control => Modifiers.HasFlag(KeyModifiers.Ctrl);
 
         public bool Shift => Modifiers.HasFlag(KeyModifiers.Shift);
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Numerics;
+﻿using System.Diagnostics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Ropes
@@ -11,19 +9,19 @@ namespace Box2DSharp.Ropes
 
         private int _bendCount;
 
-        private Vector2[] _bindPositions;
+        private FVector2[] _bindPositions;
 
         private int _count;
 
-        private Vector2 _gravity;
+        private FVector2 _gravity;
 
-        private float[] _invMasses;
+        private FP[] _invMasses;
 
-        private Vector2[] _p0s;
+        private FVector2[] _p0s;
 
-        private Vector2 _position;
+        private FVector2 _position;
 
-        private Vector2[] _ps;
+        private FVector2[] _ps;
 
         private RopeStretch[] _stretchConstraints;
 
@@ -31,18 +29,18 @@ namespace Box2DSharp.Ropes
 
         private RopeTuning _tuning;
 
-        private Vector2[] _vs;
+        private FVector2[] _vs;
 
         public void Create(in RopeDef def)
         {
             Debug.Assert(def.Count >= 3);
             _position = def.Position;
             _count = def.Count;
-            _bindPositions = new Vector2[_count];
-            _ps = new Vector2[_count];
-            _p0s = new Vector2[_count];
-            _vs = new Vector2[_count];
-            _invMasses = new float[_count];
+            _bindPositions = new FVector2[_count];
+            _ps = new FVector2[_count];
+            _p0s = new FVector2[_count];
+            _vs = new FVector2[_count];
+            _invMasses = new FP[_count];
 
             for (var i = 0; i < _count; ++i)
             {
@@ -76,7 +74,7 @@ namespace Box2DSharp.Ropes
 
                 c.I1 = i;
                 c.I2 = i + 1;
-                c.L = Vector2.Distance(p1, p2);
+                c.L = FVector2.Distance(p1, p2);
                 c.InvMass1 = _invMasses[i];
                 c.InvMass2 = _invMasses[i + 1];
                 c.Lambda = 0.0f;
@@ -99,8 +97,8 @@ namespace Box2DSharp.Ropes
                 c.invMass2 = _invMasses[i + 1];
                 c.invMass3 = _invMasses[i + 2];
                 c.invEffectiveMass = 0.0f;
-                c.L1 = Vector2.Distance(p1, p2);
-                c.L2 = Vector2.Distance(p2, p3);
+                c.L1 = FVector2.Distance(p1, p2);
+                c.L2 = FVector2.Distance(p2, p3);
                 c.lambda = 0.0f;
 
                 // Pre-compute effective mass (TODO use flattened config)
@@ -121,7 +119,7 @@ namespace Box2DSharp.Ropes
                 var j2 = jd1 - jd2;
                 var j3 = jd2;
 
-                c.invEffectiveMass = c.invMass1 * Vector2.Dot(j1, j1) + c.invMass2 * Vector2.Dot(j2, j2) + c.invMass3 * Vector2.Dot(j3, j3);
+                c.invEffectiveMass = c.invMass1 * FVector2.Dot(j1, j1) + c.invMass2 * FVector2.Dot(j2, j2) + c.invMass3 * FVector2.Dot(j3, j3);
 
                 var r = p3 - p1;
 
@@ -133,8 +131,8 @@ namespace Box2DSharp.Ropes
 
                 // a1 = h2 / (h1 + h2)
                 // a2 = h1 / (h1 + h2)
-                c.alpha1 = Vector2.Dot(e2, r) / rr;
-                c.alpha2 = Vector2.Dot(e1, r) / rr;
+                c.alpha1 = FVector2.Dot(e2, r) / rr;
+                c.alpha2 = FVector2.Dot(e1, r) / rr;
             }
 
             _gravity = def.Gravity;
@@ -199,7 +197,7 @@ namespace Box2DSharp.Ropes
             }
         }
 
-        public void Step(float dt, int iterations, Vector2 position)
+        public void Step(FP dt, int iterations, FVector2 position)
         {
             if (dt.Equals(0))
             {
@@ -208,7 +206,8 @@ namespace Box2DSharp.Ropes
 
             var invDt = 1.0f / dt;
 
-            var d = (float)Math.Exp(-dt * _tuning.Damping);
+            // Todo FP Exp
+            var d = FMath.Exp(-dt * _tuning.Damping);
 
             // Apply gravity and damping
             for (var i = 0; i < _count; ++i)
@@ -287,7 +286,7 @@ namespace Box2DSharp.Ropes
             }
         }
 
-        public void Reset(Vector2 position)
+        public void Reset(FVector2 position)
         {
             _position = position;
 
@@ -339,7 +338,7 @@ namespace Box2DSharp.Ropes
             }
         }
 
-        private void SolveStretch_XPBD(float dt)
+        private void SolveStretch_XPBD(FP dt)
         {
             Debug.Assert(dt > 0.0f);
             for (var i = 0; i < _stretchCount; ++i)
@@ -370,7 +369,7 @@ namespace Box2DSharp.Ropes
                 var stretchL = l - ropeStretch.L;
 
                 // This is using the initial velocities
-                var cDot = Vector2.Dot(j1, dp1) + Vector2.Dot(j2, dp2);
+                var cDot = FVector2.Dot(j1, dp1) + FVector2.Dot(j2, dp2);
 
                 var b = stretchL + alpha * ropeStretch.Lambda + sigma * cDot;
                 var sum2 = (1.0f + sigma) * sum + alpha;
@@ -400,11 +399,11 @@ namespace Box2DSharp.Ropes
                 var d1 = p2 - p1;
                 var d2 = p3 - p2;
                 var a = MathUtils.Cross(d1, d2);
-                var b = Vector2.Dot(d1, d2);
+                var b = FVector2.Dot(d1, d2);
 
-                var angle = (float)Math.Atan2(a, b);
+                var angle = FP.Atan2(a, b);
 
-                float L1sqr, L2sqr;
+                FP L1sqr, L2sqr;
 
                 if (_tuning.Isometric)
                 {
@@ -429,14 +428,14 @@ namespace Box2DSharp.Ropes
                 var J2 = Jd1 - Jd2;
                 var J3 = Jd2;
 
-                float sum;
+                FP sum;
                 if (_tuning.FixedEffectiveMass)
                 {
                     sum = c.invEffectiveMass;
                 }
                 else
                 {
-                    sum = c.invMass1 * Vector2.Dot(J1, J1) + c.invMass2 * Vector2.Dot(J2, J2) + c.invMass3 * Vector2.Dot(J3, J3);
+                    sum = c.invMass1 * FVector2.Dot(J1, J1) + c.invMass2 * FVector2.Dot(J2, J2) + c.invMass3 * FVector2.Dot(J3, J3);
                 }
 
                 if (sum.Equals(0))
@@ -456,7 +455,7 @@ namespace Box2DSharp.Ropes
             }
         }
 
-        private void SolveBend_XPBD_Angle(float dt)
+        private void SolveBend_XPBD_Angle(FP dt)
         {
             Debug.Assert(dt > 0.0f);
             for (var i = 0; i < _bendCount; ++i)
@@ -474,7 +473,7 @@ namespace Box2DSharp.Ropes
                 var d1 = p2 - p1;
                 var d2 = p3 - p2;
 
-                float L1sqr, L2sqr;
+                FP L1sqr, L2sqr;
 
                 if (_tuning.Isometric)
                 {
@@ -493,9 +492,9 @@ namespace Box2DSharp.Ropes
                 }
 
                 var a = MathUtils.Cross(d1, d2);
-                var b = Vector2.Dot(d1, d2);
+                var b = FVector2.Dot(d1, d2);
 
-                var angle = (float)Math.Atan2(a, b);
+                var angle = FP.Atan2(a, b);
 
                 var Jd1 = -1.0f / L1sqr * d1.Skew();
                 var Jd2 = 1.0f / L2sqr * d2.Skew();
@@ -504,14 +503,14 @@ namespace Box2DSharp.Ropes
                 var J2 = Jd1 - Jd2;
                 var J3 = Jd2;
 
-                float sum;
+                FP sum;
                 if (_tuning.FixedEffectiveMass)
                 {
                     sum = c.invEffectiveMass;
                 }
                 else
                 {
-                    sum = c.invMass1 * Vector2.Dot(J1, J1) + c.invMass2 * Vector2.Dot(J2, J2) + c.invMass3 * Vector2.Dot(J3, J3);
+                    sum = c.invMass1 * FVector2.Dot(J1, J1) + c.invMass2 * FVector2.Dot(J2, J2) + c.invMass3 * FVector2.Dot(J3, J3);
                 }
 
                 if (sum.Equals(0))
@@ -525,7 +524,7 @@ namespace Box2DSharp.Ropes
                 var C = angle;
 
                 // This is using the initial velocities
-                var Cdot = Vector2.Dot(J1, dp1) + Vector2.Dot(J2, dp2) + Vector2.Dot(J3, dp3);
+                var Cdot = FVector2.Dot(J1, dp1) + FVector2.Dot(J2, dp2) + FVector2.Dot(J3, dp3);
 
                 var B = C + alpha * c.lambda + sigma * Cdot;
                 var sum2 = (1.0f + sigma) * sum + alpha;
@@ -543,7 +542,7 @@ namespace Box2DSharp.Ropes
             }
         }
 
-        private void ApplyBendForces(float dt)
+        private void ApplyBendForces(FP dt)
         {
             // omega = 2 * pi * hz
             var omega = 2.0f * Settings.Pi * _tuning.BendHertz;
@@ -562,7 +561,7 @@ namespace Box2DSharp.Ropes
                 var d1 = p2 - p1;
                 var d2 = p3 - p2;
 
-                float L1sqr, L2sqr;
+                FP L1sqr, L2sqr;
 
                 if (_tuning.Isometric)
                 {
@@ -581,9 +580,9 @@ namespace Box2DSharp.Ropes
                 }
 
                 var a = MathUtils.Cross(d1, d2);
-                var b = Vector2.Dot(d1, d2);
+                var b = FVector2.Dot(d1, d2);
 
-                var angle = (float)Math.Atan2(a, b);
+                var angle = FP.Atan2(a, b);
 
                 var Jd1 = -1.0f / L1sqr * d1.Skew();
                 var Jd2 = 1.0f / L2sqr * d2.Skew();
@@ -592,14 +591,14 @@ namespace Box2DSharp.Ropes
                 var J2 = Jd1 - Jd2;
                 var J3 = Jd2;
 
-                float sum;
+                FP sum;
                 if (_tuning.FixedEffectiveMass)
                 {
                     sum = c.invEffectiveMass;
                 }
                 else
                 {
-                    sum = c.invMass1 * Vector2.Dot(J1, J1) + c.invMass2 * Vector2.Dot(J2, J2) + c.invMass3 * Vector2.Dot(J3, J3);
+                    sum = c.invMass1 * FVector2.Dot(J1, J1) + c.invMass2 * FVector2.Dot(J2, J2) + c.invMass3 * FVector2.Dot(J3, J3);
                 }
 
                 if (sum.Equals(0))
@@ -613,7 +612,7 @@ namespace Box2DSharp.Ropes
                 var damper = 2.0f * mass * _tuning.BendDamping * omega;
 
                 var C = angle;
-                var Cdot = Vector2.Dot(J1, v1) + Vector2.Dot(J2, v2) + Vector2.Dot(J3, v3);
+                var Cdot = FVector2.Dot(J1, v1) + FVector2.Dot(J2, v2) + FVector2.Dot(J3, v3);
 
                 var impulse = -dt * (spring * C + damper * Cdot);
 

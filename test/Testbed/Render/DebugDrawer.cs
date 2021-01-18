@@ -14,6 +14,48 @@ namespace Testbed.Render
         /// <inheritdoc />
         public DrawFlag Flags { get; set; }
 
+        /// <inheritdoc />
+        public void DrawPolygon(Span<FVector2> vertices, int vertexCount, in Color color)
+        {
+            Span<Vector2> ves = new Vector2[vertexCount];
+            for (int i = 0; i < vertexCount; i++)
+            {
+                ves[i] = vertices[i].ToVector2();
+            }
+
+            DrawPolygon(ves, vertexCount, color);
+        }
+
+        /// <inheritdoc />
+        public void DrawSolidPolygon(Span<FVector2> vertices, int vertexCount, in Color color)
+        {
+            Span<Vector2> ves = new Vector2[vertexCount];
+            for (int i = 0; i < vertexCount; i++)
+            {
+                ves[i] = vertices[i].ToVector2();
+            }
+
+            DrawSolidPolygon(ves, vertexCount, color);
+        }
+
+        /// <inheritdoc />
+        public void DrawCircle(in FVector2 center, FP radius, in Color color)
+        {
+            DrawCircle(center.ToVector2(), (float)radius, color);
+        }
+
+        /// <inheritdoc />
+        public void DrawSolidCircle(in FVector2 center, FP radius, in FVector2 axis, in Color color)
+        {
+            DrawSolidCircle(center.ToVector2(), (float)radius, axis.ToVector2(), color);
+        }
+
+        /// <inheritdoc />
+        public void DrawSegment(in FVector2 p1, in FVector2 p2, in Color color)
+        {
+            DrawSegment(p1.ToVector2(), p2.ToVector2(), color);
+        }
+
         public bool ShowUI = true;
 
         private GLRenderPoints _points;
@@ -86,7 +128,6 @@ namespace Testbed.Render
             ImGui.End();
         }
 
-        /// <inheritdoc />
         public void DrawPolygon(Span<Vector2> vertices, int vertexCount, in Color color)
         {
             var p1 = vertices[vertexCount - 1];
@@ -99,7 +140,6 @@ namespace Testbed.Render
             }
         }
 
-        /// <inheritdoc />
         public void DrawSolidPolygon(Span<Vector2> vertices, int vertexCount, in Color color)
         {
             var color4 = color.ToColor4();
@@ -122,12 +162,11 @@ namespace Testbed.Render
             }
         }
 
-        /// <inheritdoc />
         public void DrawCircle(in Vector2 center, float radius, in Color color)
         {
             var color4 = color.ToColor4();
-            const float Segments = 16.0f;
-            const float Increment = 2.0f * Settings.Pi / Segments;
+            const int Segments = 64;
+            const double Increment = 2 * Math.PI / Segments;
             var sinInc = (float)Math.Sin(Increment);
             var cosInc = (float)Math.Cos(Increment);
             var r1 = new Vector2(1.0f, 0.0f);
@@ -148,12 +187,11 @@ namespace Testbed.Render
             }
         }
 
-        /// <inheritdoc />
         public void DrawSolidCircle(in Vector2 center, float radius, in Vector2 axis, in Color color)
         {
             var color4 = color.ToColor4();
-            const float Segments = 16.0f;
-            const float Increment = 2.0f * Settings.Pi / Segments;
+            const int Segments = 64;
+            const double Increment = 2 * Math.PI / Segments;
             var sinInc = (float)Math.Sin(Increment);
             var cosInc = (float)Math.Cos(Increment);
             var v0 = center;
@@ -198,7 +236,6 @@ namespace Testbed.Render
             _lines.Vertex(p, color4);
         }
 
-        /// <inheritdoc />
         public void DrawSegment(in Vector2 p1, in Vector2 p2, in Color color)
         {
             var color4 = color.ToColor4();
@@ -211,17 +248,22 @@ namespace Testbed.Render
         {
             const float AxisScale = 0.4f;
 
-            var p1 = xf.Position;
+            var p1 = xf.Position.ToVector2();
             _lines.Vertex(p1, Color4.Red);
-            var p2 = p1 + AxisScale * xf.Rotation.GetXAxis();
+            var p2 = p1 + AxisScale * xf.Rotation.GetXAxis().ToVector2();
             _lines.Vertex(p2, Color4.Red);
 
             _lines.Vertex(p1, Color4.Green);
-            p2 = p1 + AxisScale * xf.Rotation.GetYAxis();
+            p2 = p1 + AxisScale * xf.Rotation.GetYAxis().ToVector2();
             _lines.Vertex(p2, Color4.Green);
         }
 
         /// <inheritdoc />
+        public void DrawPoint(in FVector2 p, FP size, in Color color)
+        {
+            DrawPoint(p.ToVector2(), (float)size, color);
+        }
+
         public void DrawPoint(in Vector2 p, float size, in Color color)
         {
             _points.Vertex(p, color.ToColor4(), size);
@@ -230,10 +272,10 @@ namespace Testbed.Render
         public void DrawAABB(AABB aabb, Color c)
         {
             var color4 = c.ToColor4();
-            var p1 = aabb.LowerBound;
-            var p2 = new Vector2(aabb.UpperBound.X, aabb.LowerBound.Y);
-            var p3 = aabb.UpperBound;
-            var p4 = new Vector2(aabb.LowerBound.X, aabb.UpperBound.Y);
+            var p1 = aabb.LowerBound.ToVector2();
+            var p2 = new Vector2((float)aabb.UpperBound.X, (float)aabb.LowerBound.Y);
+            var p3 = aabb.UpperBound.ToVector2();
+            var p4 = new Vector2((float)aabb.LowerBound.X, (float)aabb.UpperBound.Y);
 
             _lines.Vertex(p1, color4);
             _lines.Vertex(p2, color4);

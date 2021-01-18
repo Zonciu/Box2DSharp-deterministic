@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
@@ -16,7 +15,7 @@ namespace Testbed.TestCases
                 var ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 
@@ -86,7 +85,7 @@ namespace Testbed.TestCases
                 fd.Shape = shape;
                 fd.Density = 25.0f;
 
-                float[] friction = {0.75f, 0.5f, 0.35f, 0.1f, 0.0f};
+                FP[] friction = {0.75f, 0.5f, 0.35f, 0.1f, 0.0f};
 
                 for (var i = 0; i < 5; ++i)
                 {

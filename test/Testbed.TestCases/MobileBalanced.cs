@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
@@ -24,9 +23,9 @@ namespace Testbed.TestCases
             }
 
             var a = 0.5f;
-            var h = new Vector2(0.0f, a);
+            var h = new FVector2(0.0f, a);
 
-            var root = AddNode(ground, Vector2.Zero, 0, 3.0f, a);
+            var root = AddNode(ground, FVector2.Zero, 0, 3.0f, a);
 
             var jointDef = new RevoluteJointDef();
             jointDef.BodyA = ground;
@@ -36,10 +35,10 @@ namespace Testbed.TestCases
             World.CreateJoint(jointDef);
         }
 
-        private Body AddNode(Body parent, Vector2 localAnchor, int depth, float offset, float a)
+        private Body AddNode(Body parent, FVector2 localAnchor, int depth, FP offset, FP a)
         {
             var density = 20.0f;
-            var h = new Vector2(0.0f, a);
+            var h = new FVector2(0.0f, a);
 
             var p = parent.GetPosition() + localAnchor - h;
 
@@ -57,11 +56,11 @@ namespace Testbed.TestCases
                 return body;
             }
 
-            shape.SetAsBox(offset, 0.25f * a, new Vector2(0, -a), 0.0f);
+            shape.SetAsBox(offset, 0.25f * a, new FVector2(0, -a), 0.0f);
             body.CreateFixture(shape, density);
 
-            var a1 = new Vector2(offset, -a);
-            var a2 = new Vector2(-offset, -a);
+            var a1 = new FVector2(offset, -a);
+            var a2 = new FVector2(-offset, -a);
             var body1 = AddNode(body, a1, depth + 1, 0.5f * offset, a);
             var body2 = AddNode(body, a2, depth + 1, 0.5f * offset, a);
 

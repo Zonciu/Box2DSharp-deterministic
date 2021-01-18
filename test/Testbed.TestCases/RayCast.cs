@@ -1,11 +1,9 @@
-using System;
 using System.Diagnostics;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Testbed.Abstractions;
 using Color = Box2DSharp.Common.Color;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -13,16 +11,16 @@ namespace Testbed.TestCases
     {
         public bool Hit;
 
-        public Vector2 Normal;
+        public FVector2 Normal;
 
-        public Vector2 Point;
+        public FVector2 Point;
 
         public RayCastClosestCallback()
         {
             Hit = false;
         }
 
-        public float RayCastCallback(Fixture fixture, in Vector2 point, in Vector2 normal, float fraction)
+        public FP RayCastCallback(Fixture fixture, in FVector2 point, in FVector2 normal, FP fraction)
         {
             var body = fixture.Body;
             var userData = (int?)body.UserData;
@@ -48,16 +46,16 @@ namespace Testbed.TestCases
     {
         public bool Hit;
 
-        public Vector2 Normal;
+        public FVector2 Normal;
 
-        public Vector2 Point;
+        public FVector2 Point;
 
         public RayCastAnyCallback()
         {
             Hit = false;
         }
 
-        public float RayCastCallback(Fixture fixture, in Vector2 point, in Vector2 normal, float _)
+        public FP RayCastCallback(Fixture fixture, in FVector2 point, in FVector2 normal, FP _)
         {
             var body = fixture.Body;
             var userData = (int?)body.UserData;
@@ -85,9 +83,9 @@ namespace Testbed.TestCases
     {
         public const int MaxCount = 3;
 
-        public readonly Vector2[] Normals = new Vector2[MaxCount];
+        public readonly FVector2[] Normals = new FVector2[MaxCount];
 
-        public readonly Vector2[] Points = new Vector2[MaxCount];
+        public readonly FVector2[] Points = new FVector2[MaxCount];
 
         public int Count;
 
@@ -96,7 +94,7 @@ namespace Testbed.TestCases
             Count = 0;
         }
 
-        public float RayCastCallback(Fixture fixture, in Vector2 point, in Vector2 normal, float _)
+        public FP RayCastCallback(Fixture fixture, in FVector2 point, in FVector2 normal, FP _)
         {
             var body = fixture.Body;
             var userData = (int?)body.UserData;
@@ -144,7 +142,7 @@ namespace Testbed.TestCases
             new PolygonShape()
         };
 
-        protected float _degrees;
+        protected FP _degrees;
 
         private int _bodyIndex;
 
@@ -158,12 +156,12 @@ namespace Testbed.TestCases
                 var ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 
             {
-                var vertices = new Vector2[3];
+                var vertices = new FVector2[3];
                 vertices[0].Set(-0.5f, 0.0f);
                 vertices[1].Set(0.5f, 0.0f);
                 vertices[2].Set(0.0f, 1.5f);
@@ -171,7 +169,7 @@ namespace Testbed.TestCases
             }
 
             {
-                var vertices = new Vector2[3];
+                var vertices = new FVector2[3];
                 vertices[0].Set(-0.1f, 0.0f);
                 vertices[1].Set(0.1f, 0.0f);
                 vertices[2].Set(0.0f, 1.5f);
@@ -180,10 +178,10 @@ namespace Testbed.TestCases
 
             {
                 var w = 1.0f;
-                var b = w / (2.0f + (float)Math.Sqrt(2.0f));
-                var s = (float)Math.Sqrt(2.0f) * b;
+                var b = w / (2.0f + FP.Sqrt(2.0f));
+                var s = FP.Sqrt(2.0f) * b;
 
-                var vertices = new Vector2[8];
+                var vertices = new FVector2[8];
                 vertices[0].Set(0.5f * s, 0.0f);
                 vertices[1].Set(0.5f * w, b);
                 vertices[2].Set(0.5f * w, b + s);
@@ -205,7 +203,7 @@ namespace Testbed.TestCases
             }
 
             {
-                _edge.SetTwoSided(new Vector2(-1.0f, 0.0f), new Vector2(1.0f, 0.0f));
+                _edge.SetTwoSided(new FVector2(-1.0f, 0.0f), new FVector2(1.0f, 0.0f));
             }
 
             _bodyIndex = 0;
@@ -216,7 +214,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             DrawString("Shape 1 is intentionally ignored by the ray");
             switch (_mode)
@@ -233,12 +231,16 @@ namespace Testbed.TestCases
                 DrawString("Ray-cast mode: multiple - gather multiple fixtures");
                 break;
             }
+        }
 
+        /// <inheritdoc />
+        protected override void OnRender()
+        {
             var angle = Settings.Pi * _degrees / 180.0f;
             var L = 11.0f;
-            var point1 = new Vector2(0.0f, 10.0f);
+            var point1 = new FVector2(0.0f, 10.0f);
 
-            var d = new Vector2(L * (float)Math.Cos(angle), L * (float)Math.Sin(angle));
+            var d = new FVector2(L * FP.Cos(angle), L * FP.Sin(angle));
             var point2 = point1 + d;
 
             switch (_mode)

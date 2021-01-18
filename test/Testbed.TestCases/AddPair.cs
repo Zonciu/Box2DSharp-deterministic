@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
@@ -11,7 +10,7 @@ namespace Testbed.TestCases
     {
         public AddPair()
         {
-            World.Gravity = new Vector2(0.0f, 0.0f);
+            World.Gravity = new FVector2(0.0f, 0.0f);
             {
                 var shape = new CircleShape();
                 shape.Position.SetZero();
@@ -26,7 +25,7 @@ namespace Testbed.TestCases
                 {
                     var bd = new BodyDef();
                     bd.BodyType = BodyType.DynamicBody;
-                    bd.Position = new Vector2(RandomFloat(minX, maxX), RandomFloat(minY, maxY));
+                    bd.Position = new FVector2(RandomFloat(minX, maxX), RandomFloat(minY, maxY));
                     var body = World.CreateBody(bd);
                     body.CreateFixture(shape, 0.01f);
                 }
@@ -41,7 +40,7 @@ namespace Testbed.TestCases
                 bd.Bullet = true;
                 var body = World.CreateBody(bd);
                 body.CreateFixture(shape, 1.0f);
-                body.SetLinearVelocity(new Vector2(10.0f, 0.0f));
+                body.SetLinearVelocity(new FVector2(10.0f, 0.0f));
             }
         }
     }

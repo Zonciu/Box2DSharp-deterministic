@@ -1,5 +1,3 @@
-using System;
-using System.Numerics;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
@@ -11,7 +9,7 @@ namespace Testbed.TestCases
     [TestCase("Examples", "Breakable")]
     public class Breakable : TestBase
     {
-        private float _angularVelocity;
+        private FP _angularVelocity;
 
         private Body _body1;
 
@@ -27,7 +25,7 @@ namespace Testbed.TestCases
 
         private PolygonShape _shape2 = new PolygonShape();
 
-        private Vector2 _velocity;
+        private FVector2 _velocity;
 
         public Breakable()
         {
@@ -37,7 +35,7 @@ namespace Testbed.TestCases
                 var ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 
@@ -49,10 +47,10 @@ namespace Testbed.TestCases
                 bd.Angle = 0.25f * Settings.Pi;
                 _body1 = World.CreateBody(bd);
 
-                _shape1.SetAsBox(0.5f, 0.5f, new Vector2(-0.5f, 0.0f), 0.0f);
+                _shape1.SetAsBox(0.5f, 0.5f, new FVector2(-0.5f, 0.0f), 0.0f);
                 _piece1 = _body1.CreateFixture(_shape1, 1.0f);
 
-                _shape2.SetAsBox(0.5f, 0.5f, new Vector2(0.5f, 0.0f), 0.0f);
+                _shape2.SetAsBox(0.5f, 0.5f, new FVector2(0.5f, 0.0f), 0.0f);
                 _piece2 = _body1.CreateFixture(_shape2, 1.0f);
             }
 
@@ -74,10 +72,10 @@ namespace Testbed.TestCases
             // Should the body break?
             var count = contact.Manifold.PointCount;
 
-            var maxImpulse = 0.0f;
+            var maxImpulse = FP.Zero;
             for (var i = 0; i < count; ++i)
             {
-                maxImpulse = Math.Max(maxImpulse, impulse.NormalImpulses[i]);
+                maxImpulse = FP.Max(maxImpulse, impulse.NormalImpulses[i]);
             }
 
             if (maxImpulse > 40.0f)

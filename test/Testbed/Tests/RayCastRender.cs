@@ -54,7 +54,9 @@ namespace Testbed.Tests
             ImGui.RadioButton("Closest", ref mode, (int)Mode.Closest);
             ImGui.RadioButton("Multiple", ref mode, (int)Mode.Multiple);
             _mode = (Mode)mode;
-            ImGui.SliderFloat("Angle", ref _degrees, 0.0f, 360.0f, "%.0f");
+            var deg =(float) _degrees;
+            ImGui.SliderFloat("Angle", ref deg, 0.0f, 360.0f, "%.0f");
+            _degrees = deg;
             ImGui.End();
             base.OnRender();
         }

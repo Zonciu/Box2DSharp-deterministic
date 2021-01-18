@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Box2DSharp.Common;
+﻿using Box2DSharp.Common;
 using Box2DSharp.Ropes;
 using Testbed.Abstractions;
 
@@ -20,18 +19,18 @@ namespace Testbed.TestCases
 
         protected int Iterations2;
 
-        protected Vector2 Position1;
+        protected FVector2 Position1;
 
-        protected Vector2 Position2;
+        protected FVector2 Position2;
 
-        protected float Speed;
+        protected FP Speed;
 
         public RopeTest()
         {
             const int N = 20;
-            const float L = 0.5f;
-            var vertices = new Vector2[N];
-            var masses = new float[N];
+            FP L = 0.5f;
+            var vertices = new FVector2[N];
+            var masses = new FP[N];
 
             for (var i = 0; i < N; ++i)
             {
@@ -74,7 +73,7 @@ namespace Testbed.TestCases
             {
                 Vertices = vertices,
                 Count = N,
-                Gravity = new Vector2(0.0f, -10.0f),
+                Gravity = new FVector2(0.0f, -10.0f),
                 Masses = masses,
                 Position = Position1,
                 Tuning = Tuning1
@@ -95,7 +94,7 @@ namespace Testbed.TestCases
 
         protected override void PreStep()
         {
-            var dt = TestSettings.Hertz > 0.0f ? 1.0f / TestSettings.Hertz : 0.0f;
+            var dt = TestSettings.Hertz > 0 ? FP.One / TestSettings.Hertz : FP.Zero;
             if (Input.IsKeyDown(KeyCodes.Comma))
             {
                 Position1.X -= Speed * dt;

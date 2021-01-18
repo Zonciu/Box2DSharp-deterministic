@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Dynamics.Joints
@@ -10,19 +9,19 @@ namespace Box2DSharp.Dynamics.Joints
     {
         /// The rotational stiffness in N*m
         /// Disable softness with a value of 0
-        public float Stiffness;
+        public FP Stiffness;
 
         /// The rotational damping in N*m*s
-        public float Damping;
+        public FP Damping;
 
         /// The local anchor point relative to bodyA's origin.
-        public Vector2 LocalAnchorA;
+        public FVector2 LocalAnchorA;
 
         /// The local anchor point relative to bodyB's origin.
-        public Vector2 LocalAnchorB;
+        public FVector2 LocalAnchorB;
 
         /// The bodyB angle minus bodyA angle in the reference state (radians).
-        public float ReferenceAngle;
+        public FP ReferenceAngle;
 
         public WeldJointDef()
         {
@@ -40,7 +39,7 @@ namespace Box2DSharp.Dynamics.Joints
         /// <param name="bA">the first body connected by this joint</param>
         /// <param name="bB">the second body connected by this joint</param>
         /// <param name="anchor">the point of connection in world coordinates</param>
-        public void Initialize(Body bA, Body bB, in Vector2 anchor)
+        public void Initialize(Body bA, Body bB, in FVector2 anchor)
         {
             BodyA = bA;
             BodyB = bB;

@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Collider;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
@@ -15,9 +14,9 @@ namespace Testbed.TestCases
 
         private Fixture _platform;
 
-        private float _radius;
+        private FP _radius;
 
-        private float _top;
+        private FP _top;
 
         public Platformer()
         {
@@ -27,7 +26,7 @@ namespace Testbed.TestCases
                 var ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-20.0f, 0.0f), new Vector2(20.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-20.0f, 0.0f), new FVector2(20.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 
@@ -56,7 +55,7 @@ namespace Testbed.TestCases
                 shape.Radius = _radius;
                 _character = body.CreateFixture(shape, 20.0f);
 
-                body.SetLinearVelocity(new Vector2(0.0f, -50.0f));
+                body.SetLinearVelocity(new FVector2(0.0f, -50.0f));
             }
         }
 
@@ -85,7 +84,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             var v = _character.Body.LinearVelocity;
             DrawString($"Character Linear Velocity: {v.Y}");

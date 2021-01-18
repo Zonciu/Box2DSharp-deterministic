@@ -1,4 +1,3 @@
-using System;
 using Box2DSharp.Collision;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
@@ -6,7 +5,6 @@ using Box2DSharp.Dynamics;
 using Testbed.Abstractions;
 using Color = Box2DSharp.Common.Color;
 using Transform = Box2DSharp.Common.Transform;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -88,12 +86,12 @@ namespace Testbed.TestCases
                 var ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 
             {
-                var vertices = new Vector2[3];
+                var vertices = new FVector2[3];
                 vertices[0].Set(-0.5f, 0.0f);
                 vertices[1].Set(0.5f, 0.0f);
                 vertices[2].Set(0.0f, 1.5f);
@@ -101,7 +99,7 @@ namespace Testbed.TestCases
             }
 
             {
-                var vertices = new Vector2[3];
+                var vertices = new FVector2[3];
                 vertices[0].Set(-0.1f, 0.0f);
                 vertices[1].Set(0.1f, 0.0f);
                 vertices[2].Set(0.0f, 1.5f);
@@ -110,10 +108,10 @@ namespace Testbed.TestCases
 
             {
                 var w = 1.0f;
-                var b = w / (2.0f + (float)Math.Sqrt(2.0f));
-                var s = (float)Math.Sqrt(2.0f) * b;
+                var b = w / (2.0f + FP.Sqrt(2.0f));
+                var s = FP.Sqrt(2.0f) * b;
 
-                var vertices = new Vector2[8];
+                var vertices = new FVector2[8];
                 vertices[0].Set(0.5f * s, 0.0f);
                 vertices[1].Set(0.5f * w, b);
                 vertices[2].Set(0.5f * w, b + s);
@@ -246,12 +244,16 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             DrawString("Press 1-5 to drop stuff");
             DrawString("Press 'a' to (de)activate some bodies");
             DrawString("Press 'd' to destroy a body");
+        }
 
+        /// <inheritdoc />
+        protected override void OnRender()
+        {
             var callback = new PolyShapesCallback(Drawer) {Circle = {Radius = 2.0f}};
             callback.Circle.Position.Set(0.0f, 1.1f);
             callback.Circle.ComputeAABB(out var aabb, callback.Transform, 0);

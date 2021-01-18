@@ -1,5 +1,5 @@
-﻿using System.Numerics;
-using Box2DSharp.Collision.Shapes;
+﻿using Box2DSharp.Collision.Shapes;
+using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Testbed.Abstractions;
 
@@ -13,7 +13,7 @@ namespace Testbed.TestCases
         public DumpLoader()
         {
             var chainShape = new ChainShape();
-            Vector2[] vertices = {new Vector2(-5, 0), new Vector2(5, 0), new Vector2(5, 5), new Vector2(4, 1), new Vector2(-4, 1), new Vector2(-5, 5)};
+            FVector2[] vertices = {new FVector2(-5, 0), new FVector2(5, 0), new FVector2(5, 5), new FVector2(4, 1), new FVector2(-4, 1), new FVector2(-5, 5)};
             chainShape.CreateLoop(vertices, 6);
 
             var groundFixtureDef = new FixtureDef();
@@ -36,13 +36,13 @@ namespace Testbed.TestCases
 
             var ballBodyDef = new BodyDef();
             ballBodyDef.BodyType = BodyType.DynamicBody;
-            ballBodyDef.Position = new Vector2(0, 10);
+            ballBodyDef.Position = new FVector2(0, 10);
 
             // ballBodyDef.angularDamping = 0.2f;
 
             m_ball = World.CreateBody(ballBodyDef);
             var ballFixture = m_ball.CreateFixture(ballFixtureDef);
-            m_ball.ApplyForceToCenter(new Vector2(-1000, -400), true);
+            m_ball.ApplyForceToCenter(new FVector2(-1000, -400), true);
         }
 
         /// <inheritdoc />
@@ -53,7 +53,7 @@ namespace Testbed.TestCases
 
             m_ball.GetMassData(out var massData);
 
-            var ke = 0.5f * massData.Mass * Vector2.Dot(v, v) + 0.5f * massData.RotationInertia * omega * omega;
+            var ke = 0.5f * massData.Mass * FVector2.Dot(v, v) + 0.5f * massData.RotationInertia * omega * omega;
 
             DrawString($"kinetic energy = {ke}");
         }

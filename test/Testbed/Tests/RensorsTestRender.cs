@@ -14,7 +14,11 @@ namespace Testbed.Tests
             ImGui.SetNextWindowSize(new Vector2(200.0f, 60.0f));
             ImGui.Begin("Sensor Controls", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
-            ImGui.SliderFloat("Force", ref _force, 0.0f, 2000.0f, "%.0f");
+            var force = (float)_force;
+            if (ImGui.SliderFloat("Force", ref force, 0.0f, 2000.0f, "%.0f"))
+            {
+                _force = force;
+            }
 
             ImGui.End();
             base.OnRender();

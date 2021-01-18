@@ -1,15 +1,15 @@
-using System.Numerics;
+using Box2DSharp.Common;
 
 namespace Box2DSharp.Collision
 {
     /// Output results for b2ShapeCast
     public struct ShapeCastOutput
     {
-        public Vector2 Point;
+        public FVector2 Point;
 
-        public Vector2 Normal;
+        public FVector2 Normal;
 
-        public float Lambda;
+        public FP Lambda;
 
         public int Iterations;
     }

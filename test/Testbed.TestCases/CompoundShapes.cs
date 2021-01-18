@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
@@ -25,7 +24,7 @@ namespace Testbed.TestCases
                 Body body = World.CreateBody(bd);
 
                 EdgeShape shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(50.0f, 0.0f), new Vector2(-50.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(50.0f, 0.0f), new FVector2(-50.0f, 0.0f));
 
                 body.CreateFixture(shape, 0.0f);
             }
@@ -38,13 +37,13 @@ namespace Testbed.TestCases
                 m_table1 = World.CreateBody(bd);
 
                 PolygonShape top = new PolygonShape();
-                top.SetAsBox(3.0f, 0.5f, new Vector2(0.0f, 3.5f), 0.0f);
+                top.SetAsBox(3.0f, 0.5f, new FVector2(0.0f, 3.5f), 0.0f);
 
                 PolygonShape leftLeg = new PolygonShape();
-                leftLeg.SetAsBox(0.5f, 1.5f, new Vector2(-2.5f, 1.5f), 0.0f);
+                leftLeg.SetAsBox(0.5f, 1.5f, new FVector2(-2.5f, 1.5f), 0.0f);
 
                 PolygonShape rightLeg = new PolygonShape();
-                rightLeg.SetAsBox(0.5f, 1.5f, new Vector2(2.5f, 1.5f), 0.0f);
+                rightLeg.SetAsBox(0.5f, 1.5f, new FVector2(2.5f, 1.5f), 0.0f);
 
                 m_table1.CreateFixture(top, 2.0f);
                 m_table1.CreateFixture(leftLeg, 2.0f);
@@ -59,13 +58,13 @@ namespace Testbed.TestCases
                 m_table2 = World.CreateBody(bd);
 
                 PolygonShape top = new PolygonShape();
-                top.SetAsBox(3.0f, 0.5f, new Vector2(0.0f, 3.5f), 0.0f);
+                top.SetAsBox(3.0f, 0.5f, new FVector2(0.0f, 3.5f), 0.0f);
 
                 PolygonShape leftLeg = new PolygonShape();
-                leftLeg.SetAsBox(0.5f, 2.0f, new Vector2(-2.5f, 2.0f), 0.0f);
+                leftLeg.SetAsBox(0.5f, 2.0f, new FVector2(-2.5f, 2.0f), 0.0f);
 
                 PolygonShape rightLeg = new PolygonShape();
-                rightLeg.SetAsBox(0.5f, 2.0f, new Vector2(2.5f, 2.0f), 0.0f);
+                rightLeg.SetAsBox(0.5f, 2.0f, new FVector2(2.5f, 2.0f), 0.0f);
 
                 m_table2.CreateFixture(top, 2.0f);
                 m_table2.CreateFixture(leftLeg, 2.0f);
@@ -79,7 +78,7 @@ namespace Testbed.TestCases
                 bd.Position.Set(5.0f, 1.0f);
                 m_ship1 = World.CreateBody(bd);
 
-                Vector2[] vertices = new Vector2[3];
+                FVector2[] vertices = new FVector2[3];
 
                 PolygonShape left = new PolygonShape();
                 vertices[0].Set(-2.0f, 0.0f);
@@ -104,7 +103,7 @@ namespace Testbed.TestCases
                 bd.Position.Set(15.0f, 1.0f);
                 m_ship2 = World.CreateBody(bd);
 
-                Vector2[] vertices = new Vector2[3];
+                FVector2[] vertices = new FVector2[3];
 
                 PolygonShape left = new PolygonShape();
                 vertices[0].Set(-2.0f, 0.0f);
@@ -135,7 +134,7 @@ namespace Testbed.TestCases
                 Body body = World.CreateBody(bd);
 
                 PolygonShape box = new PolygonShape();
-                box.SetAsBox(4.0f, 0.1f, new Vector2(0.0f, 3.0f), 0.0f);
+                box.SetAsBox(4.0f, 0.1f, new FVector2(0.0f, 3.0f), 0.0f);
 
                 body.CreateFixture(box, 2.0f);
             }
@@ -150,7 +149,7 @@ namespace Testbed.TestCases
                 Body body = World.CreateBody(bd);
 
                 PolygonShape box = new PolygonShape();
-                box.SetAsBox(4.0f, 0.1f, new Vector2(0.0f, 3.0f), 0.0f);
+                box.SetAsBox(4.0f, 0.1f, new FVector2(0.0f, 3.0f), 0.0f);
 
                 body.CreateFixture(box, 2.0f);
             }

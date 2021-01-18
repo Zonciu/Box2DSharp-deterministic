@@ -3,7 +3,6 @@ using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Joints;
 using Testbed.Abstractions;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -26,7 +25,7 @@ namespace Testbed.TestCases
                 var bd = new BodyDef();
                 ground = World.CreateBody(bd);
 
-                var vs = new Vector2[5];
+                var vs = new FVector2[5];
                 vs[0].Set(-8.0f, 6.0f);
                 vs[1].Set(-8.0f, 20.0f);
                 vs[2].Set(8.0f, 20.0f);
@@ -43,8 +42,8 @@ namespace Testbed.TestCases
 
             // Flippers
             {
-                var p1 = new Vector2(-2.0f, 0.0f);
-                var p2 = new Vector2(2.0f, 0.0f);
+                var p1 = new FVector2(-2.0f, 0.0f);
+                var p2 = new FVector2(2.0f, 0.0f);
 
                 var bd = new BodyDef();
                 bd.BodyType = BodyType.DynamicBody;
@@ -140,7 +139,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             DrawString("Press 'a' to control the flippers");
         }

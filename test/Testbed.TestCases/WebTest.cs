@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Box2DSharp.Collision.Shapes;
+﻿using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Joints;
@@ -18,7 +17,7 @@ namespace Testbed.TestCases
                 ground = World.CreateBody(bd);
 
                 EdgeShape shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 
@@ -46,12 +45,12 @@ namespace Testbed.TestCases
                 m_bodies[3].CreateFixture(shape, 5.0f);
 
                 DistanceJointDef jd = new DistanceJointDef();
-                Vector2 p1;
-                Vector2 p2;
-                Vector2 d;
+                FVector2 p1;
+                FVector2 p2;
+                FVector2 d;
 
-                float frequencyHz = 2.0f;
-                float dampingRatio = 0.0f;
+                FP frequencyHz = 2.0f;
+                FP dampingRatio = 0.0f;
 
                 jd.BodyA = ground;
                 jd.BodyB = m_bodies[0];
@@ -178,9 +177,8 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnRender()
+        protected override void OnGUI()
         {
-            base.OnRender();
             DrawString("Press: (b) to delete a body, (j) to delete a joint");
         }
 

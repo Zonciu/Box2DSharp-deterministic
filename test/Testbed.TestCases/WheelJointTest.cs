@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Box2DSharp.Collision.Shapes;
+﻿using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Joints;
@@ -12,7 +11,7 @@ namespace Testbed.TestCases
     {
         protected WheelJoint Joint;
 
-        protected float MotorSpeed;
+        protected FP MotorSpeed;
 
         protected bool EnableMotor;
 
@@ -26,7 +25,7 @@ namespace Testbed.TestCases
                 ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
                 ground.CreateFixture(shape, 0.0f);
             }
 
@@ -53,7 +52,7 @@ namespace Testbed.TestCases
                 var jd = new WheelJointDef();
 
                 // Horizontal
-                jd.Initialize(ground, body, bd.Position, new Vector2(0.0f, 1.0f));
+                jd.Initialize(ground, body, bd.Position, new FVector2(0.0f, 1.0f));
 
                 jd.MotorSpeed = MotorSpeed;
                 jd.MaxMotorTorque = 10000.0f;
@@ -69,7 +68,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             var torque = Joint.GetMotorTorque(TestSettings.Hertz);
             DrawString($"Motor Torque = {torque}");

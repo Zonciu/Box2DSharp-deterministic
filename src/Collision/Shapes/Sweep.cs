@@ -1,6 +1,4 @@
-using System;
 using System.Diagnostics;
-using System.Numerics;
 using Box2DSharp.Common;
 
 namespace Box2DSharp.Collision.Shapes
@@ -18,7 +16,7 @@ namespace Box2DSharp.Collision.Shapes
         /// </summary>
         /// <param name="xf"></param>
         /// <param name="beta"></param>
-        public void GetTransform(out Transform xf, float beta)
+        public void GetTransform(out Transform xf, FP beta)
         {
             var position = (1.0f - beta) * C0 + beta * C;
             var angle = (1.0f - beta) * A0 + beta * A;
@@ -30,7 +28,7 @@ namespace Box2DSharp.Collision.Shapes
 
         /// Advance the sweep forward, yielding a new initial state.
         /// @param alpha the new initial time.
-        public void Advance(float alpha)
+        public void Advance(FP alpha)
         {
             Debug.Assert(Alpha0 < 1.0f);
             var beta = (alpha - Alpha0) / (1.0f - Alpha0);
@@ -42,8 +40,7 @@ namespace Box2DSharp.Collision.Shapes
         /// Normalize the angles.
         public void Normalize()
         {
-            const float twoPi = 2.0f * Settings.Pi;
-            var d = twoPi * (float)Math.Floor(A0 / twoPi);
+            var d = FP.PiTimes2 * FP.Floor(A0 / FP.PiTimes2);
             A0 -= d;
             A -= d;
         }
@@ -51,20 +48,20 @@ namespace Box2DSharp.Collision.Shapes
         /// <summary>
         /// local center of mass position
         /// </summary>
-        public Vector2 LocalCenter;
+        public FVector2 LocalCenter;
 
         /// <summary>
         /// center world positions
         /// </summary>
-        public Vector2 C0, C;
+        public FVector2 C0, C;
 
         /// <summary>
         /// world angles
         /// </summary>
-        public float A0, A;
+        public FP A0, A;
 
         /// Fraction of the current time step in the range [0,1]
         /// c0 and a0 are the positions at alpha0.
-        public float Alpha0;
+        public FP Alpha0;
     }
 }

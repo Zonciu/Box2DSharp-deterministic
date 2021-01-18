@@ -24,8 +24,10 @@ namespace Testbed.Tests
                 Joint.EnableMotor(EnableMotor);
             }
 
-            if (ImGui.SliderFloat("Speed", ref MotorSpeed, -100.0f, 100.0f, "%.0f"))
+            var speed = (float)MotorSpeed;
+            if (ImGui.SliderFloat("Speed", ref speed, -100.0f, 100.0f, "%.0f"))
             {
+                MotorSpeed = speed;
                 Joint.SetMotorSpeed(MotorSpeed);
             }
 

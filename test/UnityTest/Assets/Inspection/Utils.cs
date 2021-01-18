@@ -1,53 +1,51 @@
 using System;
+using Box2DSharp.Common;
 using UnityEngine;
+using Color = UnityEngine.Color;
+using SVector2 = System.Numerics.Vector2;
+using SVector3 = System.Numerics.Vector3;
+using UVector2 = UnityEngine.Vector2;
+using UVector3 = UnityEngine.Vector3;
 
 namespace Box2DSharp.Testbed.Unity.Inspection
 {
     public static class Utils
     {
-        public static Vector3 ToUnityVector3(this System.Numerics.Vector3 vector3)
+        #region From FVector
+
+        public static UVector2 ToUVector2(this FVector2 vector2)
         {
-            return new Vector3(vector3.X, vector3.Y, vector3.Z);
+            return new UVector2(vector2.X.AsFloat, vector2.Y.AsFloat);
         }
 
-        public static Vector2 ToUnityVector2(this System.Numerics.Vector3 vector3)
+        #endregion
+
+        #region From System Vector
+
+        public static UVector2 ToUVector2(in this SVector2 vector2)
         {
-            return new Vector2(vector3.X, vector3.Y);
+            return new UVector2(vector2.X, vector2.Y);
         }
 
-        public static Vector2 ToUnityVector2(this System.Numerics.Vector2 vector2)
+        #endregion
+
+        #region From Unity Vector
+
+        public static UVector3 ToUVector3(in this UVector2 vector2)
         {
-            return new Vector2(vector2.X, vector2.Y);
+            return new UVector3(vector2.x, vector2.y, 0);
         }
 
-        public static Vector3 ToUnityVector3(this System.Numerics.Vector2 vector2)
+        public static FVector2 ToFVector2(in this UVector3 vector3)
         {
-            return new Vector3(vector2.X, vector2.Y, 0);
+            return new FVector2(vector3.x, vector3.y);
         }
+
+        #endregion
 
         public static Color ToUnityColor(this Box2DSharp.Common.Color color)
         {
             return new Color(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
-        }
-
-        public static System.Numerics.Vector2 ToVector2(this Vector2 vector2)
-        {
-            return new System.Numerics.Vector2(vector2.x, vector2.y);
-        }
-
-        public static System.Numerics.Vector3 ToVector3(this Vector3 vector3)
-        {
-            return new System.Numerics.Vector3(vector3.x, vector3.y, vector3.z);
-        }
-
-        public static System.Numerics.Vector2 ToVector2(this Vector3 vector3)
-        {
-            return new System.Numerics.Vector2(vector3.x, vector3.y);
-        }
-
-        public static System.Numerics.Vector3 ToVector3(this Vector2 vector3)
-        {
-            return new System.Numerics.Vector3(vector3.x, vector3.y, 0);
         }
     }
 

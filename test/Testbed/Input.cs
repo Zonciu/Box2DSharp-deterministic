@@ -53,7 +53,7 @@ namespace Testbed
         }
 
         /// <inheritdoc />
-        public bool IsMouseClicked(MouseButton button)
+        public bool IsMousePressed(MouseButton button)
         {
             return _gameWindow.IsMouseButtonPressed(MouseButtonMap[(int)button]);
         }
@@ -89,7 +89,7 @@ namespace Testbed
 
             if (keyModifiers.HasFlag(TKKeyModifiers.Control))
             {
-                value |= KeyModifiers.Control;
+                value |= KeyModifiers.Ctrl;
             }
 
             if (keyModifiers.HasFlag(TKKeyModifiers.Alt))
@@ -157,10 +157,10 @@ namespace Testbed
 
             KeyMap[KeyCodes.Comma] = Keys.Comma;
             KeyMap[KeyCodes.Period] = Keys.Period;
-            KeyMap[KeyCodes.LeftControl] = Keys.LeftControl;
+            KeyMap[KeyCodes.LeftCtrl] = Keys.LeftControl;
             KeyMap[KeyCodes.LeftShift] = Keys.LeftShift;
             KeyMap[KeyCodes.LeftAlt] = Keys.LeftAlt;
-            KeyMap[KeyCodes.RightControl] = Keys.RightControl;
+            KeyMap[KeyCodes.RightCtrl] = Keys.RightControl;
             KeyMap[KeyCodes.RightShift] = Keys.RightShift;
             KeyMap[KeyCodes.RightAlt] = Keys.RightAlt;
 
@@ -207,10 +207,10 @@ namespace Testbed
 
             KeyCodeMap[Keys.Comma] = KeyCodes.Comma;
             KeyCodeMap[Keys.Period] = KeyCodes.Period;
-            KeyCodeMap[Keys.LeftControl] = KeyCodes.LeftControl;
+            KeyCodeMap[Keys.LeftControl] = KeyCodes.LeftCtrl;
             KeyCodeMap[Keys.LeftShift] = KeyCodes.LeftShift;
             KeyCodeMap[Keys.LeftAlt] = KeyCodes.LeftAlt;
-            KeyCodeMap[Keys.RightControl] = KeyCodes.RightControl;
+            KeyCodeMap[Keys.RightControl] = KeyCodes.RightCtrl;
             KeyCodeMap[Keys.RightShift] = KeyCodes.RightShift;
             KeyCodeMap[Keys.RightAlt] = KeyCodes.RightAlt;
 

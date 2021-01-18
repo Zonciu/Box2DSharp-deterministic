@@ -1,4 +1,3 @@
-using System.Numerics;
 using Box2DSharp.Collision.Shapes;
 using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
@@ -11,13 +10,13 @@ namespace Testbed.TestCases
     {
         public Restitution()
         {
-            const float threshold = 10.0f;
+            FP threshold = 10.0f;
             {
                 var bd = new BodyDef();
                 var ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-40.0f, 0.0f), new Vector2(40.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-40.0f, 0.0f), new FVector2(40.0f, 0.0f));
 
                 FixtureDef fd = new FixtureDef();
                 fd.Shape = shape;
@@ -33,7 +32,7 @@ namespace Testbed.TestCases
                 fd.Shape = shape;
                 fd.Density = 1.0f;
 
-                float[] restitution = {0.0f, 0.1f, 0.3f, 0.5f, 0.75f, 0.9f, 1.0f};
+                FP[] restitution = {0.0f, 0.1f, 0.3f, 0.5f, 0.75f, 0.9f, 1.0f};
 
                 for (var i = 0; i < 7; ++i)
                 {

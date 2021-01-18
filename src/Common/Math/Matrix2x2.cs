@@ -1,24 +1,23 @@
-using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Box2DSharp.Common
 {
     public struct Matrix2x2
     {
-        public Vector2 Ex;
+        public FVector2 Ex;
 
-        public Vector2 Ey;
+        public FVector2 Ey;
 
         /// The default constructor does nothing (for performance).
         /// Construct this matrix using columns.
-        public Matrix2x2(in Vector2 c1, in Vector2 c2)
+        public Matrix2x2(in FVector2 c1, in FVector2 c2)
         {
             Ex = c1;
             Ey = c2;
         }
 
         /// Construct this matrix using scalars.
-        public Matrix2x2(float a11, float a12, float a21, float a22)
+        public Matrix2x2(FP a11, FP a12, FP a21, FP a22)
         {
             Ex.X = a11;
             Ex.Y = a21;
@@ -27,7 +26,7 @@ namespace Box2DSharp.Common
         }
 
         /// Initialize this matrix using columns.
-        public void Set(in Vector2 c1, in Vector2 c2)
+        public void Set(in FVector2 c1, in FVector2 c2)
         {
             Ex = c1;
             Ey = c2;
@@ -75,19 +74,19 @@ namespace Box2DSharp.Common
 
         /// Solve A * x = b, where b is a column vector. This is more efficient
         /// than computing the inverse in one-shot cases.
-        public Vector2 Solve(in Vector2 b)
+        public FVector2 Solve(in FVector2 b)
         {
             var a11 = Ex.X;
             var a12 = Ey.X;
             var a21 = Ex.Y;
             var a22 = Ey.Y;
             var det = a11 * a22 - a12 * a21;
-            if (!det.Equals(0.0f))
+            if (det != 0)
             {
                 det = 1.0f / det;
             }
 
-            var x = new Vector2 {X = det * (a22 * b.X - a12 * b.Y), Y = det * (a11 * b.Y - a21 * b.X)};
+            var x = new FVector2 {X = det * (a22 * b.X - a12 * b.Y), Y = det * (a11 * b.Y - a21 * b.X)};
             return x;
         }
 

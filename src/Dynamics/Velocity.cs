@@ -1,12 +1,12 @@
-using System.Numerics;
+using Box2DSharp.Common;
 
 namespace Box2DSharp.Dynamics
 {
     /// This is an internal structure.
     public struct Velocity
     {
-        public Vector2 V;
+        public FVector2 V;
 
-        public float W;
+        public FP W;
     }
 }

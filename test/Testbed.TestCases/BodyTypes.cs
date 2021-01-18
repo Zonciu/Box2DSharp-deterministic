@@ -3,7 +3,6 @@ using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Joints;
 using Testbed.Abstractions;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
@@ -14,7 +13,7 @@ namespace Testbed.TestCases
 
         private Body _platform;
 
-        private float _speed;
+        private FP _speed;
 
         public BodyTypes()
         {
@@ -24,7 +23,7 @@ namespace Testbed.TestCases
                 ground = World.CreateBody(bd);
 
                 var shape = new EdgeShape();
-                shape.SetTwoSided(new Vector2(-20.0f, 0.0f), new Vector2(20.0f, 0.0f));
+                shape.SetTwoSided(new FVector2(-20.0f, 0.0f), new FVector2(20.0f, 0.0f));
 
                 var fd = new FixtureDef();
                 fd.Shape = shape;
@@ -52,7 +51,7 @@ namespace Testbed.TestCases
                 _platform = World.CreateBody(bd);
 
                 var shape = new PolygonShape();
-                shape.SetAsBox(0.5f, 4.0f, new Vector2(4.0f, 0.0f), 0.5f * Settings.Pi);
+                shape.SetAsBox(0.5f, 4.0f, new FVector2(4.0f, 0.0f), 0.5f * Settings.Pi);
 
                 var fd = new FixtureDef();
                 fd.Shape = shape;
@@ -61,13 +60,13 @@ namespace Testbed.TestCases
                 _platform.CreateFixture(fd);
 
                 var rjd = new RevoluteJointDef();
-                rjd.Initialize(_attachment, _platform, new Vector2(0.0f, 5.0f));
+                rjd.Initialize(_attachment, _platform, new FVector2(0.0f, 5.0f));
                 rjd.MaxMotorTorque = 50.0f;
                 rjd.EnableMotor = true;
                 World.CreateJoint(rjd);
 
                 var pjd = new PrismaticJointDef();
-                pjd.Initialize(ground, _platform, new Vector2(0.0f, 5.0f), new Vector2(1.0f, 0.0f));
+                pjd.Initialize(ground, _platform, new FVector2(0.0f, 5.0f), new FVector2(1.0f, 0.0f));
 
                 pjd.MaxMotorForce = 1000.0f;
                 pjd.EnableMotor = true;
@@ -99,7 +98,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnRender()
+        protected override void OnGUI()
         {
             DrawString("Keys: (d) dynamic, (s) static, (k) kinematic");
         }
@@ -136,7 +135,7 @@ namespace Testbed.TestCases
             if (keyInput.Key == KeyCodes.K)
             {
                 _platform.BodyType = BodyType.KinematicBody;
-                _platform.SetLinearVelocity(new Vector2(-_speed, 0.0f));
+                _platform.SetLinearVelocity(new FVector2(-_speed, 0.0f));
                 _platform.SetAngularVelocity(0.0f);
             }
         }

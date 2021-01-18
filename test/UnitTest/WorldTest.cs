@@ -1,6 +1,6 @@
-﻿using System.Numerics;
-using Box2DSharp.Collision.Collider;
+﻿using Box2DSharp.Collision.Collider;
 using Box2DSharp.Collision.Shapes;
+using Box2DSharp.Common;
 using Box2DSharp.Dynamics;
 using Box2DSharp.Dynamics.Contacts;
 using Shouldly;
@@ -36,7 +36,7 @@ namespace UnitTest
         [Fact(DisplayName = "begin contact")]
         public void BeginContact()
         {
-            World world = new World(new Vector2(0.0f, -10.0f));
+            World world = new World(new FVector2(0.0f, -10.0f));
             MyContactListener listener = new MyContactListener();
             world.SetContactListener(listener);
 
@@ -51,8 +51,8 @@ namespace UnitTest
             bodyA.CreateFixture(circle, 0.0f);
             bodyB.CreateFixture(circle, 0.0f);
 
-            bodyA.SetTransform(new Vector2(0f, 0f), 0f);
-            bodyB.SetTransform(new Vector2(100f, 0f), 0f);
+            bodyA.SetTransform(new FVector2(0f, 0f), 0f);
+            bodyB.SetTransform(new FVector2(100f, 0f), 0f);
 
             const float timeStep = 1f / 60f;
             const int velocityIterations = 6;
@@ -63,7 +63,7 @@ namespace UnitTest
             world.ContactManager.ContactList.ShouldBeEmpty();
             listener.begin_contact.ShouldBeFalse();
 
-            bodyB.SetTransform(new Vector2(1f, 0f), 0f);
+            bodyB.SetTransform(new FVector2(1f, 0f), 0f);
 
             world.Step(timeStep, velocityIterations, positionIterations);
 

@@ -5,20 +5,19 @@ using Box2DSharp.Common;
 using Testbed.Abstractions;
 using Color = Box2DSharp.Common.Color;
 using Transform = Box2DSharp.Common.Transform;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Testbed.TestCases
 {
     [TestCase("Geometry", "Polygon Collision")]
     public class PolygonCollision : TestBase
     {
-        private float _angleB;
+        private FP _angleB;
 
         private PolygonShape _polygonA = new PolygonShape();
 
         private PolygonShape _polygonB = new PolygonShape();
 
-        private Vector2 _positionB;
+        private FVector2 _positionB;
 
         private Transform _transformA;
 
@@ -28,7 +27,7 @@ namespace Testbed.TestCases
         {
             {
                 _polygonA.SetAsBox(0.2f, 0.4f);
-                _transformA.Set(new Vector2(0.0f, 0.0f), 0.0f);
+                _transformA.Set(new FVector2(0.0f, 0.0f), 0.0f);
             }
 
             {
@@ -75,35 +74,46 @@ namespace Testbed.TestCases
             _transformB.Set(_positionB, _angleB);
         }
 
+        private Manifold _manifold;
+
+        private WorldManifold _worldManifold;
+
+        /// <inheritdoc />
+        protected override void PostStep()
+        {
+            _manifold = new Manifold();
+            CollisionUtils.CollidePolygons(ref _manifold, _polygonA, _transformA, _polygonB, _transformB);
+            _worldManifold = new WorldManifold();
+            _worldManifold.Initialize(_manifold, _transformA, _polygonA.Radius, _transformB, _polygonB.Radius);
+        }
+
+        /// <inheritdoc />
+        protected override void OnGUI()
+        {
+            DrawString($"point count = {_manifold.PointCount}");
+        }
+
         protected override void OnRender()
         {
-            var manifold = new Manifold();
-            CollisionUtils.CollidePolygons(ref manifold, _polygonA, _transformA, _polygonB, _transformB);
-            var worldManifold = new WorldManifold();
-            worldManifold.Initialize(manifold, _transformA, _polygonA.Radius, _transformB, _polygonB.Radius);
-
-            DrawString($"point count = {manifold.PointCount}");
+            var color = Color.FromArgb(230, 230, 230);
+            var v = new FVector2[Settings.MaxPolygonVertices];
+            for (var i = 0; i < _polygonA.Count; ++i)
             {
-                var color = Color.FromArgb(230, 230, 230);
-                var v = new Vector2[Settings.MaxPolygonVertices];
-                for (var i = 0; i < _polygonA.Count; ++i)
-                {
-                    v[i] = MathUtils.Mul(_transformA, _polygonA.Vertices[i]);
-                }
-
-                Drawer.DrawPolygon(v, _polygonA.Count, color);
-
-                for (var i = 0; i < _polygonB.Count; ++i)
-                {
-                    v[i] = MathUtils.Mul(_transformB, _polygonB.Vertices[i]);
-                }
-
-                Drawer.DrawPolygon(v, _polygonB.Count, color);
+                v[i] = MathUtils.Mul(_transformA, _polygonA.Vertices[i]);
             }
 
-            for (var i = 0; i < manifold.PointCount; ++i)
+            Drawer.DrawPolygon(v, _polygonA.Count, color);
+
+            for (var i = 0; i < _polygonB.Count; ++i)
             {
-                Drawer.DrawPoint(worldManifold.Points[i], 4.0f, Color.FromArgb(230, 77, 77));
+                v[i] = MathUtils.Mul(_transformB, _polygonB.Vertices[i]);
+            }
+
+            Drawer.DrawPolygon(v, _polygonB.Count, color);
+
+            for (var i = 0; i < _manifold.PointCount; ++i)
+            {
+                Drawer.DrawPoint(_worldManifold.Points[i], 4.0f, Color.FromArgb(230, 77, 77));
             }
         }
     }
