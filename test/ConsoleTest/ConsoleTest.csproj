@@ -3,9 +3,8 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <LangVersion>7.3</LangVersion>
-        <RootNamespace>NETCoreTest</RootNamespace>
-        <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
+        <LangVersion>10</LangVersion>
+        <TargetFramework>net6.0</TargetFramework>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
