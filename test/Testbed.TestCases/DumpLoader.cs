@@ -13,7 +13,7 @@ namespace Testbed.TestCases
         public DumpLoader()
         {
             var chainShape = new ChainShape();
-            FVector2[] vertices = {new FVector2(-5, 0), new FVector2(5, 0), new FVector2(5, 5), new FVector2(4, 1), new FVector2(-4, 1), new FVector2(-5, 5)};
+            FVector2[] vertices = { new FVector2(-5, 0), new FVector2(5, 0), new FVector2(5, 5), new FVector2(4, 1), new FVector2(-4, 1), new FVector2(-5, 5) };
             chainShape.CreateLoop(vertices, 6);
 
             var groundFixtureDef = new FixtureDef();
@@ -51,7 +51,7 @@ namespace Testbed.TestCases
             var v = m_ball.LinearVelocity;
             var omega = m_ball.AngularVelocity;
 
-            m_ball.GetMassData(out var massData);
+            var massData = m_ball.GetMassData();
 
             var ke = 0.5f * massData.Mass * FVector2.Dot(v, v) + 0.5f * massData.RotationInertia * omega * omega;
 
