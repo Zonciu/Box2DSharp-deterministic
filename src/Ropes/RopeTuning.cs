@@ -11,6 +11,8 @@ namespace Box2DSharp.Ropes
             BendingModel = BendingModel.PbdAngleBendingModel;
             Damping = 0.0f;
             StretchStiffness = 1.0f;
+            StretchHertz = 1.0f;
+            StretchDamping = 0.0f;
             BendStiffness = 0.5f;
             BendHertz = 1.0f;
             BendDamping = 0.0f;
