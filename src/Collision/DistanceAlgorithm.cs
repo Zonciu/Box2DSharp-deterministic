@@ -152,32 +152,28 @@ namespace Box2DSharp.Collision
             // Apply radii if requested.
             if (input.UseRadii)
             {
-                var rA = proxyA.Radius;
-                var rB = proxyB.Radius;
-
-                if (output.Distance > rA + rB && output.Distance > Settings.Epsilon)
+                if (output.Distance < Settings.Epsilon)
                 {
-                    // Shapes are still no overlapped.
-                    // Move the witness points to the outer surface.
-                    output.Distance -= rA + rB;
-                    var normal = output.PointB - output.PointA;
-                    normal.Normalize();
-                    output.PointA += rA * normal;
-                    output.PointB -= rB * normal;
+                    // Shapes are too close to safely compute normal
+                    var p = (output.PointA + output.PointB) / 2;
+                    output.PointA = p;
+                    output.PointB = p;
+                    output.Distance = FP.Zero;
                 }
                 else
                 {
-                    // Shapes are overlapped when radii are considered.
-                    // Move the witness points to the middle.
-                    var p = 0.5f * (output.PointA + output.PointB);
-                    output.PointA = p;
-                    output.PointB = p;
-                    output.Distance = 0.0f;
+                    // Keep closest points on perimeter even if overlapped, this way
+                    // the points move smoothly.
+                    var rA = proxyA.Radius;
+                    var rB = proxyB.Radius;
+                    var normal = output.PointB - output.PointA;
+                    normal.Normalize();
+                    output.Distance = FMath.Max(FP.Zero, output.Distance - rA - rB);
+                    output.PointA += rA * normal;
+                    output.PointB -= rB * normal;
                 }
             }
         }
-
-        private static readonly FP tolerance = 0.5f * Settings.LinearSlop;
 
         /// <summary>
         /// Perform a linear shape cast of shape B moving and shape A fixed. Determines the hit point, normal, and translation fraction.
@@ -190,7 +186,7 @@ namespace Box2DSharp.Collision
             output = new ShapeCastOutput
             {
                 Iterations = 0,
-                Lambda = 1.0f,
+                Lambda = FP.One,
                 Normal = FVector2.Zero,
                 Point = FVector2.Zero
             };
@@ -198,15 +194,15 @@ namespace Box2DSharp.Collision
             ref readonly var proxyA = ref input.ProxyA;
             ref readonly var proxyB = ref input.ProxyB;
 
-            var radiusA = FP.Max(proxyA.Radius, Settings.PolygonRadius);
-            var radiusB = FP.Max(proxyB.Radius, Settings.PolygonRadius);
+            var radiusA = FMath.Max(proxyA.Radius, Settings.PolygonRadius);
+            var radiusB = FMath.Max(proxyB.Radius, Settings.PolygonRadius);
             var radius = radiusA + radiusB;
 
             var xfA = input.TransformA;
             var xfB = input.TransformB;
 
             var r = input.TranslationB;
-            var n = new FVector2(0.0f, 0.0f);
+            var n = FVector2.Zero;
             var lambda = FP.Zero;
 
             // Initial simplex
@@ -223,7 +219,8 @@ namespace Box2DSharp.Collision
             var v = wA - wB;
 
             // Sigma is the target distance between polygons
-            var sigma = FP.Max(Settings.PolygonRadius, radius - Settings.PolygonRadius);
+            var sigma = FMath.Max(Settings.PolygonRadius, radius - Settings.PolygonRadius);
+            var tolerance = Settings.LinearSlop / 2;
 
             // Main iteration loop.
             // 迭代次数上限
@@ -250,13 +247,13 @@ namespace Box2DSharp.Collision
                 var vr = FVector2.Dot(v, r);
                 if (vp - sigma > lambda * vr)
                 {
-                    if (vr <= 0.0f)
+                    if (vr <= 0)
                     {
                         return false;
                     }
 
                     lambda = (vp - sigma) / vr;
-                    if (lambda > 1.0f)
+                    if (lambda > 1)
                     {
                         return false;
                     }
@@ -275,7 +272,7 @@ namespace Box2DSharp.Collision
                 vertex.IndexB = indexA;
                 vertex.Wb = wA;
                 vertex.W = vertex.Wb - vertex.Wa;
-                vertex.A = 1.0f;
+                vertex.A = FP.One;
 
                 simplex.Count += 1;
 
@@ -320,7 +317,7 @@ namespace Box2DSharp.Collision
             // Prepare output.
             simplex.GetWitnessPoints(out var pointB, out var pointA);
 
-            if (v.LengthSquared() > 0.0f)
+            if (v.LengthSquared() > FP.Zero)
             {
                 n = -v;
                 n.Normalize();
