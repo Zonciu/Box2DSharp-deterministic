@@ -10,10 +10,11 @@ namespace Box2DSharp.Testbed.Unity
 {
     public class DeterministicTester
     {
-        public (string Hash, string Data) TestTumbler(int totalSteps, int blockCount)
+        public int Step;
+
+        public (string Hash, string Data) TestTumbler(int totalSteps, int bodyCount)
         {
             var world = new World();
-            int _count;
 
             Body ground;
             {
@@ -54,12 +55,12 @@ namespace Box2DSharp.Testbed.Unity
                 world.CreateJoint(jd);
             }
 
-            _count = 0;
-            FP invDt = FP.One / 60;
+            var count = 0;
+            var invDt = FP.One / 60;
             var data = new StringBuilder();
-            for (int i = 0; i < totalSteps; i++)
+            for (var i = 0; i < totalSteps; i++)
             {
-                while (_count < blockCount)
+                while (count < bodyCount)
                 {
                     var bd = new BodyDef
                     {
@@ -72,10 +73,11 @@ namespace Box2DSharp.Testbed.Unity
                     shape.SetAsBox(0.125f, 0.125f);
                     body.CreateFixture(shape, 1.0f);
 
-                    ++_count;
+                    ++count;
                 }
 
                 world.Step(invDt, 8, 3);
+                Step++;
                 data.Append($"Step {i} begin\n");
                 foreach (var body in world.BodyList)
                 {
@@ -223,8 +225,8 @@ namespace Box2DSharp.Testbed.Unity
                 var p5 = new FVector2(6.0f * s, 1.5f);
                 var p6 = new FVector2(2.5f * s, 3.7f);
 
-                var fd1 = new FixtureDef {Filter = {GroupIndex = -1}, Density = 1.0f};
-                var fd2 = new FixtureDef {Filter = {GroupIndex = -1}, Density = 1.0f};
+                var fd1 = new FixtureDef { Filter = { GroupIndex = -1 }, Density = 1.0f };
+                var fd2 = new FixtureDef { Filter = { GroupIndex = -1 }, Density = 1.0f };
 
                 var poly1 = new PolygonShape();
                 var poly2 = new PolygonShape();

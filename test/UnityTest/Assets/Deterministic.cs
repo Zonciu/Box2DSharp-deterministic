@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,13 +15,16 @@ namespace Box2DSharp.Testbed.Unity
 
         public string hash = "testing...";
 
+        private DeterministicTester _tester;
+
         public void Start()
         {
             ExitButton.onClick.AddListener(() => SceneManager.LoadScene("Init"));
+            _tester = new DeterministicTester();
             Task.Factory.StartNew(
                 () =>
                 {
-                    var res = new DeterministicTester().TestTumbler(3000, 400);
+                    var res = _tester.TestTumbler(3000, 400);
                     hash = res.Hash;
                     var path = Path.Combine(Application.persistentDataPath, "TestTumbler.txt");
                     if (File.Exists(path))
@@ -33,9 +37,9 @@ namespace Box2DSharp.Testbed.Unity
                 });
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
-            HashText.text = hash;
+            HashText.text = $"{hash} {_tester.Step}/3000";
         }
     }
 }
