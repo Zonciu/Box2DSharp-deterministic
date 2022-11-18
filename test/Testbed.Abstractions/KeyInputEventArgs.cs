@@ -8,13 +8,13 @@
 
         public readonly bool IsRepeat;
 
-        public bool Alt => Modifiers.HasFlag(KeyModifiers.Alt);
+        public bool Alt => Modifiers.HasSetFlag(KeyModifiers.Alt);
 
-        public bool Control => Modifiers.HasFlag(KeyModifiers.Ctrl);
+        public bool Control => Modifiers.HasSetFlag(KeyModifiers.Ctrl);
 
-        public bool Shift => Modifiers.HasFlag(KeyModifiers.Shift);
+        public bool Shift => Modifiers.HasSetFlag(KeyModifiers.Shift);
 
-        public bool Command => Modifiers.HasFlag(KeyModifiers.Super);
+        public bool Command => Modifiers.HasSetFlag(KeyModifiers.Super);
 
         public KeyInputEventArgs(KeyCodes key, KeyModifiers modifiers, bool isRepeat)
         {

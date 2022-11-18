@@ -82,32 +82,32 @@ namespace Testbed
         public static KeyModifiers GetKeyModifiers(TKKeyModifiers keyModifiers)
         {
             KeyModifiers value = 0;
-            if (keyModifiers.HasFlag(TKKeyModifiers.Shift))
+            if (keyModifiers.HasSetFlag(TKKeyModifiers.Shift))
             {
                 value |= KeyModifiers.Shift;
             }
 
-            if (keyModifiers.HasFlag(TKKeyModifiers.Control))
+            if (keyModifiers.HasSetFlag(TKKeyModifiers.Control))
             {
                 value |= KeyModifiers.Ctrl;
             }
 
-            if (keyModifiers.HasFlag(TKKeyModifiers.Alt))
+            if (keyModifiers.HasSetFlag(TKKeyModifiers.Alt))
             {
                 value |= KeyModifiers.Alt;
             }
 
-            if (keyModifiers.HasFlag(TKKeyModifiers.Super))
+            if (keyModifiers.HasSetFlag(TKKeyModifiers.Super))
             {
                 value |= KeyModifiers.Super;
             }
 
-            if (keyModifiers.HasFlag(TKKeyModifiers.CapsLock))
+            if (keyModifiers.HasSetFlag(TKKeyModifiers.CapsLock))
             {
                 value |= KeyModifiers.CapsLock;
             }
 
-            if (keyModifiers.HasFlag(TKKeyModifiers.NumLock))
+            if (keyModifiers.HasSetFlag(TKKeyModifiers.NumLock))
             {
                 value |= KeyModifiers.NumLock;
             }
