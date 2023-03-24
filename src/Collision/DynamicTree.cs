@@ -30,13 +30,13 @@ namespace Box2DSharp.Collision
 
             _nodeCapacity = 16;
             _nodeCount = 0;
-            _treeNodes = ArrayPool<TreeNode>.Shared.Rent(_nodeCapacity);
+            _treeNodes = new TreeNode[_nodeCapacity];
 
             // Build a linked list for the free list.
             // 节点数组初始化
             for (var i = 0; i < _nodeCapacity; ++i)
             {
-                _treeNodes[i] = new TreeNode {Next = i + 1, Height = -1};
+                _treeNodes[i] = new TreeNode { Next = i + 1, Height = -1 };
             }
 
             // 最后一个节点Next为null
@@ -57,17 +57,13 @@ namespace Box2DSharp.Collision
                 // 剩余节点为0,增加可用节点
                 var oldNodes = _treeNodes;
                 _nodeCapacity *= 2;
-
-                _treeNodes = ArrayPool<TreeNode>.Shared.Rent(_nodeCapacity);
-                Array.Copy(oldNodes, _treeNodes, _nodeCount);
-                Array.Clear(oldNodes, 0, _nodeCount);
-                ArrayPool<TreeNode>.Shared.Return(oldNodes);
+                Array.Resize(ref _treeNodes, _nodeCapacity);
 
                 // Build a linked list for the free list. The parent
                 // pointer becomes the "next" pointer.
                 for (var i = _nodeCount; i < _nodeCapacity; ++i)
                 {
-                    _treeNodes[i] = new TreeNode {Next = i + 1, Height = -1};
+                    _treeNodes[i] = new TreeNode { Next = i + 1, Height = -1 };
                 }
 
                 _treeNodes[_nodeCapacity - 1].Next = NullNode;

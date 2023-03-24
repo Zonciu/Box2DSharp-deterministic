@@ -35,23 +35,10 @@ namespace Box2DSharp.Collision
             _tree = new DynamicTree();
             _pairCapacity = 16;
             _pairCount = 0;
-            _pairBuffer = ArrayPool<Pair>.Shared.Rent(_pairCapacity);
+            _pairBuffer = new Pair[_pairCapacity];
             _moveCapacity = 16;
             _moveCount = 0;
-            _moveBuffer = ArrayPool<int>.Shared.Rent(_moveCapacity);
-        }
-
-        ~BroadPhase()
-        {
-            if (_pairBuffer != null)
-            {
-                ArrayPool<Pair>.Shared.Return(_pairBuffer, true);
-            }
-
-            if (_moveBuffer != null)
-            {
-                ArrayPool<int>.Shared.Return(_moveBuffer, true);
-            }
+            _moveBuffer = new int[_moveCapacity];
         }
 
         /// Create a proxy with an initial AABB. Pairs are not reported until
@@ -212,12 +199,8 @@ namespace Box2DSharp.Collision
         {
             if (_moveCount == _moveCapacity)
             {
-                var oldBuffer = _moveBuffer;
                 _moveCapacity *= 2;
-                _moveBuffer = ArrayPool<int>.Shared.Rent(_moveCapacity);
-                Array.Copy(oldBuffer, _moveBuffer, _moveCount);
-                Array.Clear(oldBuffer, 0, _moveCount);
-                ArrayPool<int>.Shared.Return(oldBuffer);
+                Array.Resize(ref _moveBuffer, _moveCapacity);
             }
 
             _moveBuffer[_moveCount] = proxyId;
@@ -253,12 +236,8 @@ namespace Box2DSharp.Collision
             // Grow the pair buffer as needed.
             if (_pairCount == _pairCapacity)
             {
-                var oldBuffer = _pairBuffer;
                 _pairCapacity += _pairCapacity >> 1;
-                _pairBuffer = ArrayPool<Pair>.Shared.Rent(_pairCapacity);
-                Array.Copy(oldBuffer, _pairBuffer, _pairCount);
-                Array.Clear(oldBuffer, 0, _pairCount);
-                ArrayPool<Pair>.Shared.Return(oldBuffer);
+                Array.Resize(ref _pairBuffer, _pairCapacity);
             }
 
             _pairBuffer[_pairCount].ProxyIdA = Math.Min(proxyId, _queryProxyId);

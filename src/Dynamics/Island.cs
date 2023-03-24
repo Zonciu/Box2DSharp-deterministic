@@ -27,6 +27,16 @@ namespace Box2DSharp.Dynamics
 
         internal Velocity[] Velocities;
 
+        private readonly ArrayPool<Body> _bodyPool = ArrayPool<Body>.Create();
+
+        private readonly ArrayPool<Contact> _contactPool = ArrayPool<Contact>.Create();
+
+        private readonly ArrayPool<Joint> _jointPool = ArrayPool<Joint>.Create();
+
+        private readonly ArrayPool<Position> _positionPool = ArrayPool<Position>.Create();
+
+        private readonly ArrayPool<Velocity> _velocityPool = ArrayPool<Velocity>.Create();
+
         public void Setup(
             int bodyCapacity,
             int contactCapacity,
@@ -39,11 +49,11 @@ namespace Box2DSharp.Dynamics
 
             ContactListener = contactListener;
 
-            Bodies = ArrayPool<Body>.Shared.Rent(bodyCapacity);
-            Contacts = ArrayPool<Contact>.Shared.Rent(contactCapacity);
-            Joints = ArrayPool<Joint>.Shared.Rent(jointCapacity);
-            Positions = ArrayPool<Position>.Shared.Rent(bodyCapacity);
-            Velocities = ArrayPool<Velocity>.Shared.Rent(bodyCapacity);
+            Bodies = _bodyPool.Rent(bodyCapacity);
+            Contacts = _contactPool.Rent(contactCapacity);
+            Joints = _jointPool.Rent(jointCapacity);
+            Positions = _positionPool.Rent(bodyCapacity);
+            Velocities = _velocityPool.Rent(bodyCapacity);
         }
 
         internal void Reset()
@@ -52,48 +62,20 @@ namespace Box2DSharp.Dynamics
             ContactCount = 0;
             JointCount = 0;
 
-            ArrayPool<Body>.Shared.Return(Bodies, true);
+            _bodyPool.Return(Bodies, true);
             Bodies = default;
 
-            ArrayPool<Contact>.Shared.Return(Contacts, true);
+            _contactPool.Return(Contacts, true);
             Contacts = default;
 
-            ArrayPool<Joint>.Shared.Return(Joints, true);
+            _jointPool.Return(Joints, true);
             Joints = default;
 
-            ArrayPool<Position>.Shared.Return(Positions, true);
+            _positionPool.Return(Positions, true);
             Positions = default;
 
-            ArrayPool<Velocity>.Shared.Return(Velocities, true);
+            _velocityPool.Return(Velocities, true);
             Velocities = default;
-        }
-
-        ~Island()
-        {
-            if (Bodies != null)
-            {
-                ArrayPool<Body>.Shared.Return(Bodies, true);
-            }
-
-            if (Contacts != null)
-            {
-                ArrayPool<Contact>.Shared.Return(Contacts, true);
-            }
-
-            if (Joints != null)
-            {
-                ArrayPool<Joint>.Shared.Return(Joints, true);
-            }
-
-            if (Positions != null)
-            {
-                ArrayPool<Position>.Shared.Return(Positions, true);
-            }
-
-            if (Velocities != null)
-            {
-                ArrayPool<Velocity>.Shared.Return(Velocities, true);
-            }
         }
 
         internal void Clear()
@@ -280,8 +262,8 @@ namespace Box2DSharp.Dynamics
                         continue;
                     }
 
-                    if (!b.Flags.HasSetFlag(BodyFlags.AutoSleep)                         // 不允许休眠
-                     || b.AngularVelocity * b.AngularVelocity > angTolSqr             // 或 角速度大于最小值
+                    if (!b.Flags.HasSetFlag(BodyFlags.AutoSleep) // 不允许休眠
+                     || b.AngularVelocity * b.AngularVelocity > angTolSqr // 或 角速度大于最小值
                      || FVector2.Dot(b.LinearVelocity, b.LinearVelocity) > linTolSqr) // 或 线速度大于最小值
                     {
                         b.SleepTime = 0.0f;
@@ -469,7 +451,7 @@ namespace Box2DSharp.Dynamics
 
                 var vc = constraints[i];
 
-                var impulse = new ContactImpulse {Count = vc.PointCount};
+                var impulse = new ContactImpulse { Count = vc.PointCount };
                 for (var j = 0; j < vc.PointCount; ++j)
                 {
                     impulse.NormalImpulses[j] = vc.Points[j].NormalImpulse;
