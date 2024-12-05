@@ -27,7 +27,7 @@ namespace Testbed
 
         public TestBase Test { get; private set; }
 
-        public readonly DebugDrawer DebugDrawer;
+        public readonly DebugDraw DebugDraw;
 
         public readonly Input Input;
 
@@ -43,8 +43,8 @@ namespace Testbed
             Input = new Input(this);
             Global.Input = Input;
 
-            DebugDrawer = new DebugDrawer();
-            Global.DebugDrawer = DebugDrawer;
+            DebugDraw = new DebugDraw();
+            Global.DebugDraw = DebugDraw;
         }
 
         /// <inheritdoc />
@@ -74,7 +74,7 @@ namespace Testbed
 
             GL.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
             _controller = new ImGuiController(Size.X, Size.Y);
-            DebugDrawer.Create();
+            DebugDraw.Create();
 
             _currentTestIndex = Math.Clamp(_currentTestIndex, 0, Global.Tests.Count - 1);
             _testSelected = _currentTestIndex;
@@ -94,7 +94,7 @@ namespace Testbed
         {
             Test?.Dispose();
             Test = null;
-            DebugDrawer.Destroy();
+            DebugDraw.Destroy();
             TestSettingHelper.Save(Global.Settings);
             _controller.Dispose();
             _controller = null;
@@ -130,14 +130,14 @@ namespace Testbed
             UpdateUI();
             Test.Render();
             Test.DrawGUI();
-            if (DebugDrawer.ShowUI)
+            if (DebugDraw.ShowUI)
             {
-                DebugDrawer.DrawString(5, Global.Camera.Height - 60, $"steps: {Test.StepCount}");
-                DebugDrawer.DrawString(5, Global.Camera.Height - 40, $"{FpsCounter.Ms:0.0} ms");
-                DebugDrawer.DrawString(5, Global.Camera.Height - 20, $"{FpsCounter.Fps:F1} fps");
+                DebugDraw.DrawString(5, Global.Camera.Height - 60, $"steps: {Test.StepCount}");
+                DebugDraw.DrawString(5, Global.Camera.Height - 40, $"{FpsCounter.Ms:0.0} ms");
+                DebugDraw.DrawString(5, Global.Camera.Height - 20, $"{FpsCounter.Fps:F1} fps");
             }
 
-            DebugDrawer.Flush();
+            DebugDraw.Flush();
 
             _controller.Render();
 
@@ -148,7 +148,7 @@ namespace Testbed
 
         private void UpdateText()
         {
-            if (DebugDrawer.ShowUI)
+            if (DebugDraw.ShowUI)
             {
                 ImGui.SetNextWindowPos(new System.Numerics.Vector2(0.0f, 0.0f));
                 ImGui.SetNextWindowSize(new System.Numerics.Vector2(Global.Camera.Width, Global.Camera.Height));
@@ -163,12 +163,12 @@ namespace Testbed
         public void UpdateUI()
         {
             const int MenuWidth = 180;
-            if (DebugDrawer.ShowUI)
+            if (DebugDraw.ShowUI)
             {
                 ImGui.SetNextWindowPos(new System.Numerics.Vector2((float)Global.Camera.Width - MenuWidth - 10, 10));
                 ImGui.SetNextWindowSize(new System.Numerics.Vector2(MenuWidth, (float)Global.Camera.Height - 20));
 
-                ImGui.Begin("Tools", ref DebugDrawer.ShowUI, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
+                ImGui.Begin("Tools", ref DebugDraw.ShowUI, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
 
                 if (ImGui.BeginTabBar("ControlTabs", ImGuiTabBarFlags.None))
                 {
@@ -389,7 +389,7 @@ namespace Testbed
                 break;
 
             case Keys.Tab:
-                DebugDrawer.ShowUI = !DebugDrawer.ShowUI;
+                DebugDraw.ShowUI = !DebugDraw.ShowUI;
                 break;
             default:
                 Test?.OnKeyDown(new KeyInputEventArgs(Input.GetKeyCode(e.Key), Input.GetKeyModifiers(e.Modifiers), e.IsRepeat));
@@ -498,9 +498,9 @@ namespace Testbed
             if (Test != null)
             {
                 Test.Input = Global.Input;
-                Test.Drawer = Global.DebugDrawer;
+                Test.Draw = Global.DebugDraw;
                 Test.TestSettings = Global.Settings;
-                Test.World.Drawer = Global.DebugDrawer;
+                Test.World.Draw = Global.DebugDraw;
             }
         }
 

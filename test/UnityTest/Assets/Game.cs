@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Camera = UnityEngine.Camera;
 using Color = UnityEngine.Color;
@@ -22,9 +23,9 @@ namespace Box2DSharp.Testbed.Unity
 
         public FpsCounter FpsCounter = new FpsCounter();
 
-        public UnityDrawer UnityDrawer;
+        public UnityDraw UnityDraw;
 
-        public DebugDrawer DebugDrawer;
+        public DebugDraw DebugDraw;
 
         public UnityTestSettings Settings;
 
@@ -81,9 +82,9 @@ namespace Box2DSharp.Testbed.Unity
             Input = new UnityInput();
             Global.Input = Input;
 
-            UnityDrawer = UnityDrawer.GetDrawer();
-            DebugDrawer = new DebugDrawer {Drawer = UnityDrawer, ShowUI = true};
-            Global.DebugDrawer = DebugDrawer;
+            UnityDraw = UnityDraw.GetDraw();
+            DebugDraw = new DebugDraw {Draw = UnityDraw, ShowUI = true};
+            Global.DebugDraw = DebugDraw;
 
             Application.quitting += () => TestSettingHelper.Save(Settings);
 
@@ -164,11 +165,11 @@ namespace Box2DSharp.Testbed.Unity
             GUI.color = _textColor;
             var (category, testName, _) = Global.Tests[Global.Settings.TestIndex];
             Test.DrawTitle($"{category} : {testName}");
-            DebugDrawer.DrawString(5, Global.Camera.Height - 70, $"steps: {Test.StepCount}");
-            DebugDrawer.DrawString(5, Global.Camera.Height - 50, $"{FpsCounter.Ms:0.0} ms");
-            DebugDrawer.DrawString(5, Global.Camera.Height - 30, $"{FpsCounter.Fps:F1} fps");
+            DebugDraw.DrawString(5, Global.Camera.Height - 70, $"steps: {Test.StepCount}");
+            DebugDraw.DrawString(5, Global.Camera.Height - 50, $"{FpsCounter.Ms:0.0} ms");
+            DebugDraw.DrawString(5, Global.Camera.Height - 30, $"{FpsCounter.Fps:F1} fps");
             Test.DrawGUI();
-            while (DebugDrawer.Texts.TryDequeue(out var text))
+            while (DebugDraw.Texts.TryDequeue(out var text))
             {
                 var size = new Vector2(Global.Camera.Width, Global.Camera.Height);
                 GUI.Box(new Rect(text.Position.ToUVector2(), size), text.Text, _textStyle);
@@ -228,9 +229,9 @@ namespace Box2DSharp.Testbed.Unity
             if (Test != null)
             {
                 Test.Input = Global.Input;
-                Test.Drawer = Global.DebugDrawer;
+                Test.Draw = Global.DebugDraw;
                 Test.TestSettings = Global.Settings;
-                Test.World.Drawer = Global.DebugDrawer;
+                Test.World.Draw = Global.DebugDraw;
                 Test.TextIncrement = 20;
             }
         }
@@ -347,7 +348,7 @@ namespace Box2DSharp.Testbed.Unity
             }
             else if (Input.IsKeyDown(KeyCodes.Tab))
             {
-                DebugDrawer.ShowUI = !DebugDrawer.ShowUI;
+                DebugDraw.ShowUI = !DebugDraw.ShowUI;
             }
             else if (Input.IsKeyDown(KeyCodes.Escape))
             {

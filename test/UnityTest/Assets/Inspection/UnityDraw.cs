@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 namespace Box2DSharp.Testbed.Unity.Inspection
 {
     [ExecuteInEditMode]
-    public class UnityDrawer : MonoBehaviour
+    public class UnityDraw : MonoBehaviour
     {
         private const string SceneCameraName = "SceneCamera";
 
@@ -29,12 +29,12 @@ namespace Box2DSharp.Testbed.Unity.Inspection
 
         private static readonly int _zWrite = Shader.PropertyToID("_ZWrite");
 
-        public static UnityDrawer GetDrawer()
+        public static UnityDraw GetDraw()
         {
-            var drawLines = FindObjectOfType<UnityDrawer>();
+            var drawLines = FindObjectOfType<UnityDraw>();
             if (drawLines == default)
             {
-                drawLines = GameObject.FindWithTag(MainCameraTag).AddComponent<UnityDrawer>();
+                drawLines = GameObject.FindWithTag(MainCameraTag).AddComponent<UnityDraw>();
             }
 
             return drawLines;
@@ -108,7 +108,7 @@ namespace Box2DSharp.Testbed.Unity.Inspection
             // Unity has a built-in shader that is useful for drawing
             // simple colored things.
             var shader = Shader.Find("Hidden/Internal-Colored");
-            _lineMaterial = new Material(shader) {hideFlags = HideFlags.HideAndDontSave};
+            _lineMaterial = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
 
             // Turn on alpha blending
             _lineMaterial.SetInt(_srcBlend, (int)BlendMode.SrcAlpha);

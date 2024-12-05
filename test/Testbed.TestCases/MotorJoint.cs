@@ -95,7 +95,7 @@ namespace Testbed.TestCases
 
         protected override void OnRender()
         {
-            Drawer.DrawPoint(_linearOffset, 4.0f, Color.FromArgb(230, 230, 230));
+            Draw.DrawPoint(_linearOffset, 4.0f, Color.FromArgb(230, 230, 230));
         }
     }
 }

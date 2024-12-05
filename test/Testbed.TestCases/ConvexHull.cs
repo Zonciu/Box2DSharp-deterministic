@@ -54,15 +54,15 @@ namespace Testbed.TestCases
             var drawLine = new FVector2[shape.Count + 1];
             Array.Copy(shape.Vertices.ToArray(), drawLine, shape.Count);
             drawLine[drawLine.Length - 1] = shape.Vertices[0];
-            Drawer.DrawPolygon(drawLine, drawLine.Length, Color.FromArgb(0.9f, 0.9f, 0.9f));
+            Draw.DrawPolygon(drawLine, drawLine.Length, Color.FromArgb(0.9f, 0.9f, 0.9f));
 
             for (var i = 0; i < _count; ++i)
             {
-                Drawer.DrawPoint(_points[i], 3.0f, Color.FromArgb(0.3f, 0.9f, 0.3f));
-                Drawer.DrawString((_points[i] + new FVector2(0.05f, 0.05f)).ToVector2(), i.ToString());
+                Draw.DrawPoint(_points[i], 3.0f, Color.FromArgb(0.3f, 0.9f, 0.3f));
+                Draw.DrawString((_points[i] + new FVector2(0.05f, 0.05f)).ToVector2(), i.ToString());
             }
 
-            Drawer.DrawPoint(FVector2.Zero, 5f, Color.Yellow);
+            Draw.DrawPoint(FVector2.Zero, 5f, Color.Yellow);
 
             if (_auto && !TestSettings.Pause)
             {

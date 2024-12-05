@@ -2,7 +2,7 @@ using System;
 
 namespace Box2DSharp.Common
 {
-    public interface IDrawer
+    public interface IDraw
     {
         DrawFlag Flags { get; set; }
 
