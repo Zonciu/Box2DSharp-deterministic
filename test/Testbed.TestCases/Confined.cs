@@ -145,7 +145,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("Press 'c' to create a circle.");
             DrawString("Press 'a' to toggle auto generate circles.");

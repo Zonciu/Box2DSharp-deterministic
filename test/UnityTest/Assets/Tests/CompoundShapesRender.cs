@@ -11,9 +11,6 @@ namespace Box2DSharp.Testbed.Unity.Tests
 
         private Canvas Canvas;
 
-        protected override void OnGUI()
-        { }
-
         /// <inheritdoc />
         protected override void OnRender()
         {

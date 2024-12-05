@@ -244,17 +244,12 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("Press 1-5 to drop stuff");
             DrawString("Press 'a' to (de)activate some bodies");
             DrawString("Press 'd' to destroy a body");
-        }
-
-        /// <inheritdoc />
-        protected override void OnRender()
-        {
-            var callback = new PolyShapesCallback(Draw) {Circle = {Radius = 2.0f}};
+            var callback = new PolyShapesCallback(Draw) { Circle = { Radius = 2.0f } };
             callback.Circle.Position.Set(0.0f, 1.1f);
             callback.Circle.ComputeAABB(out var aabb, callback.Transform, 0);
             callback.Transform.SetIdentity();

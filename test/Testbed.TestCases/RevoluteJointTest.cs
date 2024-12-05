@@ -105,7 +105,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             var torque1 = Joint1.GetMotorTorque(TestSettings.Hertz);
             DrawString($"Motor Torque 1= {torque1}");

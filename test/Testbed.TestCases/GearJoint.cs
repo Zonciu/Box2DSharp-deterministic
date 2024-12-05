@@ -142,7 +142,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             var ratio = _joint4.GetRatio();
             var value = _joint1.GetJointAngle() + ratio * _joint2.GetJointAngle();

@@ -87,14 +87,9 @@ namespace Testbed.TestCases
             _worldManifold.Initialize(_manifold, _transformA, _polygonA.Radius, _transformB, _polygonB.Radius);
         }
 
-        /// <inheritdoc />
-        protected override void OnGUI()
-        {
-            DrawString($"point count = {_manifold.PointCount}");
-        }
-
         protected override void OnRender()
         {
+            DrawString($"point count = {_manifold.PointCount}");
             var color = Color.FromArgb(230, 230, 230);
             var v = new FVector2[Settings.MaxPolygonVertices];
             for (var i = 0; i < _polygonA.Count; ++i)

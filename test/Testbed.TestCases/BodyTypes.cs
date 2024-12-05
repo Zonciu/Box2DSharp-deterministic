@@ -98,7 +98,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("Keys: (d) dynamic, (s) static, (k) kinematic");
         }

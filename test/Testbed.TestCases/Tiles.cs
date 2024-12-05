@@ -113,7 +113,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             var cm = World.ContactManager;
             var height = cm.BroadPhase.GetTreeHeight();

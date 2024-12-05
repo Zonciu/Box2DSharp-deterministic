@@ -94,15 +94,10 @@ namespace Testbed.TestCases
 
         private DistanceOutput output;
 
-        /// <inheritdoc />
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString($"distance = {output.Distance}");
             DrawString($"iterations = {output.Iterations}");
-        }
-
-        protected override void OnRender()
-        {
             {
                 var color = Color.FromArgb(230, 230, 230);
                 var v = new FVector2[Settings.MaxPolygonVertices];

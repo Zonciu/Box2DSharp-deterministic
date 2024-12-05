@@ -177,7 +177,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("Press: (b) to delete a body, (j) to delete a joint");
         }

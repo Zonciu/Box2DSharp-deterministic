@@ -127,7 +127,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             if (_distanceJoint != null)
             {

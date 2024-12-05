@@ -168,7 +168,6 @@ namespace Box2DSharp.Testbed.Unity
             DebugDraw.DrawString(5, Global.Camera.Height - 70, $"steps: {Test.StepCount}");
             DebugDraw.DrawString(5, Global.Camera.Height - 50, $"{FpsCounter.Ms:0.0} ms");
             DebugDraw.DrawString(5, Global.Camera.Height - 30, $"{FpsCounter.Fps:F1} fps");
-            Test.DrawGUI();
             while (DebugDraw.Texts.TryDequeue(out var text))
             {
                 var size = new Vector2(Global.Camera.Width, Global.Camera.Height);
@@ -233,6 +232,7 @@ namespace Box2DSharp.Testbed.Unity
                 Test.TestSettings = Global.Settings;
                 Test.World.Draw = Global.DebugDraw;
                 Test.TextIncrement = 20;
+                Test.OnInitialize();
             }
         }
 

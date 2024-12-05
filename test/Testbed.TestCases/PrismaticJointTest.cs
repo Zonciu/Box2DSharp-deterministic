@@ -84,7 +84,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             var force = Joint.GetMotorForce(TestSettings.Hertz);
             DrawString($"Motor Force = {force}");

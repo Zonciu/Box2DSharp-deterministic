@@ -90,7 +90,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             if (_gJkProfile.GjkCalls > 0)
             {

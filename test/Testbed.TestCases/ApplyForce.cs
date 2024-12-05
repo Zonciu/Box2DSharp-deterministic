@@ -176,7 +176,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("Forward (W), Turn (A) and (D)");
         }

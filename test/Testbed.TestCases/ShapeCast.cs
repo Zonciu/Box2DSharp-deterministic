@@ -89,14 +89,9 @@ namespace Testbed.TestCases
 
         private DistanceOutput distanceOutput;
 
-        /// <inheritdoc />
-        protected override void OnGUI()
-        {
-            DrawString($"hit = {hit}, iters = {output.Iterations}, lambda = {output.Lambda}, distance = {distanceOutput.Distance}");
-        }
-
         protected override void OnRender()
         {
+            DrawString($"hit = {hit}, iters = {output.Iterations}, lambda = {output.Lambda}, distance = {distanceOutput.Distance}");
             var vertices = new FVector2[Settings.MaxPolygonVertices];
 
             for (var i = 0; i < _countA; ++i)

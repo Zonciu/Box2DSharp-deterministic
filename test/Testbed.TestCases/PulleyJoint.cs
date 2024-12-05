@@ -68,7 +68,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             var ratio = _joint1.GetRatio();
             var L = _joint1.GetCurrentLengthA() + ratio * _joint1.GetCurrentLengthB();

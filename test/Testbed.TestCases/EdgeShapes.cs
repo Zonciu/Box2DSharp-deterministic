@@ -165,14 +165,9 @@ namespace Testbed.TestCases
             }
         }
 
-        /// <inheritdoc />
-        protected override void OnGUI()
-        {
-            DrawString("Press 1-5 to drop stuff");
-        }
-
         protected override void OnRender()
         {
+            DrawString("Press 1-5 to drop stuff");
             var advanceRay = TestSettings.Pause == false || TestSettings.SingleStep;
 
             var L = 25.0f;

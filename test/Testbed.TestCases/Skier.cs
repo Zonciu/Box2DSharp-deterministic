@@ -141,7 +141,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("Keys: c = Camera fixed/tracking");
         }

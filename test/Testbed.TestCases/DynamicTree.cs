@@ -106,8 +106,7 @@ namespace Testbed.TestCases
             RayCast();
         }
 
-        /// <inheritdoc />
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("Keys: a: automate, c: create, d: destroy, m: move");
             DrawString("Blue: overlap");
@@ -115,10 +114,6 @@ namespace Testbed.TestCases
             DrawString("Red: ray actor & overlap");
             var height = _tree.GetHeight();
             DrawString($"dynamic tree height = {height}");
-        }
-
-        protected override void OnRender()
-        {
             Color c;
             for (var i = 0; i < ActorCount; ++i)
             {

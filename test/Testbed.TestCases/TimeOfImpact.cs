@@ -61,15 +61,11 @@ namespace Testbed.TestCases
 
         private ToiOutput output;
 
-        /// <inheritdoc />
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString($"toi = {output.Time}");
             DrawString($"max toi iters = {ToiMaxIters}, max root iters = {ToiMaxRootIters}");
-        }
 
-        protected override void OnRender()
-        {
             //sweepB.A0 -= 300.0f * _pi;
             //sweepB.A -= 300.0f * _pi;
 

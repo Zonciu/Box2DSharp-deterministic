@@ -77,7 +77,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("Press: (c) create a shape, (d) destroy a shape. (s) set sensor");
             DrawString($"sensor = {_sensor}");

@@ -139,7 +139,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("Press 'a' to control the flippers");
         }

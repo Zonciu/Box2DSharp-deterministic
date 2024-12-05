@@ -84,7 +84,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             var v = _character.Body.LinearVelocity;
             DrawString($"Character Linear Velocity: {v.Y}");

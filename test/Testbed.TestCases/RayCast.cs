@@ -214,7 +214,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("Shape 1 is intentionally ignored by the ray");
             switch (_mode)
@@ -231,11 +231,7 @@ namespace Testbed.TestCases
                 DrawString("Ray-cast mode: multiple - gather multiple fixtures");
                 break;
             }
-        }
 
-        /// <inheritdoc />
-        protected override void OnRender()
-        {
             var angle = Settings.Pi * _degrees / 180.0f;
             var L = 11.0f;
             var point1 = new FVector2(0.0f, 10.0f);
@@ -329,19 +325,19 @@ namespace Testbed.TestCases
 
             if (index < 4)
             {
-                var fd = new FixtureDef {Shape = _polygons[index], Friction = 0.3f};
+                var fd = new FixtureDef { Shape = _polygons[index], Friction = 0.3f };
                 fd.UserData = index + 1;
                 _bodies[_bodyIndex].CreateFixture(fd);
             }
             else if (index < 5)
             {
-                var fd = new FixtureDef {Shape = _circle, Friction = 0.3f};
+                var fd = new FixtureDef { Shape = _circle, Friction = 0.3f };
                 fd.UserData = index + 1;
                 _bodies[_bodyIndex].CreateFixture(fd);
             }
             else
             {
-                var fd = new FixtureDef {Shape = _edge, Friction = 0.3f};
+                var fd = new FixtureDef { Shape = _edge, Friction = 0.3f };
                 fd.UserData = index + 1;
                 _bodies[_bodyIndex].CreateFixture(fd);
             }

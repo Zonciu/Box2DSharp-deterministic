@@ -124,12 +124,15 @@ namespace Testbed
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            if (_stopped)
+            {
+                return;
+            }
+
             _controller.Update(this, (float)e.Time);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             UpdateText();
             UpdateUI();
-            Test.Render();
-            Test.DrawGUI();
             if (DebugDraw.ShowUI)
             {
                 DebugDraw.DrawString(5, Global.Camera.Height - 60, $"steps: {Test.StepCount}");
@@ -137,8 +140,9 @@ namespace Testbed
                 DebugDraw.DrawString(5, Global.Camera.Height - 20, $"{FpsCounter.Fps:F1} fps");
             }
 
-            DebugDraw.Flush();
+            Test.Render();
 
+            DebugDraw.Flush();
             _controller.Render();
 
             Util.CheckGLError("End of frame");
@@ -501,6 +505,7 @@ namespace Testbed
                 Test.Draw = Global.DebugDraw;
                 Test.TestSettings = Global.Settings;
                 Test.World.Draw = Global.DebugDraw;
+                Test.OnInitialize();
             }
         }
 

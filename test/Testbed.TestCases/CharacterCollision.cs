@@ -227,7 +227,7 @@ namespace Testbed.TestCases
             _character.SetLinearVelocity(v);
         }
 
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("This tests various character collision shapes.");
             DrawString("Limitation: square and hexagon can snag on aligned boxes.");

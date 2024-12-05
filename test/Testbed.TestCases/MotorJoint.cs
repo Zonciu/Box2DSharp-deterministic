@@ -88,13 +88,9 @@ namespace Testbed.TestCases
 
         private FVector2 _linearOffset;
 
-        protected override void OnGUI()
-        {
-            DrawString("Keys: (s) pause");
-        }
-
         protected override void OnRender()
         {
+            DrawString("Keys: (s) pause");
             Draw.DrawPoint(_linearOffset, 4.0f, Color.FromArgb(230, 230, 230));
         }
     }

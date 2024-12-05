@@ -39,12 +39,6 @@ namespace Testbed.TestCases
             }
         }
 
-        /// <inheritdoc />
-        protected override void OnGUI()
-        {
-            base.OnGUI();
-        }
-
         protected override void OnRender()
         {
             DrawString("Press g to generate a new random convex hull");

@@ -42,6 +42,8 @@ namespace Testbed.Abstractions
 
         public IInput Input;
 
+        public float TimeStep;
+
         protected TestBase()
         {
             Regex.Replace(GetType().Name, @"(\B[A-Z])", " $1");
@@ -51,6 +53,9 @@ namespace Testbed.Abstractions
             GroundBody = World.CreateBody(new BodyDef());
             DumpLogger.Instance = new InternalDumpLogger();
         }
+
+        public virtual void OnInitialize()
+        { }
 
         #region Step
 
@@ -104,33 +109,30 @@ namespace Testbed.Abstractions
 
         public void Step()
         {
+            TimeStep = TestSettings.Hertz > 0.0f ? 1.0f / TestSettings.Hertz : 0f;
+
             if (TestSettings.Pause)
             {
                 if (TestSettings.SingleStep)
                 {
                     TestSettings.SingleStep = false;
-                    WorldStep();
+                }
+                else
+                {
+                    TimeStep = 0;
                 }
             }
-            else
-            {
-                WorldStep();
-            }
 
-            void WorldStep()
-            {
-                World.AllowSleep = TestSettings.EnableSleep;
-                World.WarmStarting = TestSettings.EnableWarmStarting;
-                World.ContinuousPhysics = TestSettings.EnableContinuous;
-                World.SubStepping = TestSettings.EnableSubStepping;
+            World.AllowSleep = TestSettings.EnableSleep;
+            World.WarmStarting = TestSettings.EnableWarmStarting;
+            World.ContinuousPhysics = TestSettings.EnableContinuous;
+            World.SubStepping = TestSettings.EnableSubStepping;
 
-                PointsCount = 0;
+            PointsCount = 0;
 
-                PreStep();
-                World.Step(1 / TestSettings.Hertz, TestSettings.VelocityIterations, TestSettings.PositionIterations);
-                PostStep();
-                ++StepCount;
-            }
+            PreStep();
+            World.Step(1 / TestSettings.Hertz, TestSettings.VelocityIterations, TestSettings.PositionIterations);
+            PostStep();
         }
 
         #endregion
@@ -147,9 +149,6 @@ namespace Testbed.Abstractions
         /// draw string and draw shape in here
         /// </summary>
         protected virtual void OnRender()
-        { }
-
-        protected virtual void OnGUI()
         { }
 
         public int TextLine = 30;
@@ -169,7 +168,7 @@ namespace Testbed.Abstractions
             TextLine = 26;
         }
 
-        public void DrawGUI()
+        public void Render()
         {
             if (TestSettings.Pause)
             {
@@ -231,13 +230,12 @@ namespace Testbed.Abstractions
                 DrawString($"broad-phase [ave] (max) = {p.Broadphase} [{aveProfile.Broadphase}] ({MaxProfile.Broadphase})");
             }
 
-            OnGUI();
-        }
-
-        public void Render()
-        {
-            DrawWorld();
             OnRender();
+            DrawWorld();
+            if (TimeStep > 0)
+            {
+                ++StepCount;
+            }
         }
 
         private void DrawWorld()
@@ -543,7 +541,7 @@ namespace Testbed.Abstractions
             Bomb = World.CreateBody(bd);
             Bomb.SetLinearVelocity(velocity);
 
-            var circle = new CircleShape {Radius = 0.3f};
+            var circle = new CircleShape { Radius = 0.3f };
 
             var fd = new FixtureDef
             {

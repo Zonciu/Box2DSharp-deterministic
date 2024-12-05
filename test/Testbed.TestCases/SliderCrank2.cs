@@ -123,7 +123,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("Keys: F toggle friction, M toggle motor");
             var torque = _joint1.GetMotorTorque(TestSettings.Hertz);

@@ -259,7 +259,7 @@ namespace Testbed.TestCases
             }
         }
 
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("Keys: left = a, brake = s, right = d");
         }

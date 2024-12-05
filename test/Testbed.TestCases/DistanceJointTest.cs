@@ -59,7 +59,7 @@ namespace Testbed.TestCases
         }
 
         /// <inheritdoc />
-        protected override void OnGUI()
+        protected override void OnRender()
         {
             DrawString("This demonstrates a soft distance joint.");
             DrawString("Press: (b) to delete a Body, (j) to delete a joint");
